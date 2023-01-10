@@ -5,19 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DARP"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="900" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
+        Title="MainWindow" Height="900" Width="1600" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="445*" />
             <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="311*" />
+            <ColumnDefinition Width="134*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <ToolBarTray Height="30" Grid.ColumnSpan="3">
+        <ToolBarTray Height="30" Grid.ColumnSpan="4">
             <ToolBar Height="30">
                 <Button Content="File"/>
             </ToolBar>
@@ -33,9 +34,17 @@
             </TabItem>
         </TabControl>
         <GridSplitter Grid.Column="1" Grid.Row="1" Width="10" HorizontalAlignment="Stretch" />
-        <TabControl Grid.Row="1"  Grid.Column="2">
+        <TabControl Grid.Row="1"  Grid.Column="2" Grid.ColumnSpan="2">
             <TabItem Header="Plan" Width="100">
-                <Grid/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ToolBar Height="30">
+                        <Button Content="Update plan"/>
+                    </ToolBar>
+                </Grid>
             </TabItem>
             <TabItem Header="Logs" Width="100">
                 <Grid/>
