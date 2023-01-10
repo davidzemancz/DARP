@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DARP.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,15 +21,19 @@ namespace DARP.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
+        private IOrderService _orderService;
+
         public MainWindow()
         {
             InitializeComponent();
+            _orderService = ServiceProvider.Default.GetService<IOrderService>();
         }
 
      
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
+            
+            dgOrders.ItemsSource = _orderService.GetOrderViews();
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

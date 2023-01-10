@@ -23,20 +23,22 @@
             </ToolBar>
         </ToolBarTray>
         <TabControl Grid.Row="1" Grid.Column="0">
-            <TabItem Header="Vehicles">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem Header="Orders" Width="100">
+                <Grid>
+                    <DataGrid x:Name="dgOrders"/>
+                </Grid>
             </TabItem>
-            <TabItem Header="Orders">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem Header="Vehicles" Width="100">
+                <Grid/>
             </TabItem>
         </TabControl>
         <GridSplitter Grid.Column="1" Grid.Row="1" Width="10" HorizontalAlignment="Stretch" />
         <TabControl Grid.Row="1"  Grid.Column="2">
-            <TabItem Header="Plan">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem Header="Plan" Width="100">
+                <Grid/>
             </TabItem>
-            <TabItem Header="Logs">
-                <Grid Background="#FFE5E5E5"/>
+            <TabItem Header="Logs" Width="100">
+                <Grid/>
             </TabItem>
         </TabControl>
     </Grid>
