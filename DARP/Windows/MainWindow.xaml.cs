@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -25,8 +26,11 @@ namespace DARP.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Settings _settings;
+        internal int CurrentTime { get; set; }
 
+        private readonly WindowParams _params;
+        private Random _random;
+        
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
 
@@ -36,7 +40,7 @@ namespace DARP.Windows
             _orderService = ServiceProvider.Default.GetService<IOrderDataService>();
             _vehicleService = ServiceProvider.Default.GetService<IVehicleDataService>();
 
-            _settings = new Settings();
+            _params = new WindowParams();
         }
 
 
@@ -45,29 +49,71 @@ namespace DARP.Windows
             dgOrders.ItemsSource = _orderService.GetOrderViews();
             dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
             
-            txtMaxCords.DataContext = _settings;
-            
-            _settings.MaxCords = (new Cords(100,100)).ToString();
+            txtMaxCords.DataContext = _params;
+            txtSeed.DataContext = _params;
+            txtMaxTimeMins.DataContext = _params;
+            txtMinTwMins.DataContext = _params;
+            txtMaxTwMins.DataContext = _params;
+            txtNewOrdersCount.DataContext = _params;
+            txtReplanIntervalMins.DataContext = _params;
+            txtNewOrderIntervalMins.DataContext = _params;
+
+            _params.MaxCords = (new Cords(100,100)).ToString();
+            _params.Seed = ((int)DateTime.Now.Ticks).ToString();
+            _params.MaxDeliveryTimeMins = 60.ToString();
+            _params.MinTimeWindowMins= 5.ToString();
+            _params.MaxTimeWindowMins = 20.ToString();
+            _params.NewOrdersCount = 5.ToString();
+            _params.ReplanIntervalMins = 5.ToString();
+            _params.NewOrderIntervalMins = 5.ToString();
+
+            _random = new Random(_params._seed);
         }
 
-        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-        }
-
+     
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
         {
-            _orderService.GetOrderViews().Add(new OrderView(new Order()
+            for (int i = 0; i < _params._newOrdersCount; i++)
             {
-                Name = "",
-                PickupLocation = new Cords(6, 4),
-                DeliveryLocation = new Cords(10, 1),
-                DeliveryTimeWindow = new TimeWindow(new Time(5), new Time(8))
+                Time deliveryTwFrom = new Time(CurrentTime + _random.Next(_params._maxDeliveryTimeMins));
+                _orderService.GetOrderViews().Add(new OrderView(new Order()
+                {
+                    PickupLocation = new Cords(_random.Next(0, (int)_params._maxCords.X), _random.Next(0, (int)_params._maxCords.Y)),
+                    DeliveryLocation = new Cords(_random.Next(0, (int)_params._maxCords.X), _random.Next(0, (int)_params._maxCords.Y)),
+                    DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_params._minTwMins, _params._maxTwMins)))
+                }));
+            }
+        }
+
+        private void btnResetRnd_Click(object sender, RoutedEventArgs e)
+        {
+            _random = new Random(_params._seed);
+        }
+
+        private void btnRunSimulation_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btwNewRandomVehicle_Click(object sender, RoutedEventArgs e)
+        {
+            _vehicleService.GetVehicleViews().Add(new VehicleView(new Vehicle()
+            {
+                Name = "Taxi car",
+                Location = new Cords(_random.Next(0, (int)_params._maxCords.X), _random.Next(0, (int)_params._maxCords.Y)),
             }));
         }
 
-        class Settings : INotifyPropertyChanged
+        class WindowParams : INotifyPropertyChanged
         {
-            private Cords _maxCords;
+            public Cords _maxCords;
+            public int _seed;
+            public int _maxDeliveryTimeMins;
+            public int _minTwMins;
+            public int _maxTwMins;
+            public int _newOrdersCount;
+            public int _replanIntervalMins;
+            public int _newOrderIntervalMins;
 
             public string MaxCords 
             { 
@@ -80,8 +126,77 @@ namespace DARP.Windows
                 } 
             }
 
+            public string Seed
+            {
+                get => _seed.ToString();
+                set{
+                    _seed = int.Parse(value);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Seed)));
+                }
+            }
+
+            public string MaxDeliveryTimeMins
+            {
+                get => _maxDeliveryTimeMins.ToString();
+                set
+                {
+                    _maxDeliveryTimeMins = int.Parse(value);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxDeliveryTimeMins)));
+                }
+            }
+
+            public string MinTimeWindowMins
+            {
+                get => _minTwMins.ToString();
+                set
+                {
+                    _minTwMins = int.Parse(value);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MinTimeWindowMins)));
+                }
+            }
+
+            public string MaxTimeWindowMins
+            {
+                get => _maxTwMins.ToString();
+                set
+                {
+                    _maxTwMins = int.Parse(value);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxTimeWindowMins)));
+                }
+            }
+
+            public string NewOrdersCount
+            {
+                get => _newOrdersCount.ToString();
+                set
+                {
+                    _newOrdersCount = int.Parse(value);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewOrdersCount)));
+                }
+            }
+            public string ReplanIntervalMins
+            {
+                get => _replanIntervalMins.ToString();
+                set
+                {
+                    _replanIntervalMins = int.Parse(value);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ReplanIntervalMins)));
+                }
+            }
+            public string NewOrderIntervalMins
+            {
+                get => _newOrderIntervalMins.ToString();
+                set
+                {
+                    _newOrderIntervalMins = int.Parse(value);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewOrderIntervalMins)));
+                }
+            }
+
             public event PropertyChangedEventHandler PropertyChanged;
         }
+
+       
     }
 
 
