@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DARP"
+        xmlns:vr="clr-namespace:DARP.Windows.ValidationRules"
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="1600" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
+
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -15,12 +17,23 @@
             <ColumnDefinition Width="134*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="60"/>
             <RowDefinition/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <ToolBarTray Height="30" Grid.ColumnSpan="4">
+        <ToolBarTray Grid.Row="0" VerticalAlignment="Stretch" Grid.ColumnSpan="4">
             <ToolBar Height="30">
                 <Button Content="File"/>
+            </ToolBar>
+            <ToolBar Height="30">
+                <Label Content="Maximal cords:"/>
+                <TextBox x:Name="txtMaxCords" TextAlignment="Center" Width="70">
+                    <Binding Path="MaxCords" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>   
+                            <vr:CordsValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
             </ToolBar>
         </ToolBarTray>
         <TabControl Grid.Row="1" Grid.Column="0">
@@ -32,7 +45,7 @@
                     </Grid.RowDefinitions>
                     <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
                         <ToolBar Height="30">
-                            <Button Content="New random order"/>
+                            <Button Content="New random order" Click="newRandomOrder_Click"/>
                             <Button Content="Delete order"/>
                         </ToolBar>
                         <ToolBar Height="30">
@@ -68,6 +81,9 @@
                 <Grid/>
             </TabItem>
         </TabControl>
+        <ToolBar Grid.Row="2" Height="30">
+            <!--<Label x:Name="lbSettingsStatus" Content="{Binding  Path=(Validation.Errors)[0].ErrorContent}" Width="200"/>-->
+        </ToolBar>
     </Grid>
 
 </Window>

@@ -24,7 +24,7 @@ namespace DARP.Views
 
         public int Id { get => _vehicle.Id; internal set => _vehicle.Id = value; }
         public string Name { get => _vehicle.Name; set => _vehicle.Name = value; }
-        public double LocationLat { get => _vehicle.Location.Latitude; set => _vehicle.Location = new(value, _vehicle.Location.Longitude); }
-        public double LocationLong { get => _vehicle.Location.Longitude; set => _vehicle.Location = new(_vehicle.Location.Latitude, value); }
+        public double LocationX { get => _vehicle.Location.X; set => _vehicle.Location = new(value, _vehicle.Location.Y); }
+        public double LocationY { get => _vehicle.Location.Y; set => _vehicle.Location = new(_vehicle.Location.X, value); }
     }
 }
