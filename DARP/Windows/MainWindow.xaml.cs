@@ -33,12 +33,14 @@ namespace DARP.Windows
         
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
+        private readonly PlanningService _planningService;
 
         public MainWindow()
         {
             InitializeComponent();
             _orderService = ServiceProvider.Default.GetService<IOrderDataService>();
             _vehicleService = ServiceProvider.Default.GetService<IVehicleDataService>();
+            _planningService = ServiceProvider.Default.GetService<PlanningService>();
 
             _params = new WindowParams();
         }

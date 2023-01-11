@@ -24,6 +24,7 @@ namespace DARP.Services
         {
             if (serviceType == typeof(IOrderDataService)) return new OrderDataService();
             else if (serviceType == typeof(IVehicleDataService)) return new VehicleDataService();
+            else if (serviceType == typeof(PlanningService)) return new PlanningService();
             return null;
         }
     }

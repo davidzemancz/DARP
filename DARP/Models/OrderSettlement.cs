@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DARP.Models
 {
-    public class RoutePoint
+    public class OrderSettlement
     {
-       
+        public Order Order { get; set; }
+        public Time Time { get; set; }
     }
-
 }
