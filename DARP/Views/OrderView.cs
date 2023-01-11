@@ -21,13 +21,15 @@ namespace DARP.Views
             _order = order;
         }
 
-        public int Id { get => _order.Id; set => _order.Id = value;}
+        
+        public int Id { get => _order.Id; internal set => _order.Id = value; }
         public string Name { get => _order.Name; set => _order.Name = value;}
-        public double PickupLat { get => _order.PickupLocation.Latitude; set => _order.PickupLocation.Latitude = value; }
-        public double PickupLong { get => _order.PickupLocation.Longitude; set => _order.PickupLocation.Longitude = value; }
-        public double DeliveryLat { get => _order.DeliveryLocation.Latitude; set => _order.DeliveryLocation.Latitude = value; }
-        public double DeliveryLong { get => _order.DeliveryLocation.Longitude; set => _order.DeliveryLocation.Longitude = value; }
-        public int DeliveryFromMins { get => _order.DeliveryTimeWindow.From.Minutes; set => _order.DeliveryTimeWindow.From.Minutes = value; }
-        public int DeliveryToMins { get => _order.DeliveryTimeWindow.To.Minutes; set => _order.DeliveryTimeWindow.To.Minutes = value; }
+        public OrderState State { get => _order.State; internal set => _order.State = value; }
+        public double PickupLat { get => _order.PickupLocation.Latitude; set => _order.PickupLocation = new (value, _order.PickupLocation.Longitude); }
+        public double PickupLong { get => _order.PickupLocation.Longitude; set => _order.PickupLocation = new(_order.PickupLocation.Latitude, value); }
+        public double DeliveryLat { get => _order.DeliveryLocation.Latitude; set => _order.DeliveryLocation = new(value, _order.DeliveryLocation.Longitude); }
+        public double DeliveryLong { get => _order.DeliveryLocation.Longitude; set => _order.DeliveryLocation = new(_order.DeliveryLocation.Latitude, value); }
+        public int DeliveryFromMins { get => _order.DeliveryTimeWindow.From.Minutes; set => _order.DeliveryTimeWindow = (new(value), _order.DeliveryTimeWindow.To); }
+        public int DeliveryToMins { get => _order.DeliveryTimeWindow.To.Minutes; set => _order.DeliveryTimeWindow = (_order.DeliveryTimeWindow.From, new(value)); }
     }
 }

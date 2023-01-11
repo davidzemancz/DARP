@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DARP.Services
 {
-    public interface IOrderService
+    public interface IOrderDataService
     {
         public ObservableCollection<OrderView> GetOrderViews();
     }

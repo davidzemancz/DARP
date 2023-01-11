@@ -16,13 +16,14 @@ namespace DARP.Services
 
         public T GetService<T>()
         {
-            if (typeof(T) == typeof(IOrderService)) return (T)(object) new OrderService();
-            return default(T);
+            var serviceType = typeof(T);
+            return (T)GetService(serviceType);
         } 
 
         public object GetService(Type serviceType)
         {
-            if (serviceType == typeof(IOrderService)) return new OrderService();
+            if (serviceType == typeof(IOrderDataService)) return new OrderDataService();
+            else if (serviceType == typeof(IVehicleDataService)) return new VehicleDataService();
             return null;
         }
     }

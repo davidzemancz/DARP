@@ -21,19 +21,21 @@ namespace DARP.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        private IOrderService _orderService;
+        private readonly IOrderDataService _orderService;
+        private readonly IVehicleDataService _vehicleService;
 
         public MainWindow()
         {
             InitializeComponent();
-            _orderService = ServiceProvider.Default.GetService<IOrderService>();
+            _orderService = ServiceProvider.Default.GetService<IOrderDataService>();
+            _vehicleService = ServiceProvider.Default.GetService<IVehicleDataService>();
         }
 
      
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
             dgOrders.ItemsSource = _orderService.GetOrderViews();
+            dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

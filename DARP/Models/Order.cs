@@ -10,8 +10,17 @@ namespace DARP.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public OrderState State { get; set; }
         public Cords PickupLocation { get; set; } = new(0,0);
         public Cords DeliveryLocation { get; set; } = new(0, 0);
         public (Time From, Time To) DeliveryTimeWindow { get; set; } = (new Time(0), new Time(0));
+    }
+
+    public enum OrderState
+    {
+        Created,
+        Accepted,
+        Rejected,
+        Handled
     }
 }

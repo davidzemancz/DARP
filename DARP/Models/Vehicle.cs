@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace DARP.Models
 {
-    public struct Time
+    public class Vehicle
     {
-        public int Minutes { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public Cords Location { get; set; } = new(0, 0);
 
-        public Time(int minutes)
-        {
-            Minutes = minutes;
-        }
     }
 }

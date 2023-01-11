@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DARP.Models
 {
-    public class Cords
+    public struct Cords
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
