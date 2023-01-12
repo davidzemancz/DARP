@@ -55,6 +55,7 @@ namespace DARP.Services
                             for (int j = i + 1;  j < route.Points.Count -1; j += 2)
                             {
                                 time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location); // Travel time between last delivery and current pickup
+                                // TODO think about waiting - vehicle can wait in previous location
 
                                 OrderPickupRoutePoint nRoutePointPickup = (OrderPickupRoutePoint)route.Points[j];
                                 OrderDeliveryRoutePoint nRoutePointDelivery = (OrderDeliveryRoutePoint)route.Points[j + 1];

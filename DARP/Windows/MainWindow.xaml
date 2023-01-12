@@ -3,11 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DARP"
+        xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules"
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="1600" Loaded="Window_Loaded">
-
+    <Window.DataContext>
+        <local:MainWindowModel/>
+    </Window.DataContext>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -53,6 +55,26 @@
                 <Label Content="Max time window (minutes):"/>
                 <TextBox x:Name="txtMaxTwMins" TextAlignment="Right" Width="50">
                     <Binding Path="MaxTimeWindowMins" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <vr:IntValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+            </ToolBar>
+            <ToolBar Band="2" Height="30">
+                <Label Content="Metric:"/>
+                <ComboBox Width="100" SelectedIndex="{Binding InsertionMethod}">
+                    <ComboBoxItem>Manhattan</ComboBoxItem>
+                    <ComboBoxItem>Euclidean</ComboBoxItem>
+                </ComboBox>
+                <Label Content="Insertion method:"/>
+                <ComboBox Width="100" SelectedIndex="{Binding InsertionMethod}">
+                    <ComboBoxItem>First fit</ComboBoxItem>
+                    <ComboBoxItem>Best fit</ComboBoxItem>
+                </ComboBox>
+                <Label Content="Vehicle speed:"/>
+                <TextBox TextAlignment="Right" Width="50">
+                    <Binding Path="VehicleSpeed" UpdateSourceTrigger="PropertyChanged" >
                         <Binding.ValidationRules>
                             <vr:IntValidationRule/>
                         </Binding.ValidationRules>
