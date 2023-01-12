@@ -14,5 +14,39 @@ namespace DARP.Models
         {
             Minutes = minutes;
         }
+
+        public static Time operator +(Time left, Time right)
+        {
+            return new(left.Minutes + right.Minutes);
+        }
+
+        public static bool operator ==(Time left, Time right)
+        {
+            return left.Minutes == right.Minutes;
+        }
+
+        public static bool operator !=(Time left, Time right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator <(Time left, Time right)
+        {
+            return left.Minutes < right.Minutes;
+        }
+
+        public static bool operator >(Time left, Time right)
+        {
+            return left.Minutes > right.Minutes;
+        }
+        public static bool operator <=(Time left, Time right)
+        {
+            return left.Minutes < right.Minutes || left.Minutes == right.Minutes;
+        }
+
+        public static bool operator >=(Time left, Time right)
+        {
+            return left.Minutes > right.Minutes || left.Minutes == right.Minutes;
+        }
     }
 }

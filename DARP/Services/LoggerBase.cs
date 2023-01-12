@@ -9,7 +9,7 @@ namespace DARP.Services
 {
     public class LoggerBase : ILogger
     {
-        public virtual IEnumerable<TextWriter> TextWriters => new TextWriter[] {Console.Out};
+        public virtual IEnumerable<TextWriter> TextWriters => new TextWriter[] { Console.Out };
 
         public void Debug(string message)
         {

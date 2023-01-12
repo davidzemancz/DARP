@@ -10,7 +10,9 @@ namespace DARP.Models
     {
         public List<Vehicle> Vehicles { get; set; } = new();
         public List<Order> Orders { get; set; } = new();
-        public Dictionary<Vehicle, List<OrderSettlement>> OrderSettlements { get; set; } = new();
+        public List<Route> Routes { get; set; } = new();
+        public Func<Cords, Cords, double> Distance { get; set; }
+        public Func<Cords, Cords, Time> TravelTime { get; set; }
 
         public Plan() 
         { 
