@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DARP.Models
 {
-    public struct Time
+    public struct Time : IComparable<Time>
     {
         public int Minutes { get; set; }
 
@@ -48,5 +48,16 @@ namespace DARP.Models
         {
             return left.Minutes > right.Minutes || left.Minutes == right.Minutes;
         }
+
+        public int CompareTo(Time other)
+        {
+            return Minutes - other.Minutes;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this == (Time)obj;
+        }
+
     }
 }
