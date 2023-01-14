@@ -16,7 +16,16 @@ namespace DARP.Views
             _routePoint = routePoint;
         }
 
-        public string Type => _routePoint.GetType().Name;   
+        public string Type
+        {
+            get
+            {
+                if (_routePoint is VehicleRoutePoint) return "Vehicle location";
+                else if (_routePoint is OrderPickupRoutePoint) return "Order pickup";
+                else if (_routePoint is OrderDeliveryRoutePoint) return "Order delivery";
+                return "Route point";
+            }
+        }
         public Time Time => _routePoint.Time;
         public Cords Location => _routePoint.Location;
         public int? VehicleId => _routePoint is VehicleRoutePoint vrp ? vrp.Vehicle.Id : null;
