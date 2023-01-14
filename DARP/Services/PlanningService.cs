@@ -11,14 +11,18 @@ namespace DARP.Services
     public class PlanningService : IPlanningService
     {
         private ILoggerService _logger;
+        private IMIPSolverService _MIPSolverService;
 
         public Plan Plan { get; protected set; }
 
         public Plan InitPlan(Func<Cords, Cords, double> metric)
         {
-            _logger = ServiceProvider.Default.GetService<ILoggerService>();
-
             Plan = new Plan(metric);
+
+            _logger = ServiceProvider.Default.GetService<ILoggerService>();
+            _MIPSolverService = ServiceProvider.Default.GetService<IMIPSolverService>();
+            _MIPSolverService.Plan = Plan;
+
             return Plan;
         }
 
@@ -30,7 +34,25 @@ namespace DARP.Services
 
         public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrders)
         {
-            // Move vehicles to locations of last deliveries
+            // TODO Decision making on choosing method (insertion, optimization,...)
+
+            // Update vehicles location - move them to locations of last deliveries
+            UpdateVehiclesLocation(currentTime);
+
+            // Try insertion heuristics
+            TryInsertOrders(newOrders);
+
+            // Try greedy procedure
+            // TODO ...
+            // 1. Build DAG (assuming time 'to tw' only)
+            // 2. Find best routes in DAG
+
+            // Run optimization
+            _MIPSolverService.Solve(currentTime, newOrders);
+        }
+
+        private void UpdateVehiclesLocation(Time currentTime)
+        {
             foreach (Route route in Plan.Routes)
             {
                 // Remove all route point which were visited before current time
@@ -50,16 +72,6 @@ namespace DARP.Services
                     }
                 }
             }
-
-            // Try insertion heuristics
-            TryInsertOrders(newOrders);
-
-            // Try greedy procedure
-            // ...
-
-            // Run optimization
-            // ...
-
         }
 
         private void TryInsertOrders(IEnumerable<Order> newOrders)

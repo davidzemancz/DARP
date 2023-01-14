@@ -8,4 +8,8 @@
     <StartupObject>DARP.App</StartupObject>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Google.OrTools" Version="9.5.2237" />
+  </ItemGroup>
+
 </Project>

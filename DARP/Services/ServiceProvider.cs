@@ -9,14 +9,12 @@ namespace DARP.Services
     public class ServiceProvider : IServiceProvider
     {
         private readonly ILoggerService _loggerService;
-        private readonly IPlanningService _planningService;
 
         public static ServiceProvider Default { get; private set; } = new ServiceProvider();
 
         public ServiceProvider() 
         {
             _loggerService = new LoggerBaseService();
-            _planningService = new PlanningService(); 
         }
 
         public T GetService<T>()
@@ -29,8 +27,9 @@ namespace DARP.Services
         {
             if (serviceType == typeof(IOrderDataService)) return new OrderDataService();
             else if (serviceType == typeof(IVehicleDataService)) return new VehicleDataService();
-            else if (serviceType == typeof(IPlanningService)) return _planningService;
+            else if (serviceType == typeof(IPlanningService)) return new PlanningService();
             else if (serviceType == typeof(ILoggerService)) return _loggerService;
+            else if (serviceType == typeof(IMIPSolverService)) return new MIPSolverService();
             return null;
         }
     }
