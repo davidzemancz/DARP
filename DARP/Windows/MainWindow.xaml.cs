@@ -1,5 +1,6 @@
 ﻿using DARP.Models;
 using DARP.Services;
+using DARP.Utils;
 using DARP.Views;
 using System;
 using System.Collections.Generic;
@@ -26,48 +27,83 @@ namespace DARP.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        internal int CurrentTime { get; set; }
-
-        private MainWindowModel _windowModel => (MainWindowModel) DataContext;
+        private MainWindowModel _windowModel => (MainWindowModel)DataContext;
         private Random _random;
-        
+
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
-        private readonly PlanningService _planningService;
+        private readonly IPlanningService _planningService;
 
         public MainWindow()
         {
             InitializeComponent();
             _orderService = ServiceProvider.Default.GetService<IOrderDataService>();
             _vehicleService = ServiceProvider.Default.GetService<IVehicleDataService>();
-            _planningService = ServiceProvider.Default.GetService<PlanningService>();
+            _planningService = ServiceProvider.Default.GetService<IPlanningService>();
         }
 
+        #region METHODS
+
+        private void UpdatePlan()
+        {
+            foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
+            {
+                if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetVehicle()))
+                {
+                    _planningService.AddVehicle(_windowModel._currentTime, vehicleView.GetVehicle());
+                }
+            }
+
+            IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetOrder());
+            _planningService.UpdatePlan(_windowModel._currentTime, newOrders);
+
+            dgOrders.Items.Refresh();
+        }
+
+        private void RenderPlan()
+        {
+            foreach (Route route in _planningService.Plan.Routes) 
+            {
+                DataGrid dg = planRoutesStack.Children.OfType<DataGrid>().FirstOrDefault(dg => dg.Tag == route);
+                if (dg == null)
+                {
+                    dg = new DataGrid() { Tag = route };
+                    planRoutesStack.Children.Add(dg);
+                }
+                dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
+            }
+
+        }
+
+        #endregion
+
+        #region EVENT METHODS
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
+        {    
             dgOrders.ItemsSource = _orderService.GetOrderViews();
             dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
             
-            _windowModel.MaxCords = (new Cords(100,100)).ToString();
+            _windowModel.MaxCords = (new Cords(20,20)).ToString();
             _windowModel.Seed = ((int)DateTime.Now.Ticks).ToString();
             _windowModel.MaxDeliveryTimeMins = 60.ToString();
-            _windowModel.MinTimeWindowMins= 5.ToString();
-            _windowModel.MaxTimeWindowMins = 20.ToString();
-            _windowModel.NewOrdersCount = 5.ToString();
+            _windowModel.MinTimeWindowMins= 10.ToString();
+            _windowModel.MaxTimeWindowMins = 10.ToString();
+            _windowModel.NewOrdersCount = 1.ToString();
             _windowModel.ReplanIntervalMins = 5.ToString();
             _windowModel.NewOrderIntervalMins = 5.ToString();
-            _windowModel.VehicleSpeed = 5.ToString();
+            _windowModel.VehicleSpeed = 1.ToString();
 
             _random = new Random(_windowModel._seed);
-        }
 
+            _planningService.InitPlan(XMath.ManhattanMetric);
+        }
      
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < _windowModel._newOrdersCount; i++)
             {
-                Time deliveryTwFrom = new Time(CurrentTime + _random.Next(_windowModel._maxDeliveryTimeMins));
+                Time deliveryTwFrom = new Time(_windowModel.CurrentTime + _random.Next(_windowModel._maxDeliveryTimeMins));
                 _orderService.GetOrderViews().Add(new OrderView(new Order()
                 {
                     PickupLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
@@ -95,6 +131,19 @@ namespace DARP.Windows
                 Location = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
             }));
         }
+
+        private void btnTick_Click(object sender, RoutedEventArgs e)
+        {
+            _windowModel.CurrentTime += 1;
+        }
+
+        private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
+        {
+            UpdatePlan();
+            RenderPlan();
+        }
+
+        #endregion
     }
 
     internal class MainWindowModel : INotifyPropertyChanged
@@ -110,7 +159,17 @@ namespace DARP.Windows
         public int _metric;
         public int _insertionMethod;
         public int _vehicleSpeed;
+        public Time _currentTime;
 
+        public int CurrentTime
+        {
+            get => _currentTime.ToInt32();
+            set
+            {
+                _currentTime = new Time(value);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
+            }
+        }
         public string VehicleSpeed
         {
             get => _vehicleSpeed.ToString();

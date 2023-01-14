@@ -28,7 +28,6 @@ namespace DARP.Services
                 foreach(OrderView item in e.NewItems)
                 {
                     item.Id = ++_lastId;
-                    item.State = OrderState.Created;
                 }
             }
         }

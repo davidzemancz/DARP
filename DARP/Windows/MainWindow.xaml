@@ -63,7 +63,7 @@
             </ToolBar>
             <ToolBar Band="2" Height="30">
                 <Label Content="Metric:"/>
-                <ComboBox Width="100" SelectedIndex="{Binding InsertionMethod}">
+                <ComboBox Width="100" SelectedIndex="{Binding Metric}">
                     <ComboBoxItem>Manhattan</ComboBoxItem>
                     <ComboBoxItem>Euclidean</ComboBoxItem>
                 </ComboBox>
@@ -72,14 +72,7 @@
                     <ComboBoxItem>First fit</ComboBoxItem>
                     <ComboBoxItem>Best fit</ComboBoxItem>
                 </ComboBox>
-                <Label Content="Vehicle speed:"/>
-                <TextBox TextAlignment="Right" Width="50">
-                    <Binding Path="VehicleSpeed" UpdateSourceTrigger="PropertyChanged" >
-                        <Binding.ValidationRules>
-                            <vr:IntValidationRule/>
-                        </Binding.ValidationRules>
-                    </Binding>
-                </TextBox>
+                
             </ToolBar>
             <ToolBar Band="2" Height="30">
                 <Label Content="Update plan each (minutes):"/>
@@ -147,7 +140,16 @@
                     <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
                         <ToolBar Height="30">
                             <Button Background="CornflowerBlue"  Content="New random vehicle" Click="btwNewRandomVehicle_Click"/>
+                            <Label Content="Speed:"/>
+                            <TextBox TextAlignment="Right" Width="50">
+                                <Binding Path="VehicleSpeed" UpdateSourceTrigger="PropertyChanged" >
+                                    <Binding.ValidationRules>
+                                        <vr:IntValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox>
                         </ToolBar>
+                        
                     </ToolBarTray>
                     <DataGrid  Grid.Row="1"  x:Name="dgVehicles"/>
                 </Grid>
@@ -164,11 +166,13 @@
                     <ToolBarTray  Grid.Row="0"  Height="30" >
                         <ToolBar Height="30">
                             <Label Content="Current time (minutes):"/>
-                            <Label Content="1"/>
-                            <Button Background="CornflowerBlue"  Content="Tick"/>
-                            <Button Background="CornflowerBlue"  Content="Tick and update plan"/>
+                            <Label Content="{Binding CurrentTime}"/>
+                            <Button Background="CornflowerBlue"  Content="Tick" Click="btnTick_Click"/>
+                            <Button Background="CornflowerBlue"  Content="Update plan" Click="btnUpdatePlan_Click"/>
                         </ToolBar>
                     </ToolBarTray>
+                    <StackPanel x:Name="planRoutesStack" Grid.Row="1">
+                    </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="Logs" Width="100">

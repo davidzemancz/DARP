@@ -11,11 +11,16 @@ namespace DARP.Models
         public List<Vehicle> Vehicles { get; set; } = new();
         public List<Order> Orders { get; set; } = new();
         public List<Route> Routes { get; set; } = new();
-        public Func<Cords, Cords, Time> TravelTime { get; set; }
+        public Func<Cords, Cords, double> Metric { get; set; }
+        
+        public Plan(Func<Cords, Cords, double> metric) 
+        {
+            Metric = metric;
+        }
 
-        public Plan(Func<Cords, Cords, Time> travelTime) 
-        { 
-            TravelTime = travelTime;
+        public Time TravelTime(Cords from, Cords to, Vehicle vehicle)
+        {
+            return new Time((int)(Metric(from, to) * vehicle.Speed));
         }
     }
 }

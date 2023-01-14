@@ -10,6 +10,7 @@ namespace DARP.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public double Speed { get; set; } = 1;
         public Cords Location { get; set; } = new(0, 0);
 
     }

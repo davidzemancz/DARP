@@ -8,11 +8,17 @@ namespace DARP.Models
 {
     public struct Time : IComparable<Time>
     {
+        public static readonly Time Zero = new Time(0);
         public int Minutes { get; set; }
 
         public Time(int minutes)
         {
             Minutes = minutes;
+        }
+
+        public int ToInt32()
+        {
+            return Minutes;
         }
 
         public static Time operator +(Time left, Time right)
@@ -59,5 +65,14 @@ namespace DARP.Models
             return this == (Time)obj;
         }
 
+        public override string ToString()
+        {
+            return Minutes.ToString();
+        }
+
+        public override int GetHashCode()
+        {
+            return Minutes.GetHashCode();
+        }
     }
 }
