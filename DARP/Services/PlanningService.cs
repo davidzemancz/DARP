@@ -10,10 +10,14 @@ namespace DARP.Services
 {
     public class PlanningService : IPlanningService
     {
+        private ILoggerService _logger;
+
         public Plan Plan { get; protected set; }
 
         public Plan InitPlan(Func<Cords, Cords, double> metric)
         {
+            _logger = ServiceProvider.Default.GetService<ILoggerService>();
+
             Plan = new Plan(metric);
             return Plan;
         }
@@ -35,6 +39,9 @@ namespace DARP.Services
                     if (route.Points[1] is OrderPickupRoutePoint orderPickup) // Already pickedup an order -> need to deliver it too, so move vehicle to delivery location
                     {
                         orderPickup.Order.UpdateState(OrderState.Handled);
+
+                        _logger.Info($"Order {orderPickup.Order.Id} handled");
+                        _logger.Info($"Vehicle {route.Vehicle.Id} moved to {route.Points[2].Location}");
 
                         route.Points[0].Location = route.Points[2].Location;
                         route.Points[0].Time = route.Points[2].Time;
@@ -67,6 +74,7 @@ namespace DARP.Services
                 if (newOrder.State != OrderState.Accepted)
                 {
                     newOrder.UpdateState(OrderState.Rejected);
+                    _logger.Info($"Order {newOrder.Id} rejected");
                 }
             }
         }
@@ -142,6 +150,9 @@ namespace DARP.Services
 
         private void InsertOrder(Route route, Order newOrder, int index)
         {
+            newOrder.UpdateState(OrderState.Accepted);
+            _logger.Info($"Order {newOrder.Id} accepted");
+
             Time pickupTime = route.Points[index - 1].Time + Plan.TravelTime(route.Points[index - 1].Location, newOrder.PickupLocation, route.Vehicle);
             Time deliveryTime = XMath.Max(
                     pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation, route.Vehicle),
@@ -157,6 +168,7 @@ namespace DARP.Services
             route.Points.Insert(index, pickupPoint);
             route.Points.Insert(index + 1, deliveryPoint);
 
+            _logger.Info($"Order {newOrder.Id} inserted to index {index} to the route of the vehicle {route.Vehicle.Id}");
 
             // Recalculate times for following orders
             Time time = deliveryTime;
@@ -170,8 +182,6 @@ namespace DARP.Services
                 time += Plan.TravelTime(route.Points[j].Location, route.Points[j + 1].Location, route.Vehicle); // Travel time between current pickup and delivery
                 ((OrderDeliveryRoutePoint)route.Points[j + 1]).Time = XMath.Max(time, order.DeliveryTimeWindow.From);
             }
-
-            newOrder.UpdateState(OrderState.Accepted);
         }
     }
 }

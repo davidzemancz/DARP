@@ -72,7 +72,7 @@
                     <ComboBoxItem>First fit</ComboBoxItem>
                     <ComboBoxItem>Best fit</ComboBoxItem>
                 </ComboBox>
-                
+
             </ToolBar>
             <ToolBar Band="2" Height="30">
                 <Label Content="Update plan each (minutes):"/>
@@ -149,7 +149,7 @@
                                 </Binding>
                             </TextBox>
                         </ToolBar>
-                        
+
                     </ToolBarTray>
                     <DataGrid  Grid.Row="1"  x:Name="dgVehicles"/>
                 </Grid>
@@ -176,7 +176,9 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Logs" Width="100">
-                <Grid/>
+                <Grid>
+                    <TextBox x:Name="txtLog" TextWrapping="Wrap" AcceptsReturn="True" Text="" IsReadOnly="True"/>
+                </Grid>
             </TabItem>
         </TabControl>
         <ToolBar Grid.Row="2" Height="30">

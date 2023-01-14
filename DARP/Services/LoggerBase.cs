@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace DARP.Services
 {
-    public class LoggerBase : ILogger
+    public class LoggerBaseService : ILoggerService
     {
-        public virtual IEnumerable<TextWriter> TextWriters => new TextWriter[] { Console.Out };
+        public virtual IList<TextWriter> TextWriters { get; protected set; } = new List<TextWriter>();
 
         public void Debug(string message)
         {
@@ -31,11 +31,11 @@ namespace DARP.Services
             Log(LogLevel.Info, message);
         }
 
-        public void Log(LogLevel level, string message)
+        public virtual void Log(LogLevel level, string message)
         {
             foreach(TextWriter writer in TextWriters)
             {
-                writer.WriteLine($"{DateTime.Now.ToString("yyyyMMddHHmmss")} {level} {message}");
+                writer.WriteLine($"[{level}] {message}");
             }
         }
 

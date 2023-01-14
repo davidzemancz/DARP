@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace DARP.Windows
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
         private readonly IPlanningService _planningService;
+        private readonly ILoggerService _logger;
 
         public MainWindow()
         {
@@ -40,6 +42,7 @@ namespace DARP.Windows
             _orderService = ServiceProvider.Default.GetService<IOrderDataService>();
             _vehicleService = ServiceProvider.Default.GetService<IVehicleDataService>();
             _planningService = ServiceProvider.Default.GetService<IPlanningService>();
+            _logger = ServiceProvider.Default.GetService<ILoggerService>();
         }
 
         #region METHODS
@@ -95,6 +98,8 @@ namespace DARP.Windows
             _windowModel.VehicleSpeed = 1.ToString();
 
             _random = new Random(_windowModel._seed);
+
+            _logger.TextWriters.Add(new TextBoxWriter(txtLog));
 
             _planningService.InitPlan(XMath.ManhattanMetric);
         }
