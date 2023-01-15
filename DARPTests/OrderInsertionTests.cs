@@ -20,7 +20,7 @@ namespace DARPTests
         [TestMethod]
         public void InsertOrderIntoEmptyRoute()
         {
-            _planningService.InitPlan(XMath.ManhattanMetric);
+            _planningService.Init(XMath.ManhattanMetric);
             _planningService.AddVehicle(Time.Zero, new Vehicle() { Location = new Cords(3, 3) });
 
             Time currentTime = Time.Zero;
@@ -37,7 +37,7 @@ namespace DARPTests
         [TestMethod]
         public void AppendOrderToRoute()
         {
-            _planningService.InitPlan(XMath.ManhattanMetric);
+            _planningService.Init(XMath.ManhattanMetric);
             _planningService.AddVehicle(Time.Zero, new Vehicle() { Location = new Cords(3, 3) });
 
             Time currentTime = Time.Zero;
@@ -59,7 +59,7 @@ namespace DARPTests
         [TestMethod]
         public void PrependOrderToRoute()
         {
-            _planningService.InitPlan(XMath.ManhattanMetric);
+            _planningService.Init(XMath.ManhattanMetric);
             _planningService.AddVehicle(Time.Zero, new Vehicle() { Location = new Cords(3, 3) });
 
             Time currentTime = Time.Zero;
@@ -80,7 +80,7 @@ namespace DARPTests
         [TestMethod]
         public void InsertOrderIntoRoute()
         {
-            _planningService.InitPlan(XMath.ManhattanMetric);
+            _planningService.Init(XMath.ManhattanMetric);
             _planningService.AddVehicle(Time.Zero, new Vehicle() { Location = new Cords(3, 3) });
 
             Time currentTime = Time.Zero;
@@ -103,7 +103,7 @@ namespace DARPTests
         [TestMethod]
         public void MoveVehicle()
         {
-            _planningService.InitPlan(XMath.ManhattanMetric);
+            _planningService.Init(XMath.ManhattanMetric);
             _planningService.AddVehicle(Time.Zero, new Vehicle() { Location = new Cords(0, 0) });
 
             Time currentTime = Time.Zero;

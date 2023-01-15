@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DARP.Views
 {
-    public class VehicleView
+    public class VehicleView : IModelView<Vehicle>
     {
         private readonly Vehicle _vehicle;
 
@@ -28,6 +28,7 @@ namespace DARP.Views
         public double LocationY { get => _vehicle.Location.Y; set => _vehicle.Location = new(_vehicle.Location.X, value); }
         public double Speed { get => _vehicle.Speed; set => _vehicle.Speed = value; }
 
-        public Vehicle GetVehicle() => _vehicle;
+        public Vehicle GetModel() => _vehicle;
+        object IModelView.GetModelObj() => GetModel();
     }
 }

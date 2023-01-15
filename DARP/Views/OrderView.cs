@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DARP.Views
 {
-    public class OrderView
+    public class OrderView : IModelView<Order>
     {
         private readonly Order _order;
 
@@ -32,6 +32,7 @@ namespace DARP.Views
         public int DeliveryFromMins { get => _order.DeliveryTimeWindow.From.Minutes; set => _order.DeliveryTimeWindow = new (new(value), _order.DeliveryTimeWindow.To); }
         public int DeliveryToMins { get => _order.DeliveryTimeWindow.To.Minutes; set => _order.DeliveryTimeWindow = new (_order.DeliveryTimeWindow.From, new(value)); }
 
-        public Order GetOrder() => _order;
+        public Order GetModel() => _order;
+        object IModelView.GetModelObj() => GetModel();
     }
 }

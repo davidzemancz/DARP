@@ -30,6 +30,7 @@ namespace DARP.Services
             else if (serviceType == typeof(IPlanningService)) return new PlanningService();
             else if (serviceType == typeof(ILoggerService)) return _loggerService;
             else if (serviceType == typeof(IMIPSolverService)) return new MIPSolverService();
+            else if (serviceType == typeof(ModelViewSerializationService)) return new ModelViewSerializationService();
             return null;
         }
     }

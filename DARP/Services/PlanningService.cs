@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace DARP.Services
 {
@@ -15,9 +16,14 @@ namespace DARP.Services
 
         public Plan Plan { get; protected set; }
 
-        public Plan InitPlan(Func<Cords, Cords, double> metric)
+        public Plan Init(Func<Cords, Cords, double> metric)
         {
-            Plan = new Plan(metric);
+            return Init(new Plan(metric));
+        }
+
+        public Plan Init(Plan plan)
+        {
+            Plan = plan;
 
             _logger = ServiceProvider.Default.GetService<ILoggerService>();
             _MIPSolverService = ServiceProvider.Default.GetService<IMIPSolverService>();

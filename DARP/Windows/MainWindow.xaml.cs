@@ -2,6 +2,7 @@
 using DARP.Services;
 using DARP.Utils;
 using DARP.Views;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -28,7 +30,11 @@ namespace DARP.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MainWindowModel _windowModel => (MainWindowModel)DataContext;
+        private MainWindowModel _windowModel
+        {
+            get => (MainWindowModel)DataContext;
+            set => DataContext = value;
+        }
         private Random _random;
 
         private readonly IOrderDataService _orderService;
@@ -51,13 +57,13 @@ namespace DARP.Windows
         {
             foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
             {
-                if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetVehicle()))
+                if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetModel()))
                 {
-                    _planningService.AddVehicle(_windowModel._currentTime, vehicleView.GetVehicle());
+                    _planningService.AddVehicle(_windowModel._currentTime, vehicleView.GetModel());
                 }
             }
 
-            IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetOrder());
+            IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
             _planningService.UpdatePlan(_windowModel._currentTime, newOrders);
 
             dgOrders.Items.Refresh();
@@ -65,7 +71,7 @@ namespace DARP.Windows
 
         private void RenderPlan()
         {
-            foreach (Route route in _planningService.Plan.Routes) 
+            foreach (Route route in _planningService.Plan.Routes)
             {
                 DataGrid dg = planRoutesStack.Children.OfType<DataGrid>().FirstOrDefault(dg => dg.Tag == route);
                 if (dg == null)
@@ -83,14 +89,14 @@ namespace DARP.Windows
         #region EVENT METHODS
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
-        {    
+        {
             dgOrders.ItemsSource = _orderService.GetOrderViews();
             dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
-            
-            _windowModel.MaxCords = (new Cords(20,20)).ToString();
+
+            _windowModel.MaxCords = (new Cords(20, 20)).ToString();
             _windowModel.Seed = ((int)DateTime.Now.Ticks).ToString();
             _windowModel.MaxDeliveryTimeMins = 60.ToString();
-            _windowModel.MinTimeWindowMins= 10.ToString();
+            _windowModel.MinTimeWindowMins = 10.ToString();
             _windowModel.MaxTimeWindowMins = 10.ToString();
             _windowModel.NewOrdersCount = 1.ToString();
             _windowModel.ReplanIntervalMins = 5.ToString();
@@ -101,9 +107,9 @@ namespace DARP.Windows
 
             _logger.TextWriters.Add(new TextBoxWriter(txtLog));
 
-            _planningService.InitPlan(XMath.ManhattanMetric);
+            _planningService.Init(XMath.ManhattanMetric);
         }
-     
+
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
         {
             for (int i = 0; i < _windowModel._newOrdersCount; i++)
@@ -148,7 +154,82 @@ namespace DARP.Windows
             RenderPlan();
         }
 
+        private void miSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog sfd = new();
+            sfd.DefaultExt = "json";
+            sfd.Filter = "JSON Files | *.json";
+            sfd.FileName = $"darp_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json";
+            if (sfd.ShowDialog() == true)
+            {
+                using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                {
+                    sw.Write(JsonSerializer.Serialize(
+                        new MainWindowDataModel(
+                            _orderService.GetOrderViews().Select(ov => ov.GetModel()),
+                            _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
+                            _windowModel,
+                            null
+                            )));
+                }
+            }
+        }
+
+        private void miOpen_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new();
+            ofd.DefaultExt = "json";
+            ofd.Filter = "JSON Files | *.json";
+
+            if (ofd.ShowDialog() == true)
+            {
+                using (StreamReader sr = new StreamReader(ofd.FileName))
+                {
+                    MainWindowDataModel dataModel = JsonSerializer.Deserialize<MainWindowDataModel>(sr.BaseStream);
+
+                    _orderService.Clear();
+                    _vehicleService.Clear();
+
+                    foreach (var order in dataModel.Orders)
+                    {
+                        order.State = OrderState.Created;
+                        _orderService.AddOrder(order);
+                    }
+                    foreach (var vehicle in dataModel.Vehicles)
+                    {
+                        _vehicleService.AddVehicle(vehicle);
+                    }
+
+                    //_planningService.Init(dataModel.Plan);
+                    _windowModel = dataModel.WindowModel;
+
+                    RenderPlan();
+                }
+            }
+        }
+
         #endregion
+    }
+
+    internal class MainWindowDataModel
+    {
+        public IEnumerable<Order> Orders { get; set; }
+        public IEnumerable<Vehicle> Vehicles { get; set; }
+        public MainWindowModel WindowModel { get; set; }
+        public Plan Plan { get; set; }
+
+        public MainWindowDataModel()
+        {
+
+        }
+
+        public MainWindowDataModel(IEnumerable<Order> orders, IEnumerable<Vehicle> vehicles, MainWindowModel windowModel, Plan plan)
+        {
+            Orders = orders;
+            Vehicles = vehicles;
+            WindowModel = windowModel;
+            Plan = plan;
+        }
     }
 
     internal class MainWindowModel : INotifyPropertyChanged

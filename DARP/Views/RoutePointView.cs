@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DARP.Views
 {
-    public class RoutePointView
+    public class RoutePointView : IModelView<RoutePoint>
     {
         private readonly RoutePoint _routePoint; 
 
@@ -39,6 +39,7 @@ namespace DARP.Views
             }
         }
 
-
+        public RoutePoint GetModel() => _routePoint;
+        object IModelView.GetModelObj() => GetModel();
     }
 }

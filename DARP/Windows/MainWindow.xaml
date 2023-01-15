@@ -19,15 +19,20 @@
             <ColumnDefinition Width="134*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="90"/>
             <RowDefinition/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <ToolBarTray Grid.Row="0" VerticalAlignment="Stretch" Grid.ColumnSpan="4">
-            <ToolBar Height="30">
-                <Button Content="File"/>
+            <ToolBar Band="1" Height="30">
+                <Menu>
+                    <MenuItem Header="_File">
+                        <MenuItem Header="_Save" InputGestureText="Ctrl+S" Click="miSave_Click"/>
+                        <MenuItem Header="_Open" InputGestureText="Ctrl+O" Click="miOpen_Click"/>
+                    </MenuItem>
+                </Menu>
             </ToolBar>
-            <ToolBar Height="30">
+            <ToolBar Band="2" Height="30">
                 <Label Content="Maximal cords:"/>
                 <TextBox x:Name="txtMaxCords" TextAlignment="Center" Width="70">
                     <Binding Path="MaxCords" UpdateSourceTrigger="PropertyChanged" >
@@ -75,6 +80,17 @@
 
             </ToolBar>
             <ToolBar Band="2" Height="30">
+                <Label Content="Seed:"/>
+                <TextBox x:Name="txtSeed" TextAlignment="Right" Width="100">
+                    <Binding Path="Seed" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <vr:IntValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button x:Name="btnResetRnd" Background="CornflowerBlue"  Content="Reset random generator" Click="btnResetRnd_Click"/>
+            </ToolBar>
+            <ToolBar Band="3" Height="30">
                 <Label Content="Update plan each (minutes):"/>
                 <TextBox x:Name="txtReplanIntervalMins" TextAlignment="Right" Width="100">
                     <Binding Path="ReplanIntervalMins" UpdateSourceTrigger="PropertyChanged" >
@@ -93,17 +109,7 @@
                 </TextBox>
                 <Button x:Name="btnRunSimulation" Background="CornflowerBlue" Content="Run simulation" Click="btnRunSimulation_Click"/>
             </ToolBar>
-            <ToolBar Band="2" Height="30">
-                <Label Content="Seed:"/>
-                <TextBox x:Name="txtSeed" TextAlignment="Right" Width="100">
-                    <Binding Path="Seed" UpdateSourceTrigger="PropertyChanged" >
-                        <Binding.ValidationRules>
-                            <vr:IntValidationRule/>
-                        </Binding.ValidationRules>
-                    </Binding>
-                </TextBox>
-                <Button x:Name="btnResetRnd" Background="CornflowerBlue"  Content="Reset random generator" Click="btnResetRnd_Click"/>
-            </ToolBar>
+           
         </ToolBarTray>
         <TabControl Grid.Row="1" Grid.Column="0">
             <TabItem Header="Orders" Width="100">

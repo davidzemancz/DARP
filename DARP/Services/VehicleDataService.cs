@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,9 +33,23 @@ namespace DARP.Services
             }
         }
 
+        public void AddVehicle(Vehicle vehicle)
+        {
+            _collection.Add(new VehicleView(vehicle));
+        }
+        public void Clear()
+        {
+            _collection.Clear();
+        }
+
         public ObservableCollection<VehicleView> GetVehicleViews()
         {
             return _collection;
+        }
+
+        public void Serialize(Stream stream)
+        {
+            ServiceProvider.Default.GetService<ModelViewSerializationService>().Serialize(stream, _collection, "Vehicles");
         }
     }
 }

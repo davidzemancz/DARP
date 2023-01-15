@@ -10,7 +10,8 @@ namespace DARP.Services
     public interface IPlanningService
     {
         public Plan Plan { get; }
-        public Plan InitPlan(Func<Cords, Cords, double> metric);
+        public Plan Init(Plan plan);
+        public Plan Init(Func<Cords, Cords, double> metric);
         public void AddVehicle(Time currentTime, Vehicle vehicle);
         public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrders);
     }

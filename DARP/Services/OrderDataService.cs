@@ -4,8 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DARP.Services
@@ -32,9 +34,23 @@ namespace DARP.Services
             }
         }
 
+        public void AddOrder(Order order)
+        {
+            _collection.Add(new OrderView(order));
+        }
+
+        public void Clear()
+        {
+            _collection.Clear();
+        }
         public ObservableCollection<OrderView> GetOrderViews()
         {
             return _collection;
+        }
+
+        public void Serialize(Stream stream)
+        {
+            ServiceProvider.Default.GetService<ModelViewSerializationService>().Serialize(stream, _collection, "Orders");
         }
     }
 }
