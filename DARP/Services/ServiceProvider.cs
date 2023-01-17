@@ -27,9 +27,9 @@ namespace DARP.Services
         {
             if (serviceType == typeof(IOrderDataService)) return new OrderDataService();
             else if (serviceType == typeof(IVehicleDataService)) return new VehicleDataService();
-            else if (serviceType == typeof(IPlanningService)) return new PlanningService();
+            else if (serviceType == typeof(IPlanningService)) return new PlanningService(_loggerService, new MIPSolverService(_loggerService));
             else if (serviceType == typeof(ILoggerService)) return _loggerService;
-            else if (serviceType == typeof(IMIPSolverService)) return new MIPSolverService();
+            else if (serviceType == typeof(IMIPSolverService)) return new MIPSolverService(_loggerService);
             else if (serviceType == typeof(ModelViewSerializationService)) return new ModelViewSerializationService();
             return null;
         }

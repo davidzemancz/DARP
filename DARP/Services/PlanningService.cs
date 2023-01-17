@@ -16,6 +16,12 @@ namespace DARP.Services
 
         public Plan Plan { get; protected set; }
 
+        public PlanningService(ILoggerService logger, IMIPSolverService mIPSolverService)
+        {
+            _logger = logger;
+            _MIPSolverService = mIPSolverService;
+        }
+
         public Plan Init(Func<Cords, Cords, double> metric)
         {
             return Init(new Plan(metric));
@@ -25,8 +31,8 @@ namespace DARP.Services
         {
             Plan = plan;
 
-            _logger = ServiceProvider.Default.GetService<ILoggerService>();
-            _MIPSolverService = ServiceProvider.Default.GetService<IMIPSolverService>();
+            //_logger = ServiceProvider.Default.GetService<ILoggerService>();
+            //_MIPSolverService = ServiceProvider.Default.GetService<IMIPSolverService>();
             _MIPSolverService.Plan = Plan;
 
             return Plan;
@@ -41,12 +47,16 @@ namespace DARP.Services
         public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrders)
         {
             // TODO Decision making on choosing method (insertion, optimization,...)
+            bool tryInsertion = false;
 
             // Update vehicles location - move them to locations of last deliveries
             UpdateVehiclesLocation(currentTime);
 
             // Try insertion heuristics
-            TryInsertOrders(newOrders);
+            if (tryInsertion)
+            {
+                TryInsertOrders(newOrders);
+            }
 
             // Try greedy procedure
             // TODO ...
