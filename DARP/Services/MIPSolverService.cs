@@ -104,16 +104,7 @@ namespace DARP.Services
                 _solver.Add(new SumVarArray(predecessors) >= 1);
             }
 
-            // Time windows
-            /*
-             *  for node1 in nodes:
-                    for node2 in nodes:
-                        if node1 == node2 or node2 in vehicle_nodes: continue
-                        M = 10_000_000
-                        edgeTravelTime = trp.travel_time(node1, node2)
-                        # solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_edge_ind[(node1, node2)] ) <= v_times[node2])
-                        solver.Add(v_times[node1] + edgeTravelTime - M*(1 - v_use_edge[(node1, node2)] ) <= v_times[node2])
-             */
+            // 5) Travel time
             foreach ((TravelVarKey travel1Key, Variable travel1) in travelVariables)
             {
                 Time travelTime;
@@ -139,7 +130,8 @@ namespace DARP.Services
                 _solver.Add(timeVarFrom + travelTimeMins - M * (1 - travel1) <= timeVarTo);
             }
 
-            foreach(var order in orders)
+            // 6) Time windows
+            foreach (var order in orders)
             {
                 Variable timeVar = timeVariables.First(kvp => kvp.Key.Id == order.Id).Value;
                 _solver.Add(timeVar <= order.DeliveryTimeWindow.To.ToInt32());
