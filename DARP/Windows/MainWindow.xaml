@@ -168,17 +168,24 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
                     <ToolBarTray  Grid.Row="0"  Height="30" >
                         <ToolBar Height="30">
-                            <Label Content="Current time (minutes):"/>
+                            <Label Content="Current time (minutes)"/>
                             <Label Content="{Binding CurrentTime}"/>
                             <Button Background="CornflowerBlue"  Content="Tick" Click="btnTick_Click"/>
                             <Button Background="CornflowerBlue"  Content="Update plan" Click="btnUpdatePlan_Click"/>
                         </ToolBar>
                     </ToolBarTray>
-                    <StackPanel x:Name="planRoutesStack" Grid.Row="1">
+                    <StackPanel Grid.Row="1" x:Name="planRoutesStack">
                     </StackPanel>
+                    <ToolBarTray  Grid.Row="2"  Height="30" >
+                        <ToolBar Height="30">
+                            <Label Content="Total distance"/>
+                            <Label Content="{Binding CurrentTime}"/>
+                        </ToolBar>
+                    </ToolBarTray>
                 </Grid>
             </TabItem>
             <TabItem Header="Logs" Width="100">
