@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DARP.Utils
@@ -20,7 +21,7 @@ namespace DARP.Utils
 
         public override void WriteLine(string value)
         {
-            _txtBox.Text += $"{value}{Environment.NewLine}";
+            Application.Current.Dispatcher.Invoke(() => _txtBox.Text += $"{value}{Environment.NewLine}");
         }
     }
 }
