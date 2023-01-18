@@ -21,6 +21,11 @@ namespace DARP.Models
         {
             State = state;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(Order)} {Id} {State}";
+        }
     }
 
     public enum OrderState

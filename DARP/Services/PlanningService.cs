@@ -41,13 +41,14 @@ namespace DARP.Services
         public void AddVehicle(Time currentTime, Vehicle vehicle)
         {
             Plan.Vehicles.Add(vehicle);
-            Plan.Routes.Add(new Route() { Vehicle = vehicle, Points = new() { new VehicleRoutePoint(vehicle) { Time = currentTime } } });
+            Plan.Routes.Add(new Route(vehicle) { Points = new() { new VehicleRoutePoint(vehicle) { Time = currentTime } } });
         }
 
         public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrders)
         {
             // TODO Decision making on choosing method (insertion, optimization,...)
             bool tryInsertion = false;
+            bool tryMIP = true;
 
             // Update vehicles location - move them to locations of last deliveries
             UpdateVehiclesLocation(currentTime);
@@ -55,6 +56,7 @@ namespace DARP.Services
             // Try insertion heuristics
             if (tryInsertion)
             {
+                _logger.Info("Start insertion heuristic");
                 TryInsertOrders(newOrders);
             }
 
@@ -64,7 +66,11 @@ namespace DARP.Services
             // 2. Find best routes in DAG
 
             // Run optimization
-            _MIPSolverService.Solve(currentTime, newOrders);
+            if (tryMIP)
+            {
+                _logger.Info("Start MIP solver");
+                _MIPSolverService.Solve(currentTime, newOrders);
+            }
         }
 
         private void UpdateVehiclesLocation(Time currentTime)
@@ -210,6 +216,11 @@ namespace DARP.Services
                 time += Plan.TravelTime(route.Points[j].Location, route.Points[j + 1].Location, route.Vehicle); // Travel time between current pickup and delivery
                 ((OrderDeliveryRoutePoint)route.Points[j + 1]).Time = XMath.Max(time, order.DeliveryTimeWindow.From);
             }
+        }
+
+        public double GetTotalDistance()
+        {
+            return Plan.GetTotalDistance();
         }
     }
 }

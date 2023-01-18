@@ -16,6 +16,11 @@ namespace DARP.Models
             Minutes = minutes;
         }
 
+        public Time(double minutes)
+        {
+            Minutes = (int)minutes;
+        }
+
         public int ToInt32()
         {
             return Minutes;
@@ -24,6 +29,11 @@ namespace DARP.Models
         public static Time operator +(Time left, Time right)
         {
             return new(left.Minutes + right.Minutes);
+        }
+
+        public static Time operator -(Time left, Time right)
+        {
+            return new(left.Minutes - right.Minutes);
         }
 
         public static bool operator ==(Time left, Time right)

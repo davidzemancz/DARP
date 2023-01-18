@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -36,6 +37,7 @@ namespace DARP.Windows
             set => DataContext = value;
         }
         private Random _random;
+        private List<Timer> _timers;
 
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
@@ -67,21 +69,34 @@ namespace DARP.Windows
             _planningService.UpdatePlan(_windowModel._currentTime, newOrders);
 
             dgOrders.Items.Refresh();
+
+            _windowModel.TotalDistance = _planningService.GetTotalDistance();
         }
 
         private void RenderPlan()
         {
+            planRoutesStack.Children.Clear();
             foreach (Route route in _planningService.Plan.Routes)
             {
-                DataGrid dg = planRoutesStack.Children.OfType<DataGrid>().FirstOrDefault(dg => dg.Tag == route);
-                if (dg == null)
-                {
-                    dg = new DataGrid() { Tag = route };
-                    planRoutesStack.Children.Add(dg);
-                }
+                DataGrid dg = new() { Tag = route };
+                planRoutesStack.Children.Add(dg);
                 dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
             }
 
+        }
+
+        private void AddRandomOrders(int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Time deliveryTwFrom = new Time(_windowModel.CurrentTime + _random.Next(_windowModel._maxDeliveryTimeMins));
+                _orderService.GetOrderViews().Add(new OrderView(new Order()
+                {
+                    PickupLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
+                    DeliveryLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
+                    DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel._minTwMins, _windowModel._maxTwMins)))
+                }));
+            }
         }
 
         #endregion
@@ -112,16 +127,7 @@ namespace DARP.Windows
 
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < _windowModel._newOrdersCount; i++)
-            {
-                Time deliveryTwFrom = new Time(_windowModel.CurrentTime + _random.Next(_windowModel._maxDeliveryTimeMins));
-                _orderService.GetOrderViews().Add(new OrderView(new Order()
-                {
-                    PickupLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
-                    DeliveryLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
-                    DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel._minTwMins, _windowModel._maxTwMins)))
-                }));
-            }
+            AddRandomOrders(_windowModel._newOrdersCount);
         }
 
         private void btnResetRnd_Click(object sender, RoutedEventArgs e)
@@ -131,6 +137,53 @@ namespace DARP.Windows
 
         private void btnRunSimulation_Click(object sender, RoutedEventArgs e)
         {
+            if (!_windowModel._simulationRunning)
+            {
+                _windowModel._simulationRunning = true;
+                btnRunSimulation.Content = "Stop simulation";
+
+                _timers = new() {
+                    // Time
+                    new Timer((state) =>
+                    {
+                        Application.Current.Dispatcher.Invoke(() => 
+                        { 
+                            _windowModel.CurrentTime += 1; 
+                        });
+                    },
+                    null, 0, 1000),
+                    // New orders
+                    new Timer((state) =>
+                    {
+                        Application.Current.Dispatcher.Invoke(() => 
+                        { 
+                            AddRandomOrders(_windowModel._newOrdersCount); 
+                        });
+                    }, null, 0, _windowModel._newOrderIntervalMins * 1000),
+                    // Plan update
+                    new Timer((state) =>
+                    {
+                         Application.Current.Dispatcher.Invoke(() => 
+                         {
+                             UpdatePlan();
+                             RenderPlan();
+                        });
+                    }, null, 0, _windowModel._replanIntervalMins * 1000),
+                };
+            }
+            else
+            {
+                _windowModel._simulationRunning = false;
+                btnRunSimulation.Content = "Run simulation";
+                _timers.ForEach(timer => timer.Dispose());
+                _timers.Clear();
+            }
+            /*
+                public int _newOrdersCount;
+                public int _replanIntervalMins;
+                public int _newOrderIntervalMins;
+             */
+
 
         }
 
@@ -208,7 +261,16 @@ namespace DARP.Windows
             }
         }
 
+        private void tbcLeft_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tbcLeft.SelectedItem == tbiLog)
+            {
+                txtLog.ScrollToEnd();
+            }
+        }
         #endregion
+
+
     }
 
     internal class MainWindowDataModel
@@ -246,6 +308,17 @@ namespace DARP.Windows
         public int _insertionMethod;
         public int _vehicleSpeed;
         public Time _currentTime;
+        public double _totalDistance;
+        public bool _simulationRunning;
+        public double TotalDistance
+        {
+            get => _totalDistance;
+            set
+            {
+                _totalDistance = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalDistance)));
+            }
+        }
 
         public int CurrentTime
         {

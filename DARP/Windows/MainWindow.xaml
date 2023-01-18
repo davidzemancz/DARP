@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1600" Loaded="Window_Loaded">
+        Title="DARP" Height="900" Width="1600" Loaded="Window_Loaded">
     <Window.DataContext>
         <local:MainWindowModel/>
     </Window.DataContext>
@@ -111,8 +111,8 @@
             </ToolBar>
            
         </ToolBarTray>
-        <TabControl Grid.Row="1" Grid.Column="0">
-            <TabItem Header="Orders" Width="100">
+        <TabControl x:Name="tbcLeft" Grid.Row="1" Grid.Column="0" SelectionChanged="tbcLeft_SelectionChanged">
+            <TabItem x:Name="tbiOrders" Header="Orders" Width="100">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
@@ -137,7 +137,7 @@
                     <DataGrid Grid.Row="1" x:Name="dgOrders"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Vehicles" Width="100">
+            <TabItem x:Name="tbiVehicles" Header="Vehicles" Width="100">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
@@ -160,6 +160,11 @@
                     <DataGrid  Grid.Row="1"  x:Name="dgVehicles"/>
                 </Grid>
             </TabItem>
+            <TabItem x:Name="tbiLog" Header="Logs" Width="100">
+                <Grid>
+                    <TextBox x:Name="txtLog" TextWrapping="Wrap" AcceptsReturn="True" Text="" IsReadOnly="True"/>
+                </Grid>
+            </TabItem>
         </TabControl>
         <GridSplitter Grid.Column="1" Grid.Row="1" Width="10" HorizontalAlignment="Stretch" />
         <TabControl Grid.Row="1"  Grid.Column="2" Grid.ColumnSpan="2">
@@ -178,19 +183,15 @@
                             <Button Background="CornflowerBlue"  Content="Update plan" Click="btnUpdatePlan_Click"/>
                         </ToolBar>
                     </ToolBarTray>
-                    <StackPanel Grid.Row="1" x:Name="planRoutesStack">
-                    </StackPanel>
+                    <ScrollViewer Grid.Row="1" >
+                        <StackPanel x:Name="planRoutesStack"/>
+                    </ScrollViewer>
                     <ToolBarTray  Grid.Row="2"  Height="30" >
                         <ToolBar Height="30">
                             <Label Content="Total distance"/>
-                            <Label Content="{Binding CurrentTime}"/>
+                            <Label Content="{Binding TotalDistance}"/>
                         </ToolBar>
                     </ToolBarTray>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Logs" Width="100">
-                <Grid>
-                    <TextBox x:Name="txtLog" TextWrapping="Wrap" AcceptsReturn="True" Text="" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
         </TabControl>

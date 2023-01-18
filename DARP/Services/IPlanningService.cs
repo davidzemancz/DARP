@@ -14,5 +14,6 @@ namespace DARP.Services
         public Plan Init(Func<Cords, Cords, double> metric);
         public void AddVehicle(Time currentTime, Vehicle vehicle);
         public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrders);
+        public double GetTotalDistance();
     }
 }

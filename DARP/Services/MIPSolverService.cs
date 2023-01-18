@@ -23,6 +23,8 @@ namespace DARP.Services
 
         public void Solve(Time currentTime, IEnumerable<Order> newOrders)
         {
+            if (!newOrders.Any()) return;
+
             // Union orders
             List<Order> orders = new List<Order>(Plan.Orders);
             orders.AddRange(newOrders);
@@ -147,13 +149,52 @@ namespace DARP.Services
             _logger.Info($"Solver result status {result}");
 
             // Construct routes
-            foreach ((TravelVarKey travelKey, Variable travel) in travelVariables)
+            if (result == Solver.ResultStatus.OPTIMAL)
             {
-                double val = travel.SolutionValue();
-                if (val > 0)
+                // Print to log
+                Dictionary<int, (TravelVarKey, TimeVarKey) > map = new(); // From->To
+                foreach ((TravelVarKey travelKey, Variable travel) in travelVariables)
                 {
-                    double arrivalTime = timeVariables.First(kvp => kvp.Key.Id == travelKey.ToId).Value.SolutionValue();
-                    _logger.Info($"{travelKey}, arrive at {arrivalTime}");
+                    double val = travel.SolutionValue();
+                    if (val > 0)
+                    {
+                        TimeVarKey timeKey = timeVariables.First(kvp => kvp.Key.Id == travelKey.ToId).Key;
+                        _logger.Info($"{travelKey}, arrive at {timeVariables[timeKey].SolutionValue()}");
+
+                        map.Add(travelKey.FromId, (travelKey, timeKey));
+                    }
+                }
+
+                // Add orders to plan
+                foreach(Order order in newOrders)
+                {
+                    Plan.Orders.Add(order);
+                }
+
+                // Construct routes
+                Plan.Routes.Clear();
+                foreach (Vehicle vehicle in Plan.Vehicles)
+                {
+                    Route route = new(vehicle);
+                    
+                    int modifiedVehicleId = GetModifiedVehicleId(vehicle.Id);
+                    (TravelVarKey travelKey, TimeVarKey timeKey) = map[modifiedVehicleId];
+                    route.Points.Add(new VehicleRoutePoint(vehicle) { Location = vehicle.Location, Time = currentTime });
+                    
+                    while (true)
+                    {
+                        Order order = orders.First(o => o.Id == travelKey.ToId);
+                        order.UpdateState(OrderState.Handled);
+                        Time arrivalTime = new Time(timeVariables[timeKey].SolutionValue());
+
+                        route.Points.Add(new OrderPickupRoutePoint(order) { Location = order.PickupLocation, Time = arrivalTime - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation, vehicle) } );
+                        route.Points.Add(new OrderDeliveryRoutePoint(order) { Location = order.DeliveryLocation, Time = arrivalTime });
+
+                        if (!map.ContainsKey(travelKey.ToId)) break;
+                        (travelKey, timeKey) = map[travelKey.ToId];
+                    }
+
+                    Plan.Routes.Add(route);
                 }
             }
         }
@@ -162,7 +203,6 @@ namespace DARP.Services
         private int GetModifiedVehicleId(int vehicleId) => vehicleId + 10000;
         private bool IsModifiedVehicleId(int id) => id > 10000;
     }
-
 
     internal struct TimeVarKey
     {
@@ -175,7 +215,7 @@ namespace DARP.Services
 
         public override string ToString()
         {
-            return $"{Id}";
+            return $"{nameof(TimeVarKey)} {Id}";
         }
     }
 
@@ -192,7 +232,7 @@ namespace DARP.Services
        
         public override string ToString()
         {
-            return $"Travel from {FromId} to {ToId}";
+            return $"{nameof(TravelVarKey)} {FromId}->{ToId}";
         }
     } 
 }

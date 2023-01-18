@@ -9,10 +9,12 @@ namespace DARP.Models
     public class Route
     {
         public Vehicle Vehicle { get; set; }
-        public List<RoutePoint> Points { get; set; }
-        public Route()
+        public List<RoutePoint> Points { get; set; } = new();
+        public Route(Vehicle vehicle)
         {
-
+            Vehicle = vehicle;
         }
+
+
     }
 }

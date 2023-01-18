@@ -13,5 +13,10 @@ namespace DARP.Models
         public double Speed { get; } = 1;
         public Cords Location { get; set; } = new(0, 0);
 
+        public override string ToString()
+        {
+            return $"{nameof(Vehicle)} {Id}";
+        }
+
     }
 }

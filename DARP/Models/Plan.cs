@@ -31,5 +31,20 @@ namespace DARP.Models
         {
             return new Time((int)(Metric(from, to) * vehicle.Speed));
         }
+
+        public double GetTotalDistance()
+        {
+            double distance = 0;
+
+            foreach (Route route in Routes)
+            {
+                for(int i = 0; i < route.Points.Count - 1; i++) 
+                {
+                    distance += Metric(route.Points[i].Location, route.Points[i + 1].Location);
+                }
+            }
+
+            return distance;
+        }
     }
 }
