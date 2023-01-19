@@ -25,7 +25,7 @@ namespace DARP.Services
 
         public object GetService(Type serviceType)
         {
-            if (serviceType == typeof(IOrderDataService)) return new OrderDataService();
+            if (serviceType == typeof(IOrderDataService)) return new OrderDataService(_loggerService);
             else if (serviceType == typeof(IVehicleDataService)) return new VehicleDataService();
             else if (serviceType == typeof(IPlanningService)) return new PlanningService(_loggerService, new MIPSolverService(_loggerService));
             else if (serviceType == typeof(ILoggerService)) return _loggerService;

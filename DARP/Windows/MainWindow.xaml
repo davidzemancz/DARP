@@ -162,7 +162,7 @@
             </TabItem>
             <TabItem x:Name="tbiLog" Header="Logs" Width="100">
                 <Grid>
-                    <TextBox x:Name="txtLog" TextWrapping="Wrap" AcceptsReturn="True" Text="" IsReadOnly="True"/>
+                    <TextBox x:Name="txtLog" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True" Text="" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
         </TabControl>

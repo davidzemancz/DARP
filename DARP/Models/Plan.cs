@@ -27,9 +27,10 @@ namespace DARP.Models
             Metric = metric;
         }
 
-        public Time TravelTime(Cords from, Cords to, Vehicle vehicle)
+        public Time TravelTime(Cords from, Cords to)
         {
-            return new Time((int)(Metric(from, to) * vehicle.Speed));
+            const int vehicleSpeed = 1;
+            return new Time((int)(Metric(from, to) * vehicleSpeed));
         }
 
         public double GetTotalDistance()

@@ -15,11 +15,13 @@ namespace DARP.Services
     public class OrderDataService : IOrderDataService
     {
         private readonly ObservableCollection<OrderView> _collection;
+        private readonly ILoggerService _logger;
         private int _lastId;
 
-        public OrderDataService() 
+        public OrderDataService(ILoggerService logger) 
         {
             _collection = new();
+            _logger = logger;
             _collection.CollectionChanged += _collection_CollectionChanged;
         }
 
@@ -37,6 +39,7 @@ namespace DARP.Services
         public void AddOrder(Order order)
         {
             _collection.Add(new OrderView(order));
+            _logger.Info($"Added order {order.Id}");
         }
 
         public void Clear()

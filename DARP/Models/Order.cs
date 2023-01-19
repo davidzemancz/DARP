@@ -33,6 +33,6 @@ namespace DARP.Models
         Created,
         Accepted,
         Rejected,
-        Handled
+        Handled,
     }
 }

@@ -55,26 +55,27 @@ namespace DARP.Windows
 
         #region METHODS
 
-        private void UpdatePlan()
+        private async Task UpdatePlanAsync()
         {
+            Time currentTime = Application.Current.Dispatcher.Invoke(() => _windowModel._currentTime);
+
             foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
             {
                 if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetModel()))
                 {
-                    _planningService.AddVehicle(_windowModel._currentTime, vehicleView.GetModel());
+                    _planningService.AddVehicle(currentTime, vehicleView.GetModel());
                 }
             }
 
             IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
-            _planningService.UpdatePlan(_windowModel._currentTime, newOrders);
-
-            dgOrders.Items.Refresh();
-
-            _windowModel.TotalDistance = _planningService.GetTotalDistance();
+            _planningService.UpdatePlan(currentTime, newOrders);
         }
 
         private void RenderPlan()
         {
+            dgOrders.Items.Refresh();
+            _windowModel.TotalDistance = _planningService.GetTotalDistance();
+
             planRoutesStack.Children.Clear();
             foreach (Route route in _planningService.Plan.Routes)
             {
@@ -89,13 +90,14 @@ namespace DARP.Windows
         {
             for (int i = 0; i < count; i++)
             {
-                Time deliveryTwFrom = new Time(_windowModel.CurrentTime + _random.Next(_windowModel._maxDeliveryTimeMins));
-                _orderService.GetOrderViews().Add(new OrderView(new Order()
+                // TODO min delivery time
+                Time deliveryTwFrom = new Time(_windowModel.CurrentTime + 20 + _random.Next(_windowModel._maxDeliveryTimeMins));
+                _orderService.AddOrder(new Order()
                 {
                     PickupLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
                     DeliveryLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
                     DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel._minTwMins, _windowModel._maxTwMins)))
-                }));
+                });
             }
         }
 
@@ -139,6 +141,12 @@ namespace DARP.Windows
         {
             if (!_windowModel._simulationRunning)
             {
+                if(_vehicleService.GetVehicleViews().Count == 0)
+                {
+                    MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 _windowModel._simulationRunning = true;
                 btnRunSimulation.Content = "Stop simulation";
 
@@ -161,14 +169,14 @@ namespace DARP.Windows
                         });
                     }, null, 0, _windowModel._newOrderIntervalMins * 1000),
                     // Plan update
-                    new Timer((state) =>
+                    new Timer(async (state) =>
                     {
-                         Application.Current.Dispatcher.Invoke(() => 
+                         await Application.Current.Dispatcher.InvokeAsync(async () => 
                          {
-                             UpdatePlan();
+                             await UpdatePlanAsync();
                              RenderPlan();
                         });
-                    }, null, 0, _windowModel._replanIntervalMins * 1000),
+                    }, null, _windowModel._replanIntervalMins * 1000, _windowModel._replanIntervalMins * 1000),
                 };
             }
             else
@@ -203,7 +211,7 @@ namespace DARP.Windows
 
         private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
         {
-            UpdatePlan();
+            UpdatePlanAsync();
             RenderPlan();
         }
 

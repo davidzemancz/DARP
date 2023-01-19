@@ -44,14 +44,20 @@ namespace DARP.Services
             Plan.Routes.Add(new Route(vehicle) { Points = new() { new VehicleRoutePoint(vehicle) { Time = currentTime } } });
         }
 
-        public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrders)
+        public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrdersEnumerable)
         {
+            // Update vehicles location - move them to locations of last deliveries
+            UpdateVehiclesLocation(currentTime);
+
+            // Remove old orders
+            RemoveOldOrders(currentTime);
+
+            // Process new orders
+            List<Order> newOrders = ProcessNewOrders(currentTime, newOrdersEnumerable);
+
             // TODO Decision making on choosing method (insertion, optimization,...)
             bool tryInsertion = false;
             bool tryMIP = true;
-
-            // Update vehicles location - move them to locations of last deliveries
-            UpdateVehiclesLocation(currentTime);
 
             // Try insertion heuristics
             if (tryInsertion)
@@ -68,8 +74,44 @@ namespace DARP.Services
             // Run optimization
             if (tryMIP)
             {
-                _logger.Info("Start MIP solver");
+                _logger.Info($"Start MIP solver ({Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles)");
                 _MIPSolverService.Solve(currentTime, newOrders);
+            }
+        }
+
+        private List<Order> ProcessNewOrders(Time currentTime, IEnumerable<Order> newOrdersEnumerable)
+        {
+            List<Order> newOrders = new();
+            foreach (Order order in newOrdersEnumerable)
+            {
+                if ((order.DeliveryTimeWindow.To - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation) < currentTime))
+                {
+                    order.UpdateState(OrderState.Rejected);
+                    _logger.Info($"Order {order.Id} rejected");
+                }
+                else
+                {
+                    order.UpdateState(OrderState.Accepted);
+                    _logger.Info($"Order {order.Id} accepted");
+                    newOrders.Add(order);
+                }
+            }
+
+            return newOrders;
+        }
+
+        private void RemoveOldOrders(Time currentTime)
+        {
+            for (int i = 0; i < Plan.Orders.Count; i++)
+            {
+                Order order = Plan.Orders[i];
+                if((order.DeliveryTimeWindow.To - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation) < currentTime))
+                {
+                    order.UpdateState(OrderState.Rejected);
+                    _logger.Info($"Order {order.Id} rejected");
+                    Plan.Orders.RemoveAt(i);
+                    i--;
+                }
             }
         }
 
@@ -82,7 +124,9 @@ namespace DARP.Services
                 {
                     if (route.Points[1] is OrderPickupRoutePoint orderPickup) // Already pickedup an order -> need to deliver it too, so move vehicle to delivery location
                     {
+                        // Remove handled order from plan
                         orderPickup.Order.UpdateState(OrderState.Handled);
+                        Plan.Orders.Remove(orderPickup.Order);
 
                         _logger.Info($"Order {orderPickup.Order.Id} handled");
                         _logger.Info($"Vehicle {route.Vehicle.Id} moved to {route.Points[2].Location}");
@@ -117,9 +161,9 @@ namespace DARP.Services
         {
             // Try append order to route
             RoutePoint lastRoutePoint = route.Points.Last();
-            Time pickupTime = lastRoutePoint.Time + Plan.TravelTime(lastRoutePoint.Location, newOrder.PickupLocation, route.Vehicle);
+            Time pickupTime = lastRoutePoint.Time + Plan.TravelTime(lastRoutePoint.Location, newOrder.PickupLocation);
             Time deliveryTime = XMath.Max(
-                    pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation, route.Vehicle),
+                    pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation),
                     newOrder.DeliveryTimeWindow.From);
 
             // Not needed to check lower bound, vehicle can wait
@@ -137,9 +181,9 @@ namespace DARP.Services
                     RoutePoint routePoint1 = route.Points[i];
                     OrderPickupRoutePoint routePoint2 = (OrderPickupRoutePoint)route.Points[i + 1];
 
-                    pickupTime = routePoint1.Time + Plan.TravelTime(routePoint1.Location, newOrder.PickupLocation, route.Vehicle);
+                    pickupTime = routePoint1.Time + Plan.TravelTime(routePoint1.Location, newOrder.PickupLocation);
                     deliveryTime = XMath.Max(
-                            pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation, route.Vehicle),
+                            pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation),
                             newOrder.DeliveryTimeWindow.From);
 
                     // Not needed to check lower bound, vehicle can wait at pickup location
@@ -152,13 +196,13 @@ namespace DARP.Services
                         bool allOrdersCanBeDelivered = true;
                         for (int j = i + 1; j < route.Points.Count - 1; j += 2)
                         {
-                            time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location, route.Vehicle); // Travel time between last delivery and current pickup
+                            time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location); // Travel time between last delivery and current pickup
 
                             OrderPickupRoutePoint nRoutePointPickup = (OrderPickupRoutePoint)route.Points[j];
                             OrderDeliveryRoutePoint nRoutePointDelivery = (OrderDeliveryRoutePoint)route.Points[j + 1];
                             Order order = nRoutePointPickup.Order;
 
-                            time += Plan.TravelTime(nRoutePointPickup.Location, nRoutePointDelivery.Location, route.Vehicle); // Travel time between current pickup and delivery
+                            time += Plan.TravelTime(nRoutePointPickup.Location, nRoutePointDelivery.Location); // Travel time between current pickup and delivery
 
                             // Not needed to check lower bound, vehicle can wait at pickup location
                             bool orderCanBeStillDelivered = time <= order.DeliveryTimeWindow.To;
@@ -187,9 +231,9 @@ namespace DARP.Services
             newOrder.UpdateState(OrderState.Accepted);
             _logger.Info($"Order {newOrder.Id} accepted");
 
-            Time pickupTime = route.Points[index - 1].Time + Plan.TravelTime(route.Points[index - 1].Location, newOrder.PickupLocation, route.Vehicle);
+            Time pickupTime = route.Points[index - 1].Time + Plan.TravelTime(route.Points[index - 1].Location, newOrder.PickupLocation);
             Time deliveryTime = XMath.Max(
-                    pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation, route.Vehicle),
+                    pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation),
                     newOrder.DeliveryTimeWindow.From);
 
             // Insert new order
@@ -210,10 +254,10 @@ namespace DARP.Services
             {
                 Order order = ((OrderPickupRoutePoint)route.Points[j]).Order;
 
-                time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location, route.Vehicle); // Travel time between last delivery and current pickup
+                time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location); // Travel time between last delivery and current pickup
                 ((OrderPickupRoutePoint)route.Points[j]).Time = time;
 
-                time += Plan.TravelTime(route.Points[j].Location, route.Points[j + 1].Location, route.Vehicle); // Travel time between current pickup and delivery
+                time += Plan.TravelTime(route.Points[j].Location, route.Points[j + 1].Location); // Travel time between current pickup and delivery
                 ((OrderDeliveryRoutePoint)route.Points[j + 1]).Time = XMath.Max(time, order.DeliveryTimeWindow.From);
             }
         }

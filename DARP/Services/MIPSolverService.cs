@@ -115,7 +115,7 @@ namespace DARP.Services
                     Vehicle vehicle = Plan.Vehicles.First(v => v.Id == GetVehicleId(travel1Key.FromId));
                     Order order = orders.First(o => o.Id == travel1Key.ToId);
 
-                    travelTime = Plan.TravelTime(vehicle.Location, order.PickupLocation, vehicle) + Plan.TravelTime(order.PickupLocation, order.DeliveryLocation, vehicle);
+                    travelTime = Plan.TravelTime(vehicle.Location, order.PickupLocation) + Plan.TravelTime(order.PickupLocation, order.DeliveryLocation);
                 }
                 else
                 {
@@ -123,7 +123,7 @@ namespace DARP.Services
                     Order order2 = orders.First(o => o.Id == travel1Key.ToId);
 
                     // TODO use global vehicle speed
-                    travelTime = Plan.TravelTime(order1.DeliveryLocation, order2.PickupLocation, Plan.Vehicles[0]) + Plan.TravelTime(order2.PickupLocation, order2.DeliveryLocation, Plan.Vehicles[0]);
+                    travelTime = Plan.TravelTime(order1.DeliveryLocation, order2.PickupLocation) + Plan.TravelTime(order2.PickupLocation, order2.DeliveryLocation);
                 }
                 Variable timeVarFrom = timeVariables.First(kvp => kvp.Key.Id == travel1Key.FromId).Value;
                 Variable timeVarTo = timeVariables.First(kvp => kvp.Key.Id == travel1Key.ToId).Value;
@@ -132,7 +132,14 @@ namespace DARP.Services
                 _solver.Add(timeVarFrom + travelTimeMins - M * (1 - travel1) <= timeVarTo);
             }
 
-            // 6) Time windows
+            // 6) Vehicles time
+            foreach(Vehicle vehicle in Plan.Vehicles)
+            {
+                Variable timeVar = timeVariables.First(kvp => kvp.Key.Id == GetModifiedVehicleId(vehicle.Id)).Value;
+                timeVar.SetLb(currentTime.ToInt32());
+            }
+
+            // 7) Orders time windows
             foreach (var order in orders)
             {
                 Variable timeVar = timeVariables.First(kvp => kvp.Key.Id == order.Id).Value;
@@ -187,7 +194,7 @@ namespace DARP.Services
                         order.UpdateState(OrderState.Handled);
                         Time arrivalTime = new Time(timeVariables[timeKey].SolutionValue());
 
-                        route.Points.Add(new OrderPickupRoutePoint(order) { Location = order.PickupLocation, Time = arrivalTime - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation, vehicle) } );
+                        route.Points.Add(new OrderPickupRoutePoint(order) { Location = order.PickupLocation, Time = arrivalTime - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation) } );
                         route.Points.Add(new OrderDeliveryRoutePoint(order) { Location = order.DeliveryLocation, Time = arrivalTime });
 
                         if (!map.ContainsKey(travelKey.ToId)) break;
