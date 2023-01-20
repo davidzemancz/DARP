@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace DARP.Windows
 {
@@ -57,48 +58,48 @@ namespace DARP.Windows
 
         private async Task UpdatePlanAsync()
         {
-            Time currentTime = Application.Current.Dispatcher.Invoke(() => _windowModel._currentTime);
+            //Time currentTime = Application.Current.Dispatcher.Invoke(() => _windowModel._currentTime);
 
-            foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
-            {
-                if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetModel()))
-                {
-                    _planningService.AddVehicle(currentTime, vehicleView.GetModel());
-                }
-            }
+            //foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
+            //{
+            //    if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetModel()))
+            //    {
+            //        _planningService.AddVehicle(currentTime, vehicleView.GetModel());
+            //    }
+            //}
 
-            IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
-            _planningService.UpdatePlan(currentTime, newOrders);
+            //IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
+            //_planningService.UpdatePlan(currentTime, newOrders);
         }
 
         private void RenderPlan()
         {
-            dgOrders.Items.Refresh();
-            _windowModel.TotalDistance = _planningService.GetTotalDistance();
+            //dgOrders.Items.Refresh();
+            //_windowModel.TotalDistance = _planningService.GetTotalDistance();
 
-            planRoutesStack.Children.Clear();
-            foreach (Route route in _planningService.Plan.Routes)
-            {
-                DataGrid dg = new() { Tag = route };
-                planRoutesStack.Children.Add(dg);
-                dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
-            }
+            //planRoutesStack.Children.Clear();
+            //foreach (Route route in _planningService.Plan.Routes)
+            //{
+            //    DataGrid dg = new() { Tag = route };
+            //    planRoutesStack.Children.Add(dg);
+            //    dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
+            //}
 
         }
 
         private void AddRandomOrders(int count)
         {
-            for (int i = 0; i < count; i++)
-            {
-                // TODO min delivery time
-                Time deliveryTwFrom = new Time(_windowModel.CurrentTime + 20 + _random.Next(_windowModel._maxDeliveryTimeMins));
-                _orderService.AddOrder(new Order()
-                {
-                    PickupLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
-                    DeliveryLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
-                    DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel._minTwMins, _windowModel._maxTwMins)))
-                });
-            }
+            //for (int i = 0; i < count; i++)
+            //{
+            //    // TODO min delivery time
+            //    Time deliveryTwFrom = new Time(_windowModel.CurrentTime + 20 + _random.Next(_windowModel._maxDeliveryTimeMins));
+            //    _orderService.AddOrder(new Order()
+            //    {
+            //        PickupLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
+            //        DeliveryLocation = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
+            //        DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel._minTwMins, _windowModel._maxTwMins)))
+            //    });
+            //}
         }
 
         #endregion
@@ -110,17 +111,17 @@ namespace DARP.Windows
             dgOrders.ItemsSource = _orderService.GetOrderViews();
             dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
 
-            _windowModel.MaxCords = (new Cords(20, 20)).ToString();
-            _windowModel.Seed = ((int)DateTime.Now.Ticks).ToString();
-            _windowModel.MaxDeliveryTimeMins = 60.ToString();
-            _windowModel.MinTimeWindowMins = 10.ToString();
-            _windowModel.MaxTimeWindowMins = 10.ToString();
-            _windowModel.NewOrdersCount = 1.ToString();
-            _windowModel.ReplanIntervalMins = 5.ToString();
-            _windowModel.NewOrderIntervalMins = 5.ToString();
-            _windowModel.VehicleSpeed = 1.ToString();
+            //_windowModel.MaxCords = (new Cords(20, 20)).ToString();
+            //_windowModel.Seed = ((int)DateTime.Now.Ticks);
+            //_windowModel.MaxDeliveryTimeMins = 60;
+            //_windowModel.MinTimeWindowMins = 10;
+            //_windowModel.MaxTimeWindowMins = 10;
+            //_windowModel.NewOrdersCount = 1;
+            //_windowModel.ReplanIntervalMins = 5;
+            //_windowModel.NewOrderIntervalMins = 5;
+            //_windowModel.VehicleSpeed = 1;
 
-            _random = new Random(_windowModel._seed);
+            //_random = new Random(_windowModel._seed);
 
             _logger.TextWriters.Add(new TextBoxWriter(txtLog));
 
@@ -129,84 +130,84 @@ namespace DARP.Windows
 
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
         {
-            AddRandomOrders(_windowModel._newOrdersCount);
+            //AddRandomOrders(_windowModel._newOrdersCount);
         }
 
         private void btnResetRnd_Click(object sender, RoutedEventArgs e)
         {
-            _random = new Random(_windowModel._seed);
+            //_random = new Random(_windowModel._seed);
         }
 
         private void btnRunSimulation_Click(object sender, RoutedEventArgs e)
         {
-            if (!_windowModel._simulationRunning)
-            {
-                if(_vehicleService.GetVehicleViews().Count == 0)
-                {
-                    MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
+            //if (!_windowModel._simulationRunning)
+            //{
+            //    if(_vehicleService.GetVehicleViews().Count == 0)
+            //    {
+            //        MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //        return;
+            //    }
 
-                _windowModel._simulationRunning = true;
-                btnRunSimulation.Content = "Stop simulation";
+            //    _windowModel._simulationRunning = true;
+            //    btnRunSimulation.Content = "Stop simulation";
 
-                _timers = new() {
-                    // Time
-                    new Timer((state) =>
-                    {
-                        Application.Current.Dispatcher.Invoke(() => 
-                        { 
-                            _windowModel.CurrentTime += 1; 
-                        });
-                    },
-                    null, 0, 1000),
-                    // New orders
-                    new Timer((state) =>
-                    {
-                        Application.Current.Dispatcher.Invoke(() => 
-                        { 
-                            AddRandomOrders(_windowModel._newOrdersCount); 
-                        });
-                    }, null, 0, _windowModel._newOrderIntervalMins * 1000),
-                    // Plan update
-                    new Timer(async (state) =>
-                    {
-                         await Application.Current.Dispatcher.InvokeAsync(async () => 
-                         {
-                             await UpdatePlanAsync();
-                             RenderPlan();
-                        });
-                    }, null, _windowModel._replanIntervalMins * 1000, _windowModel._replanIntervalMins * 1000),
-                };
-            }
-            else
-            {
-                _windowModel._simulationRunning = false;
-                btnRunSimulation.Content = "Run simulation";
-                _timers.ForEach(timer => timer.Dispose());
-                _timers.Clear();
-            }
-            /*
-                public int _newOrdersCount;
-                public int _replanIntervalMins;
-                public int _newOrderIntervalMins;
-             */
+            //    _timers = new() {
+            //        // Time
+            //        new Timer((state) =>
+            //        {
+            //            Application.Current.Dispatcher.Invoke(() => 
+            //            { 
+            //                _windowModel.CurrentTime += 1; 
+            //            });
+            //        },
+            //        null, 0, 1000),
+            //        // New orders
+            //        new Timer((state) =>
+            //        {
+            //            Application.Current.Dispatcher.Invoke(() => 
+            //            { 
+            //                AddRandomOrders(_windowModel._newOrdersCount); 
+            //            });
+            //        }, null, 0, _windowModel._newOrderIntervalMins * 1000),
+            //        // Plan update
+            //        new Timer(async (state) =>
+            //        {
+            //             await Application.Current.Dispatcher.InvokeAsync(async () => 
+            //             {
+            //                 await UpdatePlanAsync();
+            //                 RenderPlan();
+            //            });
+            //        }, null, _windowModel._replanIntervalMins * 1000, _windowModel._replanIntervalMins * 1000),
+            //    };
+            //}
+            //else
+            //{
+            //    _windowModel._simulationRunning = false;
+            //    btnRunSimulation.Content = "Run simulation";
+            //    _timers.ForEach(timer => timer.Dispose());
+            //    _timers.Clear();
+            //}
+            ///*
+            //    public int _newOrdersCount;
+            //    public int _replanIntervalMins;
+            //    public int _newOrderIntervalMins;
+            // */
 
 
         }
 
         private void btwNewRandomVehicle_Click(object sender, RoutedEventArgs e)
         {
-            _vehicleService.GetVehicleViews().Add(new VehicleView(new Vehicle()
-            {
-                Name = "Taxi car",
-                Location = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
-            }));
+            //_vehicleService.GetVehicleViews().Add(new VehicleView(new Vehicle()
+            //{
+            //    Name = "Taxi car",
+            //    Location = new Cords(_random.Next(0, (int)_windowModel._maxCords.X), _random.Next(0, (int)_windowModel._maxCords.Y)),
+            //}));
         }
 
         private void btnTick_Click(object sender, RoutedEventArgs e)
         {
-            _windowModel.CurrentTime += 1;
+            //_windowModel.CurrentTime += 1;
         }
 
         private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
@@ -277,8 +278,6 @@ namespace DARP.Windows
             }
         }
         #endregion
-
-
     }
 
     internal class MainWindowDataModel
@@ -302,150 +301,56 @@ namespace DARP.Windows
         }
     }
 
-    internal class MainWindowModel : INotifyPropertyChanged
+    public class MainWindowModel
     {
-        public Cords _maxCords;
-        public int _seed;
-        public int _maxDeliveryTimeMins;
-        public int _minTwMins;
-        public int _maxTwMins;
-        public int _newOrdersCount;
-        public int _replanIntervalMins;
-        public int _newOrderIntervalMins;
-        public int _metric;
-        public int _insertionMethod;
-        public int _vehicleSpeed;
-        public Time _currentTime;
-        public double _totalDistance;
-        public bool _simulationRunning;
-        public double TotalDistance
+        [Category("Randomization")]
+        public int Seed { get; set; } = (int)DateTime.Now.Ticks;
+
+        [Category("Orders")]
+        [DisplayName("Delivery time window size")]
+        [ExpandableObject]
+        public Range<int> DeliveryTimeWindow { get; set; } = new(10, 10);
+
+        [Category("Orders")]
+        [DisplayName("Delivery time")]
+        [ExpandableObject]
+        public Range<int> DeliveryTime { get; set; } = new(10, 10);
+
+        [Category("Simulation")]
+        [DisplayName("Update plan each [minutes]:")]
+        public int UpdatePlanMins { get; set; } = 10;
+
+        [Category("Simulation")]
+        [DisplayName("New order each [minutes]:")]
+        public int GenerateNewOrderMins { get; set; } = 10;
+
+        [Category("Planning")]
+        [DisplayName("Metric:")]
+        public MetricEnum Metric { get; set; }
+
+        public enum MetricEnum
         {
-            get => _totalDistance;
-            set
-            {
-                _totalDistance = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TotalDistance)));
-            }
+            Manhattan,
+            Euclidean
         }
 
-        public int CurrentTime
-        {
-            get => _currentTime.ToInt32();
-            set
-            {
-                _currentTime = new Time(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentTime)));
-            }
-        }
-        public string VehicleSpeed
-        {
-            get => _vehicleSpeed.ToString();
-            set
-            {
-                _vehicleSpeed = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleSpeed)));
-            }
-        }
-        public string InsertionMethod
-        {
-            get => _insertionMethod.ToString();
-            set
-            {
-                _insertionMethod = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(InsertionMethod)));
-            }
-        }
-        public string Metric
-        {
-            get => _metric.ToString();
-            set
-            {
-                _metric = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Metric)));
-            }
-        }
-        public string MaxCords
-        {
-            get => _maxCords.ToString();
-            set
-            {
-                string[] arr = value.Split(CultureInfo.CurrentCulture.TextInfo.ListSeparator);
-                _maxCords = new Cords(double.Parse(arr[0]), double.Parse(arr[1]));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxCords)));
-            }
-        }
-
-        public string Seed
-        {
-            get => _seed.ToString();
-            set
-            {
-                _seed = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Seed)));
-            }
-        }
-
-        public string MaxDeliveryTimeMins
-        {
-            get => _maxDeliveryTimeMins.ToString();
-            set
-            {
-                _maxDeliveryTimeMins = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxDeliveryTimeMins)));
-            }
-        }
-
-        public string MinTimeWindowMins
-        {
-            get => _minTwMins.ToString();
-            set
-            {
-                _minTwMins = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MinTimeWindowMins)));
-            }
-        }
-
-        public string MaxTimeWindowMins
-        {
-            get => _maxTwMins.ToString();
-            set
-            {
-                _maxTwMins = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxTimeWindowMins)));
-            }
-        }
-
-        public string NewOrdersCount
-        {
-            get => _newOrdersCount.ToString();
-            set
-            {
-                _newOrdersCount = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewOrdersCount)));
-            }
-        }
-        public string ReplanIntervalMins
-        {
-            get => _replanIntervalMins.ToString();
-            set
-            {
-                _replanIntervalMins = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ReplanIntervalMins)));
-            }
-        }
-        public string NewOrderIntervalMins
-        {
-            get => _newOrderIntervalMins.ToString();
-            set
-            {
-                _newOrderIntervalMins = int.Parse(value);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(NewOrderIntervalMins)));
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 
+    [ExpandableObject]
+    public class Range<T>
+    {
+        [DisplayName("From")]
+        public T Min { get; set; }
+
+        [DisplayName("To")]
+        public T Max { get; set; }
+
+        public Range(T min, T max)
+        {
+            Min = min;
+            Max = max;
+        }
+    }
 
 
 
