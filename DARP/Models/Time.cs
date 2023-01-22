@@ -21,6 +21,11 @@ namespace DARP.Models
             Minutes = (int)minutes;
         }
 
+        public void AddMinutes(int minutes)
+        {
+            Minutes += minutes;
+        }
+
         public int ToInt32()
         {
             return Minutes;

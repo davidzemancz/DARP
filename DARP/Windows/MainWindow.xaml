@@ -20,7 +20,7 @@
             <ColumnDefinition Width="20*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="30"/>
             <RowDefinition/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
@@ -33,7 +33,7 @@
                     </MenuItem>
                 </Menu>
             </ToolBar>
-            <ToolBar Band="3" Height="30">
+            <ToolBar Band="1" Height="30">
                 <Button x:Name="btnRunSimulation" Background="CornflowerBlue" Content="Run simulation" Click="btnRunSimulation_Click"/>
             </ToolBar>
         </ToolBarTray>
@@ -46,11 +46,7 @@
                     </Grid.RowDefinitions>
                     <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
                         <ToolBar Height="30">
-                            <Button Background="CornflowerBlue"  Content="New random orders" Click="newRandomOrder_Click"/>
-                            <TextBox x:Name="txtNewOrdersCount" TextAlignment="Right" Width="30">
-                                <Binding Path="NewOrdersCount" UpdateSourceTrigger="PropertyChanged" >
-                                </Binding>
-                            </TextBox>
+                            <Button Background="CornflowerBlue"  Content="Generate order" Click="newRandomOrder_Click"/>
                         </ToolBar>
                     </ToolBarTray>
                     <DataGrid Grid.Row="1" x:Name="dgOrders"/>
@@ -65,11 +61,6 @@
                     <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
                         <ToolBar Height="30">
                             <Button Background="CornflowerBlue"  Content="New random vehicle" Click="btwNewRandomVehicle_Click"/>
-                            <Label Content="Speed:"/>
-                            <TextBox TextAlignment="Right" Width="50">
-                                <Binding Path="VehicleSpeed" UpdateSourceTrigger="PropertyChanged" >
-                                </Binding>
-                            </TextBox>
                         </ToolBar>
 
                     </ToolBarTray>
@@ -93,8 +84,10 @@
                     </Grid.RowDefinitions>
                     <ToolBarTray  Grid.Row="0"  Height="30" >
                         <ToolBar Height="30">
-                            <Label Content="Current time (minutes)"/>
+                            <Label Content="Current time (minutes):"/>
                             <Label Content="{Binding CurrentTime}"/>
+                            <Label Content="Total distance:"/>
+                            <Label Content="{Binding TotalDistance}"/>
                             <Button Background="CornflowerBlue"  Content="Tick" Click="btnTick_Click"/>
                             <Button Background="CornflowerBlue"  Content="Update plan" Click="btnUpdatePlan_Click"/>
                         </ToolBar>
@@ -102,17 +95,11 @@
                     <ScrollViewer Grid.Row="1" >
                         <StackPanel x:Name="planRoutesStack"/>
                     </ScrollViewer>
-                    <ToolBarTray  Grid.Row="2"  Height="30" >
-                        <ToolBar Height="30">
-                            <Label Content="Total distance"/>
-                            <Label Content="{Binding TotalDistance}"/>
-                        </ToolBar>
-                    </ToolBarTray>
                 </Grid>
             </TabItem>
         </TabControl>
         <GridSplitter Grid.Column="3" Grid.Row="1" Width="10" HorizontalAlignment="Stretch" />
-        <xctk:PropertyGrid Grid.Row="1" Grid.Column="4" ShowSortOptions="False" IsCategorized="False"  VerticalAlignment="Stretch" SelectedObject="{Binding }"/>
+        <xctk:PropertyGrid  x:Name="pgSettings" Grid.Row="1" Grid.Column="4" VerticalAlignment="Stretch" SelectedObject="{Binding Props}"/>
         <ToolBar Grid.Row="2" Height="30" Grid.ColumnSpan="100">
             <!--<Label x:Name="lbSettingsStatus" Content="{Binding  Path=(Validation.Errors)[0].ErrorContent}" Width="200"/>-->
         </ToolBar>

@@ -30,9 +30,6 @@ namespace DARP.Services
         public Plan Init(Plan plan)
         {
             Plan = plan;
-
-            //_logger = ServiceProvider.Default.GetService<ILoggerService>();
-            //_MIPSolverService = ServiceProvider.Default.GetService<IMIPSolverService>();
             _MIPSolverService.Plan = Plan;
 
             return Plan;
@@ -48,9 +45,6 @@ namespace DARP.Services
         {
             // Update vehicles location - move them to locations of last deliveries
             UpdateVehiclesLocation(currentTime);
-
-            // Remove old orders
-            RemoveOldOrders(currentTime);
 
             // Process new orders
             List<Order> newOrders = ProcessNewOrders(currentTime, newOrdersEnumerable);
@@ -98,21 +92,6 @@ namespace DARP.Services
             }
 
             return newOrders;
-        }
-
-        private void RemoveOldOrders(Time currentTime)
-        {
-            for (int i = 0; i < Plan.Orders.Count; i++)
-            {
-                Order order = Plan.Orders[i];
-                if((order.DeliveryTimeWindow.To - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation) < currentTime))
-                {
-                    order.UpdateState(OrderState.Rejected);
-                    _logger.Info($"Order {order.Id} rejected");
-                    Plan.Orders.RemoveAt(i);
-                    i--;
-                }
-            }
         }
 
         private void UpdateVehiclesLocation(Time currentTime)

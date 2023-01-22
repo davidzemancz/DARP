@@ -28,4 +28,5 @@ namespace DARP.Utils
             return Math.Sqrt(Math.Pow(c1.X + c2.X, 2) + Math.Pow(c1.Y + c2.Y, 2));
         }
     }
+
 }

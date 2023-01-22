@@ -204,6 +204,14 @@ namespace DARP.Services
                     Plan.Routes.Add(route);
                 }
             }
+            else
+            {
+                foreach(Order order in newOrders)
+                {
+                    order.UpdateState(OrderState.Rejected);
+                    _logger.Info($"Order {order.Id} rejected.");
+                }
+            }
         }
 
         private int GetVehicleId(int modifiedVehicleId) => modifiedVehicleId - 10000;
