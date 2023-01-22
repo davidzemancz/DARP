@@ -262,7 +262,15 @@ namespace DARP.Windows
                 txtLog.ScrollToEnd();
             }
         }
+
+        private void txtLog_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            txtLog.ScrollToEnd();
+        }
+
         #endregion
+
+
     }
 
     internal class MainWindowDataModel
