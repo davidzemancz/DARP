@@ -131,7 +131,7 @@ namespace DARP.Windows
 
             _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => _windowModel.Params.MIPMultithreading;
             _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => _windowModel.Params.MIPTimeLimit;
-            _planningService.InsertionHeuristicsParamsProvider.RetrieveInsertionHeuristicsMode = () => _windowModel.Params.InsertionMode;
+            _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => _windowModel.Params.InsertionMode;
         }
 
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
@@ -173,6 +173,7 @@ namespace DARP.Windows
                     // Plan update
                     new Timer((state) =>
                     {
+                        // TODO: taks queue
                          Application.Current.Dispatcher.Invoke(() =>
                          {
                              UpdatePlan();
@@ -262,6 +263,8 @@ namespace DARP.Windows
                     _windowModel = dataModel.WindowModel;
 
                     RenderPlan();
+
+                    pgSettings.ExpandAllProperties();
                 }
             }
         }

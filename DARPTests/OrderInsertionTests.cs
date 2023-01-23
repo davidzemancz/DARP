@@ -1,4 +1,5 @@
 using DARP.Models;
+using DARP.Providers;
 using DARP.Services;
 using DARP.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,6 +16,7 @@ namespace DARPTests
         public OrderInsertionTests()
         {
             _planningService = ServiceProvider.Default.GetService<IPlanningService>();
+            _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => InsertionHeuristicsMode.FirstFit;
         }
 
         [TestMethod]

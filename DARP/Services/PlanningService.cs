@@ -18,7 +18,7 @@ namespace DARP.Services
         private IMIPSolverService _MIPSolverService;
 
         public Plan Plan { get; protected set; }
-        public InsertionHeuristicsParamsProvider InsertionHeuristicsParamsProvider => new InsertionHeuristicsParamsProvider();
+        public InsertionHeuristicsParamsProvider InsertionHeuristicsParamsProvider { get; } = new InsertionHeuristicsParamsProvider();
         public IMIPSolverService MIPSolverService => _MIPSolverService;
 
         public PlanningService(ILoggerService logger, IMIPSolverService mIPSolverService)
@@ -43,6 +43,9 @@ namespace DARP.Services
 
         public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrdersEnumerable)
         {
+            InsertionHeuristicsMode insertionMode = InsertionHeuristicsParamsProvider.RetrieveMode();
+
+
             // Update vehicles location - move them to locations of last deliveries
             UpdateVehiclesLocation(currentTime);
 
@@ -51,13 +54,14 @@ namespace DARP.Services
 
             // TODO Decision making on choosing method (insertion, optimization,...)
 
-            // Try insertion heuristics
-            bool tryInsertion = true;
-            if (tryInsertion)
+            // Try insertion heuristics in enabled
+            if (insertionMode != InsertionHeuristicsMode.Disabled)
             {
-                _logger.Info("Started insertion heuristic");
+                Stopwatch sw = Stopwatch.StartNew();
+                _logger.Info($"Started insertion heuristic, {Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles");
                 newOrders = TryInsertOrders(newOrders);
-                _logger.Info("Finished insertion heuristic");
+                sw.Stop();
+                _logger.Info($"Finished insertion heuristic, running time {sw.Elapsed}");
             }
 
             // Try greedy procedure
@@ -71,7 +75,7 @@ namespace DARP.Services
             {
                 int mipId = Random.Shared.Next(100_000_000, 1000_000_000);
                 Stopwatch sw = Stopwatch.StartNew();
-                _logger.Info($"Started MIP solver, id {mipId}, ({Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles)");
+                _logger.Info($"Started MIP solver, id {mipId}, {Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles");
                 Status mipStatus = _MIPSolverService.Solve(currentTime, newOrders);
                 
                 foreach (Order order in newOrders) 
@@ -79,16 +83,14 @@ namespace DARP.Services
                     if (Plan.Orders.Contains(order))
                     {
                         order.UpdateState(OrderState.Accepted);
-                        _logger.Info($"Order {order.Id} accepted.");
                     }
                     else
                     {
                         order.UpdateState(OrderState.Rejected);
-                        _logger.Info($"Order {order.Id} rejected.");
                     }
                 }
                 sw.Stop();
-                _logger.Info($"Finished MIP solver, id {mipId}, status {mipStatus.Code}, running time {sw.Elapsed.Seconds} s");
+                _logger.Info($"Finished MIP solver, id {mipId}, status {mipStatus.Code}, running time {sw.Elapsed} s");
             }
         }
 
@@ -145,21 +147,48 @@ namespace DARP.Services
 
         private List<Order> TryInsertOrders(List<Order> newOrders)
         {
+            InsertionHeuristicsMode mode = InsertionHeuristicsParamsProvider.RetrieveMode();
+
             List<Order> remainingOrders = new();
             foreach(Order order in newOrders.OrderBy(o => o.DeliveryTimeWindow.To))  // TODO think about the order of processing orders
             {
+                Route bestRoute = null;
+                int bestInsertionIndex = -1;
+                int bestInsertionScore = int.MinValue;
+
                 foreach (Route route in Plan.Routes)
                 {
-                    if (OrderCanBeInserted(order, route, out int insertionIndex))
+                    if (OrderCanBeInserted(order, route, out int insertionIndex, out int insertionScore))
                     {
-                        InsertOrder(route, order, insertionIndex);
-                        
-                        order.UpdateState(OrderState.Accepted);
-                        _logger.Info($"Order {order.Id} accepted.");
-                        break;
+                        if (mode == InsertionHeuristicsMode.FirstFit)
+                        {
+                            // Insert route to first possible place
+                            InsertOrder(route, order, insertionIndex);
+                            order.UpdateState(OrderState.Accepted);
+                            break;
+                        }
+                        else if (mode == InsertionHeuristicsMode.BestFit)
+                        {
+                            // Find best place where to insert order based in insertionScore
+                            if (insertionScore > bestInsertionScore)
+                            {
+                                bestRoute = route;
+                                bestInsertionScore = insertionScore;
+                                bestInsertionIndex = insertionIndex;
+                                _logger.Info($"Better insertion index ({insertionIndex}) on route {route.Vehicle.Id} for order {order.Id} was found, score {insertionScore}");
+                            }
+                        }
                     }
                 }
 
+                // Insert order to best position
+                if (mode == InsertionHeuristicsMode.BestFit && bestInsertionIndex >= 0)
+                {
+                    InsertOrder(bestRoute, order, bestInsertionIndex);
+                    order.UpdateState(OrderState.Accepted);
+                }
+
+                // If order was not inserted
                 if (order.State != OrderState.Accepted)
                 {
                     remainingOrders.Add(order);
@@ -168,81 +197,121 @@ namespace DARP.Services
             return remainingOrders;
         }
 
-        private bool OrderCanBeInserted(Order newOrder, Route route, out int insertionIndex)
+        private bool OrderCanBeInserted(Order newOrder, Route route, out int insertionIndex, out int insertionScore)
         {
             insertionIndex = -1;
+            insertionScore = int.MinValue;
 
-            // Try append order to route
+            // Insertion mode
+            InsertionHeuristicsMode mode = InsertionHeuristicsParamsProvider.RetrieveMode();
+            int bestIsertionIndex = -1;
+            int bestIsertionScore = int.MinValue;
+
+            Time pickupTime;
+            Time deliveryTime;
+            for (int i = 0; i < route.Points.Count - 1; i += 2)
+            {
+                RoutePoint routePoint1 = route.Points[i];
+                OrderPickupRoutePoint routePoint2 = (OrderPickupRoutePoint)route.Points[i + 1];
+
+                pickupTime = routePoint1.Time + Plan.TravelTime(routePoint1.Location, newOrder.PickupLocation);
+                deliveryTime = XMath.Max(
+                        pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation),
+                        newOrder.DeliveryTimeWindow.From);
+
+                // Not needed to check lower bound, vehicle can wait at pickup location
+                bool newOrderCanBeInserted = deliveryTime <= newOrder.DeliveryTimeWindow.To;
+
+                // If new order can be inserted, check all following if they can be still delivered
+                if (newOrderCanBeInserted)
+                {
+                    Time time = deliveryTime;
+                    bool allOrdersCanBeDelivered = true;
+                    for (int j = i + 1; j < route.Points.Count - 1; j += 2)
+                    {
+                        time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location); // Travel time between last delivery and current pickup
+
+                        OrderPickupRoutePoint nRoutePointPickup = (OrderPickupRoutePoint)route.Points[j];
+                        OrderDeliveryRoutePoint nRoutePointDelivery = (OrderDeliveryRoutePoint)route.Points[j + 1];
+                        Order order = nRoutePointPickup.Order;
+
+                        time += Plan.TravelTime(nRoutePointPickup.Location, nRoutePointDelivery.Location); // Travel time between current pickup and delivery
+
+                        // Not needed to check lower bound, vehicle can wait at pickup location
+                        bool orderCanBeStillDelivered = time <= order.DeliveryTimeWindow.To;
+                        if (!orderCanBeStillDelivered)
+                        {
+                            allOrdersCanBeDelivered = false;
+                            break;
+                        }
+                    }
+
+                    // All following orders can be delivered
+                    if (allOrdersCanBeDelivered)
+                    {
+                        // Return first index where new order fits
+                        if (mode == InsertionHeuristicsMode.FirstFit)
+                        {
+                            // Insert new order
+                            insertionIndex = i + 1;
+                            return true;
+                        }
+                        else if (mode == InsertionHeuristicsMode.BestFit)
+                        {
+                            int pointInserstionScore = -deliveryTime.ToInt32(); // TODO parametrize insertion score - deliveryTime is same as first fit
+                            if (pointInserstionScore > bestIsertionScore) // Store best insertionIndex wrt score
+                            {
+                                bestIsertionScore = pointInserstionScore;
+                                bestIsertionIndex = i + 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Try append order to route if it cannot be inserted or if mode is BestFit
             RoutePoint lastRoutePoint = route.Points.Last();
-            Time pickupTime = lastRoutePoint.Time + Plan.TravelTime(lastRoutePoint.Location, newOrder.PickupLocation);
-            Time deliveryTime = XMath.Max(
+            pickupTime = lastRoutePoint.Time + Plan.TravelTime(lastRoutePoint.Location, newOrder.PickupLocation);
+            deliveryTime = XMath.Max(
                     pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation),
                     newOrder.DeliveryTimeWindow.From);
 
             // Not needed to check lower bound, vehicle can wait
             bool newOrderCanBeAppended = deliveryTime <= newOrder.DeliveryTimeWindow.To;
 
-            if (newOrderCanBeAppended) // Append order to the end of the route
+            // Append order to the end of the route
+            if (newOrderCanBeAppended)
             {
-                insertionIndex = route.Points.Count;
-                return true;
-            }
-            else // Find space between two orders where to 'insert' new one
-            {
-                for (int i = 0; i < route.Points.Count - 1; i += 2)
+                if (mode == InsertionHeuristicsMode.FirstFit)
                 {
-                    RoutePoint routePoint1 = route.Points[i];
-                    OrderPickupRoutePoint routePoint2 = (OrderPickupRoutePoint)route.Points[i + 1];
-
-                    pickupTime = routePoint1.Time + Plan.TravelTime(routePoint1.Location, newOrder.PickupLocation);
-                    deliveryTime = XMath.Max(
-                            pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation),
-                            newOrder.DeliveryTimeWindow.From);
-
-                    // Not needed to check lower bound, vehicle can wait at pickup location
-                    bool newOrderCanBeInserted = deliveryTime <= newOrder.DeliveryTimeWindow.To;
-
-                    // If new order can be inserted, check all following if they can be still delivered
-                    if (newOrderCanBeInserted)
+                    insertionIndex = route.Points.Count;
+                    return true;
+                }
+                else if (mode == InsertionHeuristicsMode.BestFit)
+                {
+                    int appendScore = -deliveryTime.ToInt32();  // TODO parametrize insertion score - deliveryTime is same as first fit
+                    if (appendScore > bestIsertionScore)
                     {
-                        Time time = deliveryTime;
-                        bool allOrdersCanBeDelivered = true;
-                        for (int j = i + 1; j < route.Points.Count - 1; j += 2)
-                        {
-                            time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location); // Travel time between last delivery and current pickup
-
-                            OrderPickupRoutePoint nRoutePointPickup = (OrderPickupRoutePoint)route.Points[j];
-                            OrderDeliveryRoutePoint nRoutePointDelivery = (OrderDeliveryRoutePoint)route.Points[j + 1];
-                            Order order = nRoutePointPickup.Order;
-
-                            time += Plan.TravelTime(nRoutePointPickup.Location, nRoutePointDelivery.Location); // Travel time between current pickup and delivery
-
-                            // Not needed to check lower bound, vehicle can wait at pickup location
-                            bool orderCanBeStillDelivered = time <= order.DeliveryTimeWindow.To;
-                            if (!orderCanBeStillDelivered)
-                            {
-                                allOrdersCanBeDelivered = false;
-                                break;
-                            }
-                        }
-
-                        // All following orders can be delivered
-                        if (allOrdersCanBeDelivered)
-                        {
-                            // Insert new order
-                            insertionIndex = i + 1;
-                            return true;
-                        }
+                        bestIsertionScore = appendScore;
+                        bestIsertionIndex = route.Points.Count;
                     }
                 }
             }
+
+            if (bestIsertionIndex >= 0)
+            {
+                insertionIndex = bestIsertionIndex;
+                insertionScore = bestIsertionScore;
+                return true;
+            }
+           
             return false;
         }
 
         private void InsertOrder(Route route, Order newOrder, int index)
         {
             newOrder.UpdateState(OrderState.Accepted);
-            _logger.Info($"Order {newOrder.Id} accepted");
+            Plan.Orders.Add(newOrder);
 
             Time pickupTime = route.Points[index - 1].Time + Plan.TravelTime(route.Points[index - 1].Location, newOrder.PickupLocation);
             Time deliveryTime = XMath.Max(

@@ -15,7 +15,7 @@ namespace DARP.Services
     {
         private ILoggerService _logger;
         public Plan Plan { get; set; }
-        public MIPSolverParamsProvider ParamsProvider => new MIPSolverParamsProvider();
+        public MIPSolverParamsProvider ParamsProvider { get; } = new MIPSolverParamsProvider();
 
         private Solver _solver;
 
@@ -192,20 +192,23 @@ namespace DARP.Services
                     Route route = new(vehicle);
                     
                     int modifiedVehicleId = GetModifiedVehicleId(vehicle.Id);
-                    (TravelVarKey travelKey, TimeVarKey timeKey) = map[modifiedVehicleId];
                     route.Points.Add(new VehicleRoutePoint(vehicle) { Location = vehicle.Location, Time = currentTime });
-                    
-                    while (true)
+
+                    if (map.ContainsKey(modifiedVehicleId))
                     {
-                        Order order = orders.First(o => o.Id == travelKey.ToId);
-                        order.UpdateState(OrderState.Handled);
-                        Time arrivalTime = new Time(timeVariables[timeKey].SolutionValue());
+                        (TravelVarKey travelKey, TimeVarKey timeKey) = map[modifiedVehicleId];
+                        while (true)
+                        {
+                            Order order = orders.First(o => o.Id == travelKey.ToId);
+                            order.UpdateState(OrderState.Handled);
+                            Time arrivalTime = new Time(timeVariables[timeKey].SolutionValue());
 
-                        route.Points.Add(new OrderPickupRoutePoint(order) { Location = order.PickupLocation, Time = arrivalTime - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation) } );
-                        route.Points.Add(new OrderDeliveryRoutePoint(order) { Location = order.DeliveryLocation, Time = arrivalTime });
+                            route.Points.Add(new OrderPickupRoutePoint(order) { Location = order.PickupLocation, Time = arrivalTime - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation) });
+                            route.Points.Add(new OrderDeliveryRoutePoint(order) { Location = order.DeliveryLocation, Time = arrivalTime });
 
-                        if (!map.ContainsKey(travelKey.ToId)) break;
-                        (travelKey, timeKey) = map[travelKey.ToId];
+                            if (!map.ContainsKey(travelKey.ToId)) break;
+                            (travelKey, timeKey) = map[travelKey.ToId];
+                        }
                     }
 
                     Plan.Routes.Add(route);

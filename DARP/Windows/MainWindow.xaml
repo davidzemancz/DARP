@@ -97,6 +97,9 @@
                     </ScrollViewer>
                 </Grid>
             </TabItem>
+            <TabItem Header="Statistics"  Width="100">
+                <Label Content="TODO"/>
+            </TabItem>
         </TabControl>
         <GridSplitter Grid.Column="3" Grid.Row="1" Width="10" HorizontalAlignment="Stretch" />
         <xctk:PropertyGrid  x:Name="pgSettings" Grid.Row="1" Grid.Column="4" VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
