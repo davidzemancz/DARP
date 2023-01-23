@@ -6,16 +6,16 @@
         xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="DARP" Height="900" Width="1600" Loaded="Window_Loaded">
+        Title="DARP" Height="900" Width="1800" Loaded="Window_Loaded">
     <Window.DataContext>
         <local:MainWindowModel/>
     </Window.DataContext>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="45*" />
             <ColumnDefinition Width="10" />
-            <ColumnDefinition Width="40*" />
+            <ColumnDefinition Width="35*" />
             <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="20*"/>
         </Grid.ColumnDefinitions>
@@ -73,7 +73,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <GridSplitter Grid.Column="1" Grid.Row="1" Width="10" HorizontalAlignment="Stretch" />
+        <GridSplitter Grid.Column="1" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" />
         <TabControl Grid.Row="1"  Grid.Column="2" >
             <TabItem Header="Plan" Width="100">
                 <Grid>
@@ -101,8 +101,12 @@
                 <Label Content="TODO"/>
             </TabItem>
         </TabControl>
-        <GridSplitter Grid.Column="3" Grid.Row="1" Width="10" HorizontalAlignment="Stretch" />
-        <xctk:PropertyGrid  x:Name="pgSettings" Grid.Row="1" Grid.Column="4" VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
+        <GridSplitter Grid.Column="3" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" />
+        <TabControl  Grid.Row="1" Grid.Column="4">
+            <TabItem Header="Properties" Width="100">
+                <xctk:PropertyGrid  x:Name="pgSettings" VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
+            </TabItem>
+        </TabControl>
         <ToolBar Grid.Row="2" Height="30" Grid.ColumnSpan="100">
             <!--<Label x:Name="lbSettingsStatus" Content="{Binding  Path=(Validation.Errors)[0].ErrorContent}" Width="200"/>-->
         </ToolBar>

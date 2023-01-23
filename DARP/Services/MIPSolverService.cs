@@ -150,8 +150,18 @@ namespace DARP.Services
             }
 
             // Objective
-            Variable[] allTravels = travelVariables.Select(kvp => kvp.Value).ToArray();
-            _solver.Minimize(new SumVarArray(allTravels));
+            ObjectiveFunction objective = ParamsProvider.RetrieveObjective();
+            if (objective == ObjectiveFunction.MinimizeDistance)
+            {
+                Variable[] allTravels = travelVariables.Select(kvp => kvp.Value).ToArray();
+                _solver.Minimize(new SumVarArray(allTravels));
+            }
+            else if (objective == ObjectiveFunction.MaximizeProfit)
+            {
+                int vehicleCharge = ParamsProvider.RetrieveVehicleCharge();
+                Variable[] allTravels = travelVariables.Select(kvp => kvp.Value).ToArray();
+                _solver.Minimize(new SumVarArray(allTravels));
+            }
 
             // Solve
             int timeLimitSecs = ParamsProvider.RetrieveTimeLimitSeconds();

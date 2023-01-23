@@ -100,7 +100,8 @@ namespace DARP.Windows
             {
                 PickupLocation = new Cords(_random.Next(0, _windowModel.Params.MapSize), _random.Next(0, (int)_windowModel.Params.MapSize)),
                 DeliveryLocation = new Cords(_random.Next(0, _windowModel.Params.MapSize), _random.Next(0, (int)_windowModel.Params.MapSize)),
-                DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel.Params.DeliveryTimeWindow.Min, _windowModel.Params.DeliveryTimeWindow.Max)))
+                DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel.Params.DeliveryTimeWindow.Min, _windowModel.Params.DeliveryTimeWindow.Max))),
+                Cost = _windowModel.Params.OrderCostPerDistanceUnit
             });
         }
 
@@ -131,6 +132,8 @@ namespace DARP.Windows
 
             _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => _windowModel.Params.MIPMultithreading;
             _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => _windowModel.Params.MIPTimeLimit;
+            _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => _windowModel.Params.MIPObjectiveFunction;
+            _planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => _windowModel.Params.VehicleCharge;
             _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => _windowModel.Params.InsertionMode;
         }
 
@@ -322,19 +325,24 @@ namespace DARP.Windows
     {
         // ------------ Order generation ------------------
         [Category("Order generation")]
-        [DisplayName("Delivery time window size")]
+        [DisplayName("Delivery time window size.")]
         [ExpandableObject]
         public PropertyRange<int> DeliveryTimeWindow { get; set; } = new(15, 15);
 
         [Category("Order generation")]
         [DisplayName("Delivery time")]
-        [Description("Delivery time since current time")]
+        [Description("Delivery time since current time.")]
         [ExpandableObject]
         public PropertyRange<int> DeliveryTime { get; set; } = new(30, 60);
 
+        [Category("Order generation")]
+        [DisplayName("Cost")]
+        [Description("Cost per distance unit.")]
+        public int OrderCostPerDistanceUnit { get; set; } = 3;
+
         // ------------ Randomization ------------------
         [Category("Randomization")]
-        public int Seed { get; set; } = (int)DateTime.Now.Ticks;
+        public int Seed { get; set; } = (int)DateTime.Now.Ticks;    
 
         // ------------ Simulation ------------------
         [Category("Simulation")]
@@ -347,12 +355,12 @@ namespace DARP.Windows
 
         [Category("Simulation")]
         [DisplayName("Expected orders count")]
-        [Description("[ExpectedOrdersCount] * [OrdersCountVariance] orders is generated independently with probability 1 / [OrdersCountVariance]")]
+        [Description("[ExpectedOrdersCount] * [OrdersCountVariance] orders is generated independently with probability 1 / [OrdersCountVariance].")]
         public int ExpectedOrdersCount { get; set; } = 1;
 
         [Category("Simulation")]
         [DisplayName("Orders count variance")]
-        [Description("[ExpectedOrdersCount] * [OrdersCountVariance] orders is generated independently with probability 1 / [OrdersCountVariance]")]
+        [Description("[ExpectedOrdersCount] * [OrdersCountVariance] orders is generated independently with probability 1 / [OrdersCountVariance].")]
         public int OrdersCountVariance { get; set; } = 5;
 
         // ------------ Map ------------------
@@ -366,9 +374,15 @@ namespace DARP.Windows
         public Metric Metric { get; set; }
 
         // ------------ Vehicle ------------------
-        [Category("Vehicle")]
+        [Category("Vehicles")]
         [DisplayName("Speed")]
+        [Description("Distance traveled by each vehicle in one tick.")]
         public int Speed { get; set; } = 1;
+
+        [Category("Vehicles")]
+        [DisplayName("Charge")]
+        [Description("Charge per distance unit of vehicle's route.")]
+        public int VehicleCharge { get; set; } = 1;
 
         // ------------ Optimization ------------------
         [Category("Optimization")]
@@ -378,7 +392,7 @@ namespace DARP.Windows
 
         [Category("Optimization")]
         [DisplayName("Objective function")]
-        public ObjectiveFunction ObjectiveFunction { get; set; }
+        public ObjectiveFunction MIPObjectiveFunction { get; set; }
 
         // ------------ MIP solver ------------------
         [Category("MIP solver")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DARP.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,5 +11,7 @@ namespace DARP.Providers
     {
         public Func<int> RetrieveTimeLimitSeconds { get; set; }
         public Func<bool> RetrieveMultithreading { get; set; }
+        public Func<ObjectiveFunction> RetrieveObjective {  get; set; }
+        public Func<int> RetrieveVehicleCharge { get; set; }
     }
 }
