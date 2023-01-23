@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,7 +22,14 @@ namespace DARP.Utils
 
         public override void WriteLine(string value)
         {
-            Application.Current.Dispatcher.Invoke(() => _txtBox.Text += $"{value}{Environment.NewLine}");
+            if (Thread.CurrentThread == Application.Current.Dispatcher.Thread)
+            {
+                _txtBox.Text += $"{value}{Environment.NewLine}";
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(() => _txtBox.Text += $"{value}{Environment.NewLine}");
+            }
         }
     }
 }
