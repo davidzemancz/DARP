@@ -2,6 +2,7 @@
 using DARP.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,7 @@ namespace DARP.Services
             // Update vehicles location - move them to locations of last deliveries
             UpdateVehiclesLocation(currentTime);
 
-            // Process new orders
+            // Filter new orders - reject or accept
             List<Order> newOrders = ProcessNewOrders(currentTime, newOrdersEnumerable);
 
             // TODO Decision making on choosing method (insertion, optimization,...)
@@ -68,8 +69,26 @@ namespace DARP.Services
             // Run optimization
             if (tryMIP)
             {
-                _logger.Info($"Start MIP solver ({Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles)");
-                _MIPSolverService.Solve(currentTime, newOrders);
+                int mipId = Random.Shared.Next(100_000_000, 1000_000_000);
+                Stopwatch sw = Stopwatch.StartNew();
+                _logger.Info($"Started MIP solver, id {mipId}, ({Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles)");
+                Status mipStatus = _MIPSolverService.Solve(currentTime, newOrders);
+                
+                foreach (Order order in newOrders) 
+                {
+                    if (Plan.Orders.Contains(order))
+                    {
+                        order.UpdateState(OrderState.Accepted);
+                        _logger.Info($"Order {order.Id} accepted.");
+                    }
+                    else
+                    {
+                        order.UpdateState(OrderState.Rejected);
+                        _logger.Info($"Order {order.Id} rejected.");
+                    }
+                }
+                sw.Stop();
+                _logger.Info($"Stoped MIP solver, id {mipId}, status {mipStatus.Code}, running time {sw.Elapsed.Seconds} s");
             }
         }
 
@@ -80,13 +99,18 @@ namespace DARP.Services
             {
                 if ((order.DeliveryTimeWindow.To - Plan.TravelTime(order.PickupLocation, order.DeliveryLocation) < currentTime))
                 {
+                    // Order cannot be delivered
+                    // Pass ...
+                    // TODO some other conditions can be added
+
                     order.UpdateState(OrderState.Rejected);
-                    _logger.Info($"Order {order.Id} rejected");
+                    _logger.Info($"Order {order.Id} rejected.");
                 }
                 else
                 {
-                    order.UpdateState(OrderState.Accepted);
-                    _logger.Info($"Order {order.Id} accepted");
+                    // Order can be delivered
+                    order.UpdateState(OrderState.Processing);
+                    _logger.Info($"Order {order.Id} is being processed.");
                     newOrders.Add(order);
                 }
             }
@@ -107,7 +131,7 @@ namespace DARP.Services
                         orderPickup.Order.UpdateState(OrderState.Handled);
                         Plan.Orders.Remove(orderPickup.Order);
 
-                        _logger.Info($"Order {orderPickup.Order.Id} handled");
+                        _logger.Info($"Order {orderPickup.Order.Id} handled by vehicle {route.Vehicle.Id}");
                         _logger.Info($"Vehicle {route.Vehicle.Id} moved to {route.Points[2].Location}");
 
                         route.Points[0].Location = route.Points[2].Location;

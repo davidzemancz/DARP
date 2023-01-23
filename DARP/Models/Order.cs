@@ -31,6 +31,7 @@ namespace DARP.Models
     public enum OrderState
     {
         Created,
+        Processing,
         Accepted,
         Rejected,
         Handled,

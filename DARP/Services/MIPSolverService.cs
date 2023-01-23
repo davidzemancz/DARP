@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.OrTools.LinearSolver;
 using System.Windows.Controls;
+using DARP.Utils;
 
 namespace DARP.Services
 {
@@ -21,9 +22,9 @@ namespace DARP.Services
             _logger = logger;
         }
 
-        public void Solve(Time currentTime, IEnumerable<Order> newOrders)
+        public Status Solve(Time currentTime, IEnumerable<Order> newOrders)
         {
-            if (!newOrders.Any()) return;
+            if (!newOrders.Any()) return Status.Ok;
 
             // Union orders
             List<Order> orders = new List<Order>(Plan.Orders);
@@ -152,8 +153,8 @@ namespace DARP.Services
 
             // Solve
             MPSolverParameters solverParameters = new();
+            _solver.SetTimeLimit(10_000);
             Solver.ResultStatus result =_solver.Solve(solverParameters);
-            _logger.Info($"Solver result status {result}");
 
             // Construct routes
             if (result == Solver.ResultStatus.OPTIMAL)
@@ -203,14 +204,12 @@ namespace DARP.Services
 
                     Plan.Routes.Add(route);
                 }
+
+                return Status.Ok;
             }
             else
             {
-                foreach(Order order in newOrders)
-                {
-                    order.UpdateState(OrderState.Rejected);
-                    _logger.Info($"Order {order.Id} rejected.");
-                }
+                return Status.Failed;
             }
         }
 

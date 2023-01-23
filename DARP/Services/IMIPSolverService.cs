@@ -1,4 +1,5 @@
 ﻿using DARP.Models;
+using DARP.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,6 @@ namespace DARP.Services
     public interface IMIPSolverService
     {
         Plan Plan { get; set; }
-        public void Solve(Time currentTime, IEnumerable<Order> newOrders);
+        public Status Solve(Time currentTime, IEnumerable<Order> newOrders);
     }
 }
