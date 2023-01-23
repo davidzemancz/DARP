@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Google.OrTools.LinearSolver;
 using System.Windows.Controls;
 using DARP.Utils;
+using DARP.Providers;
 
 namespace DARP.Services
 {
@@ -14,6 +15,7 @@ namespace DARP.Services
     {
         private ILoggerService _logger;
         public Plan Plan { get; set; }
+        public MIPSolverParamsProvider ParamsProvider => new MIPSolverParamsProvider();
 
         private Solver _solver;
 
@@ -87,7 +89,7 @@ namespace DARP.Services
             foreach (Vehicle vehicle in Plan.Vehicles)
             {
                 Variable[] travels = travelVariables.Where(kvp => kvp.Key.FromId == GetModifiedVehicleId(vehicle.Id)).Select(kvp => kvp.Value).ToArray();
-                _solver.Add(new SumVarArray(travels) == 1); // Each vehicle must be used 
+                _solver.Add(new SumVarArray(travels) <= 1); // Each vehicle must be used 
             }
 
             // 3) Cycles are not allowed, just paths
@@ -104,7 +106,7 @@ namespace DARP.Services
             foreach(Order order in orders)
             {
                 Variable[] predecessors = travelVariables.Where(kvp => kvp.Key.ToId == order.Id).Select(kvp => kvp.Value).ToArray();
-                _solver.Add(new SumVarArray(predecessors) >= 1);
+                _solver.Add(new SumVarArray(predecessors) == 1);
             }
 
             // 5) Travel time
@@ -152,12 +154,16 @@ namespace DARP.Services
             _solver.Minimize(new SumVarArray(allTravels));
 
             // Solve
+            int timeLimitSecs = ParamsProvider.RetrieveTimeLimitSeconds();
+            bool multithreading = ParamsProvider.RetrieveMultithreading();
             MPSolverParameters solverParameters = new();
-            _solver.SetTimeLimit(10_000);
+            if (timeLimitSecs > 0) _solver.SetTimeLimit(timeLimitSecs * 1_000);
+            if (multithreading) _solver.SetNumThreads(Math.Max((int)(Environment.ProcessorCount * 0.5), 1));
             Solver.ResultStatus result =_solver.Solve(solverParameters);
+            _logger.Info($"MIP result {result}");
 
             // Construct routes
-            if (result == Solver.ResultStatus.OPTIMAL)
+            if (result == Solver.ResultStatus.OPTIMAL || result == Solver.ResultStatus.FEASIBLE)
             {
                 // Print to log
                 Dictionary<int, (TravelVarKey, TimeVarKey) > map = new(); // From->To

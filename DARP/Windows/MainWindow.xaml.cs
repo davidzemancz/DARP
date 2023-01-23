@@ -1,4 +1,5 @@
 ﻿using DARP.Models;
+using DARP.Providers;
 using DARP.Services;
 using DARP.Utils;
 using DARP.Views;
@@ -58,24 +59,24 @@ namespace DARP.Windows
 
         #region METHODS
 
-        private async Task UpdatePlanAsync()
+        private void UpdatePlan()
         {
-            await Task.Run(() =>
+            Time currentTime = Application.Current.Dispatcher.Invoke(() => _windowModel.CurrentTime);
+
+            foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
             {
-                Time currentTime = Application.Current.Dispatcher.Invoke(() => _windowModel.CurrentTime);
-
-                foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
+                if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetModel()))
                 {
-                    if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetModel()))
-                    {
-                        _planningService.AddVehicle(currentTime, vehicleView.GetModel());
-                    }
+                    _planningService.AddVehicle(currentTime, vehicleView.GetModel());
                 }
+            }
 
-                IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
-                _planningService.UpdatePlan(currentTime, newOrders);
-            });
+            IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
+            _planningService.UpdatePlan(currentTime, newOrders);
+
         }
+
+       
 
         private void RenderPlan()
         {
@@ -92,17 +93,24 @@ namespace DARP.Windows
 
         }
 
-        private void AddRandomOrders(int count)
+        private void AddRandomOrder()
         {
-            for (int i = 0; i < count; i++)
+            Time deliveryTwFrom = new Time(_windowModel.CurrentTime.ToInt32() + _windowModel.Params.DeliveryTime.Min + _random.Next(_windowModel.Params.DeliveryTime.Max));
+            _orderService.AddOrder(new Order()
             {
-                Time deliveryTwFrom = new Time(_windowModel.CurrentTime.ToInt32() + _windowModel.Props.DeliveryTime.Min + _random.Next(_windowModel.Props.DeliveryTime.Max));
-                _orderService.AddOrder(new Order()
-                {
-                    PickupLocation = new Cords(_random.Next(0, _windowModel.Props.MapSize), _random.Next(0, (int)_windowModel.Props.MapSize)),
-                    DeliveryLocation = new Cords(_random.Next(0, _windowModel.Props.MapSize), _random.Next(0, (int)_windowModel.Props.MapSize)),
-                    DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel.Props.DeliveryTimeWindow.Min, _windowModel.Props.DeliveryTimeWindow.Max)))
-                });
+                PickupLocation = new Cords(_random.Next(0, _windowModel.Params.MapSize), _random.Next(0, (int)_windowModel.Params.MapSize)),
+                DeliveryLocation = new Cords(_random.Next(0, _windowModel.Params.MapSize), _random.Next(0, (int)_windowModel.Params.MapSize)),
+                DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel.Params.DeliveryTimeWindow.Min, _windowModel.Params.DeliveryTimeWindow.Max)))
+            });
+        }
+
+        private void AddRandomOrders(int expectedCount)
+        {
+            int variance = _windowModel.Params.OrdersCountVariance;
+            for (int i = 0; i < expectedCount * variance; i++)
+            {
+                if (Random.Shared.NextDouble() > (1.0 / variance)) continue;
+                AddRandomOrder();
             }
         }
 
@@ -117,15 +125,18 @@ namespace DARP.Windows
 
             pgSettings.ExpandAllProperties();
 
-            _random = new Random(_windowModel.Props.Seed);
-
+            _random = new Random(_windowModel.Params.Seed);
             _logger.TextWriters.Add(new TextBoxWriter(txtLog));
-            _planningService.Init(XMath.ManhattanMetric);
+            _planningService.Init(new Plan(XMath.ManhattanMetric)); 
+
+            _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => _windowModel.Params.MIPMultithreading;
+            _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => _windowModel.Params.MIPTimeLimit;
+            _planningService.InsertionHeuristicsParamsProvider.RetrieveInsertionHeuristicsMode = () => _windowModel.Params.InsertionMode;
         }
 
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
         {
-            AddRandomOrders(1);
+            AddRandomOrder();
         }
 
         private void btnRunSimulation_Click(object sender, RoutedEventArgs e)
@@ -156,18 +167,18 @@ namespace DARP.Windows
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            AddRandomOrders(_windowModel.Props.NewOrdersCount);
+                            AddRandomOrders(_windowModel.Params.ExpectedOrdersCount);
                         });
-                    }, null, 0, _windowModel.Props.GenerateNewOrderMins * 1000),
+                    }, null, 0, _windowModel.Params.GenerateNewOrderMins * 1000),
                     // Plan update
-                    new Timer(async (state) =>
+                    new Timer((state) =>
                     {
-                         await Application.Current.Dispatcher.InvokeAsync(async () =>
+                         Application.Current.Dispatcher.Invoke(() =>
                          {
-                             await UpdatePlanAsync();
+                             UpdatePlan();
                              RenderPlan();
                         });
-                    }, null, _windowModel.Props.UpdatePlanMins * 1000, _windowModel.Props.UpdatePlanMins * 1000),
+                    }, null, _windowModel.Params.UpdatePlanMins * 1000, _windowModel.Params.UpdatePlanMins * 1000),
                 };
             }
             else
@@ -186,7 +197,7 @@ namespace DARP.Windows
         {
             _vehicleService.GetVehicleViews().Add(new VehicleView(new Vehicle()
             {
-                Location = new Cords(_random.Next(0, _windowModel.Props.MapSize), _random.Next(0, _windowModel.Props.MapSize)),
+                Location = new Cords(_random.Next(0, _windowModel.Params.MapSize), _random.Next(0, _windowModel.Params.MapSize)),
             }));
         }
 
@@ -197,7 +208,7 @@ namespace DARP.Windows
 
         private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
         {
-            UpdatePlanAsync();
+            UpdatePlan();
             RenderPlan();
         }
 
@@ -301,11 +312,10 @@ namespace DARP.Windows
         public double TotalDistance { get; set; }
         public bool SimulationRunning { get; set; }
 
-        public MainWindowProperties Props { get; set; } = new();
-
+        public MainWindowParams Params { get; set; } = new();
     }
 
-    internal class MainWindowProperties
+    internal class MainWindowParams
     {
         // ------------ Order generation ------------------
         [Category("Order generation")]
@@ -326,36 +336,58 @@ namespace DARP.Windows
         // ------------ Simulation ------------------
         [Category("Simulation")]
         [DisplayName("Update plan each [minutes]")]
-        public int UpdatePlanMins { get; set; } = 5;
+        public int UpdatePlanMins { get; set; } = 10;
 
         [Category("Simulation")]
         [DisplayName("New orders each [minutes]")]
         public int GenerateNewOrderMins { get; set; } = 2;
 
         [Category("Simulation")]
-        [DisplayName("New orders count")]
-        public int NewOrdersCount { get; set; } = 1;
+        [DisplayName("Expected orders count")]
+        [Description("[ExpectedOrdersCount] * [OrdersCountVariance] orders is generated independently with probability 1 / [OrdersCountVariance]")]
+        public int ExpectedOrdersCount { get; set; } = 1;
+
+        [Category("Simulation")]
+        [DisplayName("Orders count variance")]
+        [Description("[ExpectedOrdersCount] * [OrdersCountVariance] orders is generated independently with probability 1 / [OrdersCountVariance]")]
+        public int OrdersCountVariance { get; set; } = 5;
 
         // ------------ Map ------------------
         [Category("Map")]
         [DisplayName("Size")]
         [Description("Maps height and width")]
-        public int MapSize { get; set; } = 20;
+        public int MapSize { get; set; } = 10;
 
         [Category("Map")]
         [DisplayName("Metric")]
-        public MetricEnum Metric { get; set; }
+        public Metric Metric { get; set; }
 
         // ------------ Vehicle ------------------
         [Category("Vehicle")]
         [DisplayName("Speed")]
         public int Speed { get; set; } = 1;
 
-        public enum MetricEnum
-        {
-            Manhattan,
-            Euclidean
-        }
+        // ------------ Optimization ------------------
+        [Category("Optimization")]
+        [DisplayName("Insertion heuristics")]
+        [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
+        public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.FirstFit;
+
+        [Category("Optimization")]
+        [DisplayName("Objective function")]
+        public ObjectiveFunction ObjectiveFunction { get; set; }
+
+        // ------------ MIP solver ------------------
+        [Category("MIP solver")]
+        [DisplayName("Time limit [seconds]")]
+        [Description("MIP solver time limit in seconds. If set to zero, then solving time is unlimited.")]
+        public int MIPTimeLimit { get; set; } = 10;
+
+        [Category("MIP solver")]
+        [DisplayName("Multithreading")]
+        [Description("Enable multithreading for MIP solver. Uses half of available threads.")]
+        public bool MIPMultithreading { get; set; } = false;
+       
     }
     
     internal class PropertyRange<T>

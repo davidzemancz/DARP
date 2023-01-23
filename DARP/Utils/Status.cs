@@ -15,7 +15,7 @@ namespace DARP.Utils
         public string Message { get; set; }
 
         public Status() { }
-        
+
         public Status(StatusCode code, string message)
         {
             Code = code;
@@ -25,10 +25,4 @@ namespace DARP.Utils
         public bool IsOk() => Code == StatusCode.Ok;
     }
 
-    public enum StatusCode
-    {
-        Ok = 0,
-        Failed = 1,
-        Exception = 2,
-    }
 }

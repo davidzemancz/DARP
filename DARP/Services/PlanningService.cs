@@ -1,4 +1,5 @@
 ﻿using DARP.Models;
+using DARP.Providers;
 using DARP.Utils;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace DARP.Services
@@ -16,16 +18,13 @@ namespace DARP.Services
         private IMIPSolverService _MIPSolverService;
 
         public Plan Plan { get; protected set; }
+        public InsertionHeuristicsParamsProvider InsertionHeuristicsParamsProvider => new InsertionHeuristicsParamsProvider();
+        public IMIPSolverService MIPSolverService => _MIPSolverService;
 
         public PlanningService(ILoggerService logger, IMIPSolverService mIPSolverService)
         {
             _logger = logger;
             _MIPSolverService = mIPSolverService;
-        }
-
-        public Plan Init(Func<Cords, Cords, double> metric)
-        {
-            return Init(new Plan(metric));
         }
 
         public Plan Init(Plan plan)
@@ -51,14 +50,14 @@ namespace DARP.Services
             List<Order> newOrders = ProcessNewOrders(currentTime, newOrdersEnumerable);
 
             // TODO Decision making on choosing method (insertion, optimization,...)
-            bool tryInsertion = false;
-            bool tryMIP = true;
 
             // Try insertion heuristics
+            bool tryInsertion = true;
             if (tryInsertion)
             {
-                _logger.Info("Start insertion heuristic");
-                TryInsertOrders(newOrders);
+                _logger.Info("Started insertion heuristic");
+                newOrders = TryInsertOrders(newOrders);
+                _logger.Info("Finished insertion heuristic");
             }
 
             // Try greedy procedure
@@ -67,6 +66,7 @@ namespace DARP.Services
             // 2. Find best routes in DAG
 
             // Run optimization
+            bool tryMIP = newOrders.Count > 0;
             if (tryMIP)
             {
                 int mipId = Random.Shared.Next(100_000_000, 1000_000_000);
@@ -88,7 +88,7 @@ namespace DARP.Services
                     }
                 }
                 sw.Stop();
-                _logger.Info($"Stoped MIP solver, id {mipId}, status {mipStatus.Code}, running time {sw.Elapsed.Seconds} s");
+                _logger.Info($"Finished MIP solver, id {mipId}, status {mipStatus.Code}, running time {sw.Elapsed.Seconds} s");
             }
         }
 
@@ -143,25 +143,35 @@ namespace DARP.Services
             }
         }
 
-        private void TryInsertOrders(IEnumerable<Order> newOrders)
+        private List<Order> TryInsertOrders(List<Order> newOrders)
         {
-            foreach (Order newOrder in newOrders)  // TODO think about the order of processing orders
+            List<Order> remainingOrders = new();
+            foreach(Order order in newOrders.OrderBy(o => o.DeliveryTimeWindow.To))  // TODO think about the order of processing orders
             {
                 foreach (Route route in Plan.Routes)
                 {
-                    if (TryInsertOrder(newOrder, route)) break;
+                    if (OrderCanBeInserted(order, route, out int insertionIndex))
+                    {
+                        InsertOrder(route, order, insertionIndex);
+                        
+                        order.UpdateState(OrderState.Accepted);
+                        _logger.Info($"Order {order.Id} accepted.");
+                        break;
+                    }
                 }
 
-                if (newOrder.State != OrderState.Accepted)
+                if (order.State != OrderState.Accepted)
                 {
-                    newOrder.UpdateState(OrderState.Rejected);
-                    _logger.Info($"Order {newOrder.Id} rejected");
+                    remainingOrders.Add(order);
                 }
             }
+            return remainingOrders;
         }
 
-        private bool TryInsertOrder(Order newOrder, Route route)
+        private bool OrderCanBeInserted(Order newOrder, Route route, out int insertionIndex)
         {
+            insertionIndex = -1;
+
             // Try append order to route
             RoutePoint lastRoutePoint = route.Points.Last();
             Time pickupTime = lastRoutePoint.Time + Plan.TravelTime(lastRoutePoint.Location, newOrder.PickupLocation);
@@ -174,7 +184,7 @@ namespace DARP.Services
 
             if (newOrderCanBeAppended) // Append order to the end of the route
             {
-                InsertOrder(route, newOrder, route.Points.Count);
+                insertionIndex = route.Points.Count;
                 return true;
             }
             else // Find space between two orders where to 'insert' new one
@@ -220,7 +230,7 @@ namespace DARP.Services
                         if (allOrdersCanBeDelivered)
                         {
                             // Insert new order
-                            InsertOrder(route, newOrder, i + 1);
+                            insertionIndex = i + 1;
                             return true;
                         }
                     }

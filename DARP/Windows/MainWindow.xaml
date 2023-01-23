@@ -99,7 +99,7 @@
             </TabItem>
         </TabControl>
         <GridSplitter Grid.Column="3" Grid.Row="1" Width="10" HorizontalAlignment="Stretch" />
-        <xctk:PropertyGrid  x:Name="pgSettings" Grid.Row="1" Grid.Column="4" VerticalAlignment="Stretch" SelectedObject="{Binding Props}"/>
+        <xctk:PropertyGrid  x:Name="pgSettings" Grid.Row="1" Grid.Column="4" VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
         <ToolBar Grid.Row="2" Height="30" Grid.ColumnSpan="100">
             <!--<Label x:Name="lbSettingsStatus" Content="{Binding  Path=(Validation.Errors)[0].ErrorContent}" Width="200"/>-->
         </ToolBar>
