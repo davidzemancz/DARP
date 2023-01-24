@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -27,6 +28,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using Color = System.Windows.Media.Color;
+using Point = System.Windows.Point;
+using Rectangle = System.Windows.Shapes.Rectangle;
+using Size = System.Windows.Size;
 
 namespace DARP.Windows
 {
@@ -73,10 +78,7 @@ namespace DARP.Windows
 
             IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
             _planningService.UpdatePlan(currentTime, newOrders);
-
         }
-
-       
 
         private void RenderPlan()
         {
@@ -124,6 +126,104 @@ namespace DARP.Windows
             }
         }
 
+        private void DrawManhattanMap()
+        {
+            const int ROAD_THICKNESS = 5;
+            const int ORDER_POINT_SIZE = 15;
+            Color BG_COLOR = Colors.WhiteSmoke;
+            Color ROUTE_COLOR = Colors.LightGray;
+
+            double blockHeight = (cMap.ActualHeight / _windowModel.Params.MapSize);
+            double blockWidth = (cMap.ActualWidth /  _windowModel.Params.MapSize);
+
+            cMap.Children.Clear();
+            cMap.Background = new SolidColorBrush(BG_COLOR);
+
+            // Horizontal lines
+            Dictionary<int, double> cordsY = new();
+            int yIndex = 0;
+            for (double y = 0; y < cMap.ActualHeight; y += blockHeight)
+            {
+                cordsY[yIndex++] = y;
+                Line line = new()
+                {
+                    X1 = 0,
+                    X2 = cMap.ActualWidth,
+                    Y1 = y,
+                    Y2 = y,
+                    Stroke = new SolidColorBrush(ROUTE_COLOR),
+                    StrokeThickness = ROAD_THICKNESS
+                }; 
+                cMap.Children.Add(line);
+            }
+
+            // Vertical lines
+            Dictionary<int, double> cordsX = new();
+            int xIndex = 0;
+            for (double x = 0; x < cMap.ActualWidth; x += blockWidth)
+            {
+                cordsX[xIndex++] = x;
+                Line line = new() 
+                { 
+                    X1 = x,
+                    X2 = x,
+                    Y1 = 0,
+                    Y2 = cMap.ActualHeight,
+                    Stroke = new SolidColorBrush(ROUTE_COLOR),
+                    StrokeThickness = ROAD_THICKNESS
+                };
+                cMap.Children.Add(line);
+            }
+
+            // Coordinates mapping
+            Dictionary<(double, double), (double, double)> cords = new();
+            foreach ((int cordY, double y) in cordsY)
+            {
+                foreach ((int cordX, double x) in cordsX)
+                {
+                    cords[(cordX, cordY)] = (x, y);
+                }
+            }
+
+            // Orders
+            foreach(OrderView orderView in _orderService.GetOrderViews())
+            {
+                Color orderColor = GetRandomColor();
+
+                // Pickup
+                (double pickupX, double pickupY) = cords[(orderView.PickupX, orderView.PickupY)];
+                Rectangle rectPickup = new()
+                {
+                    Width = ORDER_POINT_SIZE,
+                    Height = ORDER_POINT_SIZE,
+                    Fill = new SolidColorBrush(orderColor),
+                };
+                cMap.Children.Add(rectPickup);
+                Canvas.SetTop(rectPickup, pickupY - ORDER_POINT_SIZE / 2);
+                Canvas.SetLeft(rectPickup, pickupX - ORDER_POINT_SIZE / 2);
+
+                // Delivery
+                (double deliveryX, double deliveryY) = cords[(orderView.DeliveryX, orderView.DeliveryY)];
+                Rectangle deliveryRect = new()
+                {
+                    Width = ORDER_POINT_SIZE,
+                    Height = ORDER_POINT_SIZE,
+                    Fill = new SolidColorBrush(orderColor),
+                };
+                cMap.Children.Add(deliveryRect);
+                Canvas.SetTop(deliveryRect, deliveryY - ORDER_POINT_SIZE / 2);
+                Canvas.SetLeft(deliveryRect, deliveryX - ORDER_POINT_SIZE / 2);
+            }
+
+            // Routes
+            // TODO draw routes
+        }
+
+        private Color GetRandomColor()
+        {
+            return Color.FromRgb((byte)Random.Shared.Next(1, 255), (byte)Random.Shared.Next(1, 255), (byte)Random.Shared.Next(1, 233));
+        }
+
         #endregion
 
         #region EVENT METHODS
@@ -144,6 +244,11 @@ namespace DARP.Windows
             _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.MIPObjectiveFunction);
             _planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.VehicleCharge);
             _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.InsertionMode);
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            DrawManhattanMap();
         }
 
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
@@ -302,9 +407,10 @@ namespace DARP.Windows
             txtLog.ScrollToEnd();
         }
 
+
         #endregion
 
-
+      
     }
 
     internal class MainWindowDataModel

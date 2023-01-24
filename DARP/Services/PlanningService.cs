@@ -52,7 +52,7 @@ namespace DARP.Services
             // Filter new orders - reject or accept
             List<Order> newOrders = ProcessNewOrders(currentTime, newOrdersEnumerable);
 
-            // TODO Decision making on choosing method (insertion, optimization,...)
+            // TODO decision making on choosing method (insertion, optimization,...)
 
             // Try insertion heuristics in enabled
             if (insertionMode != InsertionHeuristicsMode.Disabled)
@@ -65,7 +65,7 @@ namespace DARP.Services
             }
 
             // Try greedy procedure
-            // TODO ...
+            // TODO DAG heuristics
             // 1. Build DAG (assuming time 'to tw' only)
             // 2. Find best routes in DAG
 

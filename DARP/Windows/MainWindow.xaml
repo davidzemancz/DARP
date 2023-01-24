@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="DARP" Height="900" Width="1800" Loaded="Window_Loaded">
+        Title="DARP" Height="900" Width="1800" Loaded="Window_Loaded" Activated="Window_Activated">
     <Window.DataContext>
         <local:MainWindowModel/>
     </Window.DataContext>
@@ -104,6 +104,23 @@
                     <Label Content="{Binding Stats.AcceptedOrdersStr}"/>
                     <Label Content="{Binding Stats.RejectedOrdersStr}"/>
                 </StackPanel>
+            </TabItem>
+            <TabItem Header="Map"  Width="100">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="100*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5" Height="20">
+                        <CheckBox Content="Orders" Margin="10,0" IsChecked="True"/>
+                        <CheckBox Content="Vehicles" Margin="10,0" IsChecked="True"/>
+                        <CheckBox Content="Routes" Margin="10,0" IsChecked="True"/>
+                    </StackPanel>
+                    <Canvas Grid.Row="1" x:Name="cMap" Margin="20"/>
+                </Grid>
             </TabItem>
         </TabControl>
         <GridSplitter Grid.Column="3" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" />
