@@ -91,6 +91,15 @@ namespace DARP.Windows
                 dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
             }
 
+            var orderViews = _orderService.GetOrderViews();
+
+            _windowModel.Stats.TotalOrders = orderViews.Count;
+            _windowModel.Stats.HandledOrders = orderViews.Where(o => o.State == OrderState.Handled).Count();
+            _windowModel.Stats.AcceptedOrders = orderViews.Where(o => o.State == OrderState.Handled || o.State == OrderState.Accepted).Count();
+            _windowModel.Stats.RejectedOrders = orderViews.Where(o => o.State == OrderState.Rejected).Count();
+
+            // TODO optimality index
+
         }
 
         private void AddRandomOrder()
@@ -130,11 +139,11 @@ namespace DARP.Windows
             _logger.TextWriters.Add(new TextBoxWriter(txtLog));
             _planningService.Init(new Plan(XMath.ManhattanMetric)); 
 
-            _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => _windowModel.Params.MIPMultithreading;
-            _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => _windowModel.Params.MIPTimeLimit;
-            _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => _windowModel.Params.MIPObjectiveFunction;
-            _planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => _windowModel.Params.VehicleCharge;
-            _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => _windowModel.Params.InsertionMode;
+            _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.MIPMultithreading);
+            _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.MIPTimeLimit);
+            _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.MIPObjectiveFunction);
+            _planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.VehicleCharge);
+            _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.InsertionMode);
         }
 
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
@@ -159,7 +168,7 @@ namespace DARP.Windows
                     // Time
                     new Timer((state) =>
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
+                        Application.Current.Dispatcher.BeginInvoke(() =>
                         {
                             _windowModel.CurrentTime = new Time(_windowModel.CurrentTime.Minutes + 1);
                         });
@@ -168,7 +177,7 @@ namespace DARP.Windows
                     // New orders
                     new Timer((state) =>
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
+                        Application.Current.Dispatcher.BeginInvoke(() =>
                         {
                             AddRandomOrders(_windowModel.Params.ExpectedOrdersCount);
                         });
@@ -176,12 +185,22 @@ namespace DARP.Windows
                     // Plan update
                     new Timer((state) =>
                     {
-                        // TODO: taks queue
-                         Application.Current.Dispatcher.Invoke(() =>
-                         {
-                             UpdatePlan();
-                             RenderPlan();
+                        Task task = new(() => UpdatePlan());
+                        task.Start();
+                        task.ContinueWith(_ =>
+                        {
+                            Application.Current.Dispatcher.BeginInvoke(() =>
+                            {
+                                RenderPlan();
+                                lbTasks.Items.Refresh();
+                            });
                         });
+                        Application.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            _windowModel.Tasks.Add(new TaskItem("Planning", task));
+                            lbTasks.Items.Refresh();
+                        });
+
                     }, null, _windowModel.Params.UpdatePlanMins * 1000, _windowModel.Params.UpdatePlanMins * 1000),
                 };
             }
@@ -192,8 +211,6 @@ namespace DARP.Windows
                 _timers.ForEach(timer => timer.Dispose());
                 _timers.Clear();
             }
-           
-
 
         }
 
@@ -317,8 +334,24 @@ namespace DARP.Windows
         public Time CurrentTime { get; set; }
         public double TotalDistance { get; set; }
         public bool SimulationRunning { get; set; }
-
+        public MainWindowStats Stats { get; set; } = new();
+        public List<TaskItem> Tasks { get; set; } = new List<TaskItem>() ;
         public MainWindowParams Params { get; set; } = new();
+    }
+
+    [AddINotifyPropertyChangedInterface]
+    internal class MainWindowStats
+    {
+        public int TotalOrders { get; set; } = 1;
+        public int HandledOrders { get; set; }
+        public int AcceptedOrders { get; set; }
+        public int RejectedOrders { get; set; }
+
+        public string TotalOrdersStr { get => $"Total orders: {TotalOrders}"; }
+        public string AcceptedOrdersStr { get => $"Accepted orders: {AcceptedOrders} ({100 * AcceptedOrders / TotalOrders}%)"; }
+        public string HandledOrdersStr { get => $"Handled orders: {HandledOrders} ({100 * HandledOrders / TotalOrders}%)"; }
+        public string RejectedOrdersStr { get => $"Rejected orders: {RejectedOrders} ({100 * RejectedOrders / TotalOrders}%)"; }
+
     }
 
     internal class MainWindowParams
@@ -431,6 +464,24 @@ namespace DARP.Windows
         }
     }
 
+    internal class TaskItem
+    {
+        public string Name { get; set; }
+        public Task Task { get; set; }
+        public DateTime Created { get; }
+
+        public TaskItem(string name, Task task)
+        {
+            Name = name;
+            Task = task;
+            Created = DateTime.Now;
+        }
+
+        public override string ToString()
+        {
+            return $"Task {Name}, status {Task.Status}, created at {Created:T}";
+        }
+    }
 
 
 }
