@@ -69,6 +69,10 @@ namespace DARP.Services
             // 1. Build DAG (assuming time 'to tw' only)
             // 2. Find best routes in DAG
 
+            // TODO
+            // Think about solving linear program first
+            // If has no feasable solution -> remove some orders
+
             // Run optimization
             bool tryMIP = newOrders.Count > 0;
             if (tryMIP)
@@ -175,6 +179,7 @@ namespace DARP.Services
                                 bestRoute = route;
                                 bestInsertionScore = insertionScore;
                                 bestInsertionIndex = insertionIndex;
+
                                 _logger.Info($"Better insertion index ({insertionIndex}) on route {route.Vehicle.Id} for order {order.Id} was found, score {insertionScore}");
                             }
                         }

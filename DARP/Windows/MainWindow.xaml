@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="DARP" Height="900" Width="1800" Loaded="Window_Loaded" Activated="Window_Activated">
+        Title="DARP" Height="900" Width="1800" Loaded="Window_Loaded">
     <Window.DataContext>
         <local:MainWindowModel/>
     </Window.DataContext>
@@ -113,13 +113,17 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="100*"/>
+                        <RowDefinition Height="60"/>
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5" Height="20">
-                        <CheckBox Content="Orders" Margin="10,0" IsChecked="True"/>
-                        <CheckBox Content="Vehicles" Margin="10,0" IsChecked="True"/>
-                        <CheckBox Content="Routes" Margin="10,0" IsChecked="True"/>
+                        <Button x:Name="btnRefreshMap" Content="Refresh" Click="btnRefreshMap_Click" Padding="5, 0"  VerticalAlignment="Center"/>
+                        <CheckBox x:Name="chbDrawOrders" Content="Orders" Margin="10,0" IsChecked="True"  VerticalAlignment="Center"/>
+                        <CheckBox x:Name="chbDrawRoutes" Content="Routes" Margin="10,0" IsChecked="True"  VerticalAlignment="Center"/>
                     </StackPanel>
                     <Canvas Grid.Row="1" x:Name="cMap" Margin="20"/>
+                    <GroupBox Grid.Row="2" Header="Legend">
+                        <Canvas x:Name="cLegend"/>
+                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>

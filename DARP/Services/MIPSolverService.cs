@@ -89,7 +89,7 @@ namespace DARP.Services
             foreach (Vehicle vehicle in Plan.Vehicles)
             {
                 Variable[] travels = travelVariables.Where(kvp => kvp.Key.FromId == GetModifiedVehicleId(vehicle.Id)).Select(kvp => kvp.Value).ToArray();
-                _solver.Add(new SumVarArray(travels) <= 1); // Each vehicle must be used 
+                _solver.Add(new SumVarArray(travels) == 1); // Each vehicle must be used 
             }
 
             // 3) Cycles are not allowed, just paths

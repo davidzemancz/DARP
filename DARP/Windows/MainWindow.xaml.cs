@@ -40,13 +40,46 @@ namespace DARP.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MainWindowModel _windowModel
+        private MainWindowModel WindowModel
         {
             get => (MainWindowModel)DataContext;
             set => DataContext = value;
         }
+
         private Random _random;
         private List<Timer> _timers;
+        private Dictionary<(double, double), (double, double)> _cords;
+        private PointCollection _vehicleShapePoints = new()
+        {
+            new Point(0, 3),
+            new Point(0, 2),
+            new Point(2, 2),
+            new Point(2, 1),
+            new Point(4, 1),
+            new Point(4, 2),
+            new Point(6, 2),
+            new Point(6, 2),
+            new Point(6, 3),
+            new Point(6, 3),
+            new Point(5, 3),
+            new Point(5, 3.5),
+            new Point(4, 3.5),
+            new Point(4, 3),
+            new Point(2, 3),
+            new Point(2, 3.5),
+            new Point(1, 3.5),
+            new Point(1, 3),
+        };
+        private PointCollection _arrowUpShapePoints = new()
+        {
+            new Point(1, 3),
+            new Point(1, 1),
+            new Point(0, 1),
+            new Point(1.5, 0),
+            new Point(3, 1),
+            new Point(2, 1),
+            new Point(2, 3),
+        };
 
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
@@ -66,7 +99,7 @@ namespace DARP.Windows
 
         private void UpdatePlan()
         {
-            Time currentTime = Application.Current.Dispatcher.Invoke(() => _windowModel.CurrentTime);
+            Time currentTime = Application.Current.Dispatcher.Invoke(() => WindowModel.CurrentTime);
 
             foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
             {
@@ -83,7 +116,7 @@ namespace DARP.Windows
         private void RenderPlan()
         {
             dgOrders.Items.Refresh();
-            _windowModel.TotalDistance = _planningService.GetTotalDistance();
+            WindowModel.TotalDistance = _planningService.GetTotalDistance();
 
             planRoutesStack.Children.Clear();
             foreach (Route route in _planningService.Plan.Routes)
@@ -95,10 +128,10 @@ namespace DARP.Windows
 
             var orderViews = _orderService.GetOrderViews();
 
-            _windowModel.Stats.TotalOrders = orderViews.Count;
-            _windowModel.Stats.HandledOrders = orderViews.Where(o => o.State == OrderState.Handled).Count();
-            _windowModel.Stats.AcceptedOrders = orderViews.Where(o => o.State == OrderState.Handled || o.State == OrderState.Accepted).Count();
-            _windowModel.Stats.RejectedOrders = orderViews.Where(o => o.State == OrderState.Rejected).Count();
+            WindowModel.Stats.TotalOrders = orderViews.Count;
+            WindowModel.Stats.HandledOrders = orderViews.Where(o => o.State == OrderState.Handled).Count();
+            WindowModel.Stats.AcceptedOrders = orderViews.Where(o => o.State == OrderState.Handled || o.State == OrderState.Accepted).Count();
+            WindowModel.Stats.RejectedOrders = orderViews.Where(o => o.State == OrderState.Rejected).Count();
 
             // TODO optimality index
 
@@ -106,19 +139,19 @@ namespace DARP.Windows
 
         private void AddRandomOrder()
         {
-            Time deliveryTwFrom = new Time(_windowModel.CurrentTime.ToInt32() + _windowModel.Params.DeliveryTime.Min + _random.Next(_windowModel.Params.DeliveryTime.Max));
+            Time deliveryTwFrom = new Time(WindowModel.CurrentTime.ToInt32() + WindowModel.Params.DeliveryTime.Min + _random.Next(WindowModel.Params.DeliveryTime.Max));
             _orderService.AddOrder(new Order()
             {
-                PickupLocation = new Cords(_random.Next(0, _windowModel.Params.MapSize), _random.Next(0, (int)_windowModel.Params.MapSize)),
-                DeliveryLocation = new Cords(_random.Next(0, _windowModel.Params.MapSize), _random.Next(0, (int)_windowModel.Params.MapSize)),
-                DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(_windowModel.Params.DeliveryTimeWindow.Min, _windowModel.Params.DeliveryTimeWindow.Max))),
-                Cost = _windowModel.Params.OrderCostPerDistanceUnit
+                PickupLocation = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize)),
+                DeliveryLocation = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize)),
+                DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(WindowModel.Params.DeliveryTimeWindow.Min, WindowModel.Params.DeliveryTimeWindow.Max))),
+                Cost = WindowModel.Params.OrderCostPerDistanceUnit
             });
         }
 
         private void AddRandomOrders(int expectedCount)
         {
-            int variance = _windowModel.Params.OrdersCountVariance;
+            int variance = WindowModel.Params.OrdersCountVariance;
             for (int i = 0; i < expectedCount * variance; i++)
             {
                 if (Random.Shared.NextDouble() > (1.0 / variance)) continue;
@@ -126,97 +159,177 @@ namespace DARP.Windows
             }
         }
 
+
         private void DrawManhattanMap()
         {
-            const int ROAD_THICKNESS = 5;
-            const int ORDER_POINT_SIZE = 15;
-            Color BG_COLOR = Colors.WhiteSmoke;
-            Color ROUTE_COLOR = Colors.LightGray;
 
-            double blockHeight = (cMap.ActualHeight / _windowModel.Params.MapSize);
-            double blockWidth = (cMap.ActualWidth /  _windowModel.Params.MapSize);
+            Color BG_COLOR = Colors.WhiteSmoke;
+            double blockHeight = (cMap.ActualHeight / WindowModel.Params.MapSize);
+            double blockWidth = (cMap.ActualWidth / WindowModel.Params.MapSize);
 
             cMap.Children.Clear();
             cMap.Background = new SolidColorBrush(BG_COLOR);
 
-            // Horizontal lines
+            // Horizontal roads
             Dictionary<int, double> cordsY = new();
             int yIndex = 0;
             for (double y = 0; y < cMap.ActualHeight; y += blockHeight)
             {
                 cordsY[yIndex++] = y;
-                Line line = new()
-                {
-                    X1 = 0,
-                    X2 = cMap.ActualWidth,
-                    Y1 = y,
-                    Y2 = y,
-                    Stroke = new SolidColorBrush(ROUTE_COLOR),
-                    StrokeThickness = ROAD_THICKNESS
-                }; 
-                cMap.Children.Add(line);
+                DrawRoad(0, cMap.ActualWidth, y, y);
             }
 
-            // Vertical lines
+            // Vertical roads
             Dictionary<int, double> cordsX = new();
             int xIndex = 0;
             for (double x = 0; x < cMap.ActualWidth; x += blockWidth)
             {
                 cordsX[xIndex++] = x;
-                Line line = new() 
-                { 
-                    X1 = x,
-                    X2 = x,
-                    Y1 = 0,
-                    Y2 = cMap.ActualHeight,
-                    Stroke = new SolidColorBrush(ROUTE_COLOR),
-                    StrokeThickness = ROAD_THICKNESS
-                };
-                cMap.Children.Add(line);
+                DrawRoad(x, x, 0, cMap.ActualHeight);
             }
 
             // Coordinates mapping
-            Dictionary<(double, double), (double, double)> cords = new();
+            _cords = new();
             foreach ((int cordY, double y) in cordsY)
-            {
                 foreach ((int cordX, double x) in cordsX)
+                    _cords[(cordX, cordY)] = (x, y);
+
+            // Routes
+            if (chbDrawRoutes.IsChecked ?? false)
+            {
+                foreach (Route route in _planningService.Plan.Routes)
                 {
-                    cords[(cordX, cordY)] = (x, y);
+                    DrawVehicle(route.Vehicle);
+                    DrawRoute(route);
                 }
             }
 
             // Orders
-            foreach(OrderView orderView in _orderService.GetOrderViews())
+            if (chbDrawOrders.IsChecked ?? false)
             {
-                Color orderColor = GetRandomColor();
-
-                // Pickup
-                (double pickupX, double pickupY) = cords[(orderView.PickupX, orderView.PickupY)];
-                Rectangle rectPickup = new()
+                foreach (OrderView orderView in _orderService.GetOrderViews())
                 {
-                    Width = ORDER_POINT_SIZE,
-                    Height = ORDER_POINT_SIZE,
-                    Fill = new SolidColorBrush(orderColor),
-                };
-                cMap.Children.Add(rectPickup);
-                Canvas.SetTop(rectPickup, pickupY - ORDER_POINT_SIZE / 2);
-                Canvas.SetLeft(rectPickup, pickupX - ORDER_POINT_SIZE / 2);
-
-                // Delivery
-                (double deliveryX, double deliveryY) = cords[(orderView.DeliveryX, orderView.DeliveryY)];
-                Rectangle deliveryRect = new()
-                {
-                    Width = ORDER_POINT_SIZE,
-                    Height = ORDER_POINT_SIZE,
-                    Fill = new SolidColorBrush(orderColor),
-                };
-                cMap.Children.Add(deliveryRect);
-                Canvas.SetTop(deliveryRect, deliveryY - ORDER_POINT_SIZE / 2);
-                Canvas.SetLeft(deliveryRect, deliveryX - ORDER_POINT_SIZE / 2);
+                    DrawOrder(orderView.GetModel());
+                }
             }
+        }
 
-            // Routes
-            // TODO draw routes
+        private void DrawLegened()
+        {
+            // TODO draw legend
+
+            //Polygon carShape = new()
+            //{
+            //    Points = _vehicleShapePoints,
+            //    Fill = new SolidColorBrush(Colors.Black),
+            //    Width = 16,
+            //    Height = 16,
+            //    Stretch = Stretch.Fill,
+            //};
+            //cLegend.Children.Add(carShape);
+
+            //cLegend.Children.Add(new Label() { Content = "Car"});
+
+            //Canvas.SetTop(carShape, 0);
+            //Canvas.SetLeft(carShape, 0);
+        }
+
+        private void DrawRoute(Route route)
+        {
+            for (int i = 1; i < route.Points.Count; i++)
+            {
+                RoutePoint point1 = route.Points[i - 1];
+                RoutePoint point2 = route.Points[i];
+                (double p1X, double p1Y) = _cords[(point1.Location.X, point1.Location.Y)];
+                (double p2X, double p2Y) = _cords[(point2.Location.X, point2.Location.Y)];
+
+                DrawPath(p1X, p2X, p1Y, p2Y, route.Vehicle.Color);
+            }
+        }
+
+        private void DrawVehicle(Vehicle vehicle)
+        {
+            const int VEHICLE_SIZE = 16;
+
+            (double vehicleX, double vehicleY) = _cords[(vehicle.Location.X, vehicle.Location.Y)];
+
+            Polygon vehicleShape = new()
+            {
+                Points = _vehicleShapePoints,
+                Fill = new SolidColorBrush(vehicle.Color),
+                Width = VEHICLE_SIZE,
+                Height = VEHICLE_SIZE,
+                Stretch = Stretch.Fill,
+            };
+            cMap.Children.Add(vehicleShape);
+
+            Canvas.SetTop(vehicleShape, vehicleY - VEHICLE_SIZE / 2);
+            Canvas.SetLeft(vehicleShape, vehicleX - VEHICLE_SIZE / 2);
+        }
+
+        private void DrawOrder(Order order)
+        {
+            const int ORDER_POINT_SIZE = 15;
+
+            Color orderColor = GetRandomColor();
+
+            // Pickup
+            (double pickupX, double pickupY) = _cords[(order.PickupLocation.X, order.PickupLocation.Y)];
+            Polygon pickupShape = new()
+            {
+                Points = _arrowUpShapePoints,
+                Fill = new SolidColorBrush(orderColor),
+                Width = ORDER_POINT_SIZE,
+                Height = ORDER_POINT_SIZE,
+                Stretch = Stretch.Fill,
+            };
+            cMap.Children.Add(pickupShape);
+            Canvas.SetTop(pickupShape, pickupY - ORDER_POINT_SIZE / 2);
+            Canvas.SetLeft(pickupShape, pickupX - ORDER_POINT_SIZE / 2);
+
+            // Delivery
+            (double deliveryX, double deliveryY) = _cords[(order.DeliveryLocation.X, order.DeliveryLocation.Y)];
+            Polygon deliveryShape = new()
+            {
+                Points = _arrowUpShapePoints,
+                Fill = new SolidColorBrush(orderColor),
+                Width = ORDER_POINT_SIZE,
+                Height = ORDER_POINT_SIZE,
+                Stretch = Stretch.Fill,
+                RenderTransform = new ScaleTransform(1,-1),
+                RenderTransformOrigin = new Point(0.5,0.5)
+            };
+            cMap.Children.Add(deliveryShape);
+            Canvas.SetTop(deliveryShape, deliveryY - ORDER_POINT_SIZE / 2);
+            Canvas.SetLeft(deliveryShape, deliveryX - ORDER_POINT_SIZE / 2);
+
+            // Route from pickup to delivery
+            //DrawPath(pickupX, deliveryX, pickupY, deliveryY, orderColor);
+        }
+
+        private void DrawPath(double x1, double x2, double y1, double y2, Color color)
+        {
+            DrawLine(x1, x2, y1, y1, color, 3);
+            DrawLine(x2, x2, y1, y2, color, 3);
+        }
+
+        private void DrawRoad(double x1, double x2, double y1, double y2)
+        {
+            DrawLine(x1, x2, y1, y2, Colors.LightGray, 5);
+        }
+
+        private void DrawLine(double x1, double x2, double y1, double y2, Color color, int thickness)
+        {
+            Line line = new()
+            {
+                X1 = x1,
+                X2 = x2,
+                Y1 = y1,
+                Y2 = y2,
+                Stroke = new SolidColorBrush(color),
+                StrokeThickness = thickness
+            };
+            cMap.Children.Add(line);
         }
 
         private Color GetRandomColor()
@@ -235,20 +348,17 @@ namespace DARP.Windows
 
             pgSettings.ExpandAllProperties();
 
-            _random = new Random(_windowModel.Params.Seed);
+            _random = new Random(WindowModel.Params.Seed);
             _logger.TextWriters.Add(new TextBoxWriter(txtLog));
-            _planningService.Init(new Plan(XMath.ManhattanMetric)); 
+            _planningService.Init(new Plan(XMath.ManhattanMetric));
 
-            _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.MIPMultithreading);
-            _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.MIPTimeLimit);
-            _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.MIPObjectiveFunction);
-            _planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.VehicleCharge);
-            _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => _windowModel.Params.InsertionMode);
-        }
+            _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPMultithreading);
+            _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPTimeLimit);
+            _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke((() => WindowModel.Params.ObjectiveFunction));
+            _planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.VehicleCharge);
+            _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionMode);
 
-        private void Window_Activated(object sender, EventArgs e)
-        {
-            DrawManhattanMap();
+            DrawLegened();
         }
 
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
@@ -258,7 +368,7 @@ namespace DARP.Windows
 
         private void btnRunSimulation_Click(object sender, RoutedEventArgs e)
         {
-            if (!_windowModel.SimulationRunning)
+            if (!WindowModel.SimulationRunning)
             {
                 if (_vehicleService.GetVehicleViews().Count == 0)
                 {
@@ -266,7 +376,7 @@ namespace DARP.Windows
                     return;
                 }
 
-                _windowModel.SimulationRunning = true;
+                WindowModel.SimulationRunning = true;
                 btnRunSimulation.Content = "Stop simulation";
 
                 _timers = new() {
@@ -275,7 +385,7 @@ namespace DARP.Windows
                     {
                         Application.Current.Dispatcher.BeginInvoke(() =>
                         {
-                            _windowModel.CurrentTime = new Time(_windowModel.CurrentTime.Minutes + 1);
+                            WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
                         });
                     },
                     null, 0, 1000),
@@ -284,9 +394,9 @@ namespace DARP.Windows
                     {
                         Application.Current.Dispatcher.BeginInvoke(() =>
                         {
-                            AddRandomOrders(_windowModel.Params.ExpectedOrdersCount);
+                            AddRandomOrders(WindowModel.Params.ExpectedOrdersCount);
                         });
-                    }, null, 0, _windowModel.Params.GenerateNewOrderMins * 1000),
+                    }, null, 0, WindowModel.Params.GenerateNewOrderMins * 1000),
                     // Plan update
                     new Timer((state) =>
                     {
@@ -302,16 +412,16 @@ namespace DARP.Windows
                         });
                         Application.Current.Dispatcher.BeginInvoke(() =>
                         {
-                            _windowModel.Tasks.Add(new TaskItem("Planning", task));
+                            WindowModel.Tasks.Add(new TaskItem("Planning", task));
                             lbTasks.Items.Refresh();
                         });
 
-                    }, null, _windowModel.Params.UpdatePlanMins * 1000, _windowModel.Params.UpdatePlanMins * 1000),
+                    }, null, WindowModel.Params.UpdatePlanMins * 1000, WindowModel.Params.UpdatePlanMins * 1000),
                 };
             }
             else
             {
-                _windowModel.SimulationRunning = false;
+                WindowModel.SimulationRunning = false;
                 btnRunSimulation.Content = "Run simulation";
                 _timers.ForEach(timer => timer.Dispose());
                 _timers.Clear();
@@ -323,13 +433,14 @@ namespace DARP.Windows
         {
             _vehicleService.GetVehicleViews().Add(new VehicleView(new Vehicle()
             {
-                Location = new Cords(_random.Next(0, _windowModel.Params.MapSize), _random.Next(0, _windowModel.Params.MapSize)),
+                Location = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, WindowModel.Params.MapSize)),
+                Color = GetRandomColor(),
             }));
         }
 
         private void btnTick_Click(object sender, RoutedEventArgs e)
         {
-            _windowModel.CurrentTime = new Time(_windowModel.CurrentTime.Minutes + 1);
+            WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
         }
 
         private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
@@ -352,7 +463,7 @@ namespace DARP.Windows
                         new MainWindowDataModel(
                             _orderService.GetOrderViews().Select(ov => ov.GetModel()),
                             _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
-                            _windowModel,
+                            WindowModel,
                             null
                             )));
                 }
@@ -385,7 +496,7 @@ namespace DARP.Windows
                     }
 
                     //_planningService.Init(dataModel.Plan);
-                    _windowModel = dataModel.WindowModel;
+                    WindowModel = dataModel.WindowModel;
 
                     RenderPlan();
 
@@ -408,10 +519,15 @@ namespace DARP.Windows
         }
 
 
-        #endregion
-
-      
+        private void btnRefreshMap_Click(object sender, RoutedEventArgs e)
+        {
+            DrawManhattanMap();
+        }
     }
+
+
+    #endregion
+
 
     internal class MainWindowDataModel
     {
@@ -435,13 +551,13 @@ namespace DARP.Windows
     }
 
     [AddINotifyPropertyChangedInterface]
-    internal class MainWindowModel 
+    internal class MainWindowModel
     {
         public Time CurrentTime { get; set; }
         public double TotalDistance { get; set; }
         public bool SimulationRunning { get; set; }
         public MainWindowStats Stats { get; set; } = new();
-        public List<TaskItem> Tasks { get; set; } = new List<TaskItem>() ;
+        public List<TaskItem> Tasks { get; set; } = new List<TaskItem>();
         public MainWindowParams Params { get; set; } = new();
     }
 
@@ -481,7 +597,7 @@ namespace DARP.Windows
 
         // ------------ Randomization ------------------
         [Category("Randomization")]
-        public int Seed { get; set; } = (int)DateTime.Now.Ticks;    
+        public int Seed { get; set; } = (int)DateTime.Now.Ticks;
 
         // ------------ Simulation ------------------
         [Category("Simulation")]
@@ -506,11 +622,11 @@ namespace DARP.Windows
         [Category("Map")]
         [DisplayName("Size")]
         [Description("Maps height and width")]
-        public int MapSize { get; set; } = 10;
+        public int MapSize { get; set; } = 20;
 
         [Category("Map")]
         [DisplayName("Metric")]
-        public Metric Metric { get; set; }
+        public Metric Metric { get; set; } = Metric.Manhattan;
 
         // ------------ Vehicle ------------------
         [Category("Vehicles")]
@@ -525,13 +641,17 @@ namespace DARP.Windows
 
         // ------------ Optimization ------------------
         [Category("Optimization")]
+        [DisplayName("Method")]
+        public OptimizationMethod OptimizationMethod { get; set; } = OptimizationMethod.MIP;
+
+        [Category("Optimization")]
         [DisplayName("Insertion heuristics")]
         [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
-        public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.FirstFit;
+        public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.Disabled;
 
         [Category("Optimization")]
         [DisplayName("Objective function")]
-        public ObjectiveFunction MIPObjectiveFunction { get; set; }
+        public ObjectiveFunction ObjectiveFunction { get; set; } = ObjectiveFunction.MinimizeDistance;
 
         // ------------ MIP solver ------------------
         [Category("MIP solver")]
@@ -543,9 +663,9 @@ namespace DARP.Windows
         [DisplayName("Multithreading")]
         [Description("Enable multithreading for MIP solver. Uses half of available threads.")]
         public bool MIPMultithreading { get; set; } = false;
-       
+
     }
-    
+
     internal class PropertyRange<T>
     {
         [DisplayName("Min")]

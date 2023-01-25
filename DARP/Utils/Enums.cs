@@ -31,4 +31,12 @@ namespace DARP.Utils
         MinimizeDistance,
         MaximizeProfit
     }
+
+    public enum OptimizationMethod
+    {
+        Disabled = 0,
+        MIP = 1,
+        Evolutionary = 2,
+        AntColony = 3
+    }
 }
