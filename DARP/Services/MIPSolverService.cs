@@ -231,7 +231,6 @@ namespace DARP.Services
                 return Status.Failed;
             }
         }
-
         private int GetVehicleId(int modifiedVehicleId) => modifiedVehicleId - 10000;
         private int GetModifiedVehicleId(int vehicleId) => vehicleId + 10000;
         private bool IsModifiedVehicleId(int id) => id > 10000;
