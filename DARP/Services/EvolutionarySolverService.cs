@@ -19,7 +19,7 @@ namespace DARP.Services
         private Random _random;
 
         private const int POPULATION_SIZE = 100;
-        private const int GENERATIONS = 500;
+        private const int GENERATIONS = 1000;
 
         private Individual[] _population;
         private double[] _fitnesses;
@@ -27,7 +27,7 @@ namespace DARP.Services
         public EvolutionarySolverService(ILoggerService logger)
         {
             _logger = logger;
-            _random = new();
+            _random = new((int)DateTime.Now.Ticks);
         }
 
         public Status Solve(Time currentTime, IEnumerable<Order> newOrders)
@@ -81,30 +81,62 @@ namespace DARP.Services
 
         private void SwapMutation()
         {
-            const double MUT_PROB = 0.5;
-            foreach(Individual ind in _population)
+            const double MUT_PROB = 1;
+            for (int i = 0; i < _population.Length; i++)
             {
+                Individual ind = _population[i];
                 if (_random.NextDouble() < MUT_PROB)
                 {
-                    int i1 = Random.Shared.Next(0, ind.Length);
-                    int i2 = Random.Shared.Next(0, ind.Length);
-                    int tmp = ind[i1];
-                    ind[i1] = ind[i2];
-                    ind[i2] = tmp;
+                    while (true)
+                    {
+                        Individual newInd = ind.Copy();
+                        int i1 = _random.Next(0, ind.Length);
+                        int i2 = _random.Next(0, ind.Length);
+                        int tmp = newInd[i1];
+                        newInd[i1] = newInd[i2];
+                        newInd[i2] = tmp;
+
+                        if (Fitness(newInd) >= _fitnesses[i])
+                        {
+                            ind.OrderIds = newInd.OrderIds;
+                            break;
+                        }
+                    }
+
                 }
             }
         }
 
         private void EnviromentalSelection()
         {
+            bool tournament = true;
+            bool rouletteWheel = false;
+
             var newPopulation = new Individual[POPULATION_SIZE];
             for (int i = 0; i < POPULATION_SIZE; i++)
             {
                 // Tournament selection
-                int i1 = _random.Next(0, POPULATION_SIZE);
-                int i2 = _random.Next(0, POPULATION_SIZE);
-                if (_fitnesses[i1] > _fitnesses[i2]) newPopulation[i] = _population[i1];
-                else newPopulation[i] = _population[i2];
+                if (tournament)
+                {
+                    int i1 = _random.Next(0, POPULATION_SIZE);
+                    int i2 = _random.Next(0, POPULATION_SIZE);
+                    if (_fitnesses[i1] > _fitnesses[i2]) newPopulation[i] = _population[i1];
+                    else newPopulation[i] = _population[i2];
+                }
+
+                // Roulette-wheel selectio
+                if (rouletteWheel)
+                {
+                    while (true)
+                    {
+                        int j1 = _random.Next(0, POPULATION_SIZE);
+                        if (_random.NextDouble() < 1 / _fitnesses[j1])
+                        {
+                            newPopulation[i] = _population[j1];
+                            break;
+                        }
+                    }
+                }
             }
             _population = newPopulation;
         }
@@ -114,7 +146,7 @@ namespace DARP.Services
             int fitness = 0;
             for (int i = 1; i < individual.Length; i++)
             {
-                fitness += individual[i - 1] < individual[i] ? 1 : 0;
+                fitness += individual[i - 1] < individual[i] ? 1 : -1;
             }
             return fitness;
 
@@ -147,11 +179,19 @@ namespace DARP.Services
                 Array.Copy(orderIds, ind.OrderIds, orderIds.Length);
                 for (int i = 0; i < orderIds.Length; i++)
                 {
-                    int swapIndex = Random.Shared.Next(0, orderIds.Length);
+                    int swapIndex = new Random().Next(0, orderIds.Length);
                     int tmp  = ind.OrderIds[i];
                     ind.OrderIds[i] = ind.OrderIds[swapIndex];
                     ind.OrderIds[swapIndex] = tmp;
                 }
+                return ind;
+            }
+
+            public Individual Copy()
+            {
+                Individual ind = new();
+                ind.OrderIds = new int[Length];
+                Array.Copy(OrderIds, ind.OrderIds, Length);
                 return ind;
             }
 

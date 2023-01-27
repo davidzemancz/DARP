@@ -9,19 +9,7 @@ namespace DARPConsole
         {
             EvolutionarySolverService es = new(new LoggerBaseService());
             es.Plan = new();
-            List<Order> orders = new()
-            {
-                new Order() { Id = 1, },
-                new Order() { Id = 2, },
-                new Order() { Id = 3, },
-                new Order() { Id = 4, },
-                new Order() { Id = 5, },
-                new Order() { Id = 6, },
-                new Order() { Id = 7, },
-                new Order() { Id = 8, },
-                new Order() { Id = 9, },
-                new Order() { Id = 10, },
-            };
+            List<Order> orders = Enumerable.Range(0, 50).Select(i => new Order() { Id = i }).ToList();
             es.Solve(Time.Zero, orders);
         }
     }
