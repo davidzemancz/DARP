@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static Google.Protobuf.WellKnownTypes.Field.Types;
@@ -18,8 +19,10 @@ namespace DARP.Services
         private ImmutableDictionary<int, Order> _ordersById;
         private Random _random;
 
-        private const int POPULATION_SIZE = 100;
-        private const int GENERATIONS = 1000;
+        private const int POPULATION_SIZE = 200;
+        private const int GENERATIONS = 200;
+        private const double MUT_SWAP_PROB = 1;
+        private const double MUT_INV_PROB = 1;
 
         private Individual[] _population;
         private double[] _fitnesses;
@@ -37,7 +40,7 @@ namespace DARP.Services
             List<Order> orders = new List<Order>(Plan.Orders);
             orders.AddRange(newOrders);
 
-            _ordersById = Plan.Orders.ToImmutableDictionary(o => o.Id, o => o);
+            _ordersById = orders.ToImmutableDictionary(o => o.Id, o => o);
 
             InitializePopulation(orders);
             for (int g = 0; g < GENERATIONS; g++)
@@ -47,6 +50,9 @@ namespace DARP.Services
 
                 // Swap mutation
                 SwapMutation();
+
+                // Inverse mutation
+                InverseMutation();
 
                 // Enviromental selection
                 EnviromentalSelection();
@@ -65,7 +71,7 @@ namespace DARP.Services
                 _fitnesses[i] = fitness;
                 sum += fitness;
             }
-            Console.WriteLine(sum/POPULATION_SIZE);
+            Console.WriteLine(-sum/POPULATION_SIZE);
 
         }
 
@@ -79,13 +85,45 @@ namespace DARP.Services
             }
         }
 
-        private void SwapMutation()
+        private void InverseMutation()
         {
-            const double MUT_PROB = 1;
             for (int i = 0; i < _population.Length; i++)
             {
                 Individual ind = _population[i];
-                if (_random.NextDouble() < MUT_PROB)
+                if (_random.NextDouble() < MUT_INV_PROB)
+                {
+                    while (true)
+                    {
+                        Individual newInd = ind.Copy();
+                        int index1 = _random.Next(0, ind.Length);
+                        int index2 = _random.Next(index1, ind.Length);
+
+
+                        int half = (index2 - index1) / 2 - 1;
+                        for (int j = index1; j < half; j++)
+                        {
+                            int tmp = newInd[j];
+                            newInd[j] = newInd[j + half];
+                            newInd[j + half] = tmp;
+                        }
+
+                        if (Fitness(newInd) >= _fitnesses[i])
+                        {
+                            _population[i] = newInd;
+                            break;
+                        }
+                    }
+
+                }
+            }
+        }
+
+        private void SwapMutation()
+        {
+            for (int i = 0; i < _population.Length; i++)
+            {
+                Individual ind = _population[i];
+                if (_random.NextDouble() < MUT_SWAP_PROB)
                 {
                     while (true)
                     {
@@ -98,11 +136,10 @@ namespace DARP.Services
 
                         if (Fitness(newInd) >= _fitnesses[i])
                         {
-                            ind.OrderIds = newInd.OrderIds;
+                            _population[i] = newInd;
                             break;
                         }
                     }
-
                 }
             }
         }
@@ -143,25 +180,16 @@ namespace DARP.Services
 
         private double Fitness(Individual individual)
         {
-            int fitness = 0;
-            for (int i = 1; i < individual.Length; i++)
-            {
-                fitness += individual[i - 1] < individual[i] ? 1 : -1;
-            }
-            return fitness;
-
-
             double distance = 0;
-            Order prevOrder = null;
-            for (int i = 0; i < individual.OrderIds.Length; i++)
+            for (int i = 1; i < individual.OrderIds.Length; i++)
             {
-                int order1Id = individual.OrderIds[i];
-                Order order = _ordersById[order1Id];
-                if (i > 0) distance += Plan.Metric(prevOrder.DeliveryLocation, order.PickupLocation);
-                distance += Plan.Metric(order.PickupLocation, order.DeliveryLocation);
-                prevOrder = order;
+                int order1Id = individual.OrderIds[i-1];
+                int order2Id = individual.OrderIds[i];
+                Order order1 = _ordersById[order1Id];
+                Order order2 = _ordersById[order2Id];
+                distance += Plan.Metric(order1.PickupLocation, order2.PickupLocation);
             }
-            return distance;
+            return -distance;
         }
 
         internal class Individual
