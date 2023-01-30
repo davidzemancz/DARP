@@ -36,6 +36,7 @@ namespace DARP.Services
         {
             Plan = plan;
             _MIPSolverService.Plan = Plan;
+            _evolutionarySolverService.Plan = Plan;
             _insertionHeuristicsService.Plan = plan;
 
             return Plan;
@@ -164,7 +165,7 @@ namespace DARP.Services
 
         public double GetTotalDistance()
         {
-            return Plan.GetTotalDistance();
+            return Plan.TotalDistance();
         }
     }
 }

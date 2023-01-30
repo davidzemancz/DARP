@@ -245,7 +245,6 @@ namespace DARP.Services
 
         public void InsertOrder(Route route, Order newOrder, int index)
         {
-            newOrder.UpdateState(OrderState.Accepted);
             Plan.Orders.Add(newOrder);
 
             Time pickupTime = route.Points[index - 1].Time + Plan.TravelTime(route.Points[index - 1].Location, newOrder.PickupLocation);

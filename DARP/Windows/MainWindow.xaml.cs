@@ -449,6 +449,12 @@ namespace DARP.Windows
 
         private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
         {
+            if (_vehicleService.GetVehicleViews().Count == 0)
+            {
+                MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             UpdatePlan();
             RenderPlan();
         }
@@ -626,7 +632,7 @@ namespace DARP.Windows
         [Category("Map")]
         [DisplayName("Size")]
         [Description("Maps height and width")]
-        public int MapSize { get; set; } = 20;
+        public int MapSize { get; set; } = 10;
 
         [Category("Map")]
         [DisplayName("Metric")]
@@ -646,7 +652,7 @@ namespace DARP.Windows
         // ------------ Optimization ------------------
         [Category("Optimization")]
         [DisplayName("Optimization method")]
-        public OptimizationMethod OptimizationMethod { get; set; } = OptimizationMethod.MIP;
+        public OptimizationMethod OptimizationMethod { get; set; } = OptimizationMethod.Evolutionary;
 
         [Category("Optimization")]
         [DisplayName("Optimization objective")]

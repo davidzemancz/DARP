@@ -10,6 +10,15 @@ namespace DARP.Models
     {
         public virtual Time Time { get; set; }
         public virtual Cords Location { get; set; }
+        public virtual RoutePoint Copy()
+        {
+            return new RoutePoint { Time = Time, Location = Location };
+        }
+
+        public override string ToString()
+        {
+            return $"{Location}";
+        }
     }
 
     public class VehicleRoutePoint : RoutePoint
@@ -20,6 +29,11 @@ namespace DARP.Models
         public VehicleRoutePoint(Vehicle vehicle)
         {
             Vehicle = vehicle;
+        }
+
+        public override RoutePoint Copy()
+        {
+            return new VehicleRoutePoint(Vehicle) { Location = Location, Time = Time };
         }
     }
 
@@ -32,6 +46,11 @@ namespace DARP.Models
         {
             Order = order;
         }
+
+        public override RoutePoint Copy()
+        {
+            return new OrderPickupRoutePoint(Order) { Location = Location, Time = Time };
+        }
     }
 
     public class OrderDeliveryRoutePoint : RoutePoint
@@ -42,6 +61,11 @@ namespace DARP.Models
         public OrderDeliveryRoutePoint(Order order)
         {
             Order = order;
+        }
+
+        public override RoutePoint Copy()
+        {
+            return new OrderDeliveryRoutePoint(Order) { Location = Location, Time = Time };
         }
     }
 }

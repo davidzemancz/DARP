@@ -15,6 +15,16 @@ namespace DARP.Models
             Vehicle = vehicle;
         }
 
+        public Route Copy()
+        {
+            Route route = new(Vehicle);
+            route.Points = Points.Select(p => p.Copy()).ToList();
+            return route;
+        }
 
+        public override string ToString()
+        {
+            return $"Route [{string.Join(',', Points)}]";
+        }
     }
 }
