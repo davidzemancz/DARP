@@ -22,7 +22,7 @@ namespace DARP.Services
         private Random _random;
 
         private const int POPULATION_SIZE = 100;
-        private const int GENERATIONS = 500;
+        private const int GENERATIONS = 100;
         private const double MUT_SWAP_PROB = 1;
         private const double MUT_INV_PROB = 1;
         
@@ -61,11 +61,11 @@ namespace DARP.Services
                 // Enviromental selection
                 EnviromentalSelection();
 
-                if (false && _variance < 1)
-                {
-                    ReinicializePopulation(POPULATION_SIZE / 5);
-                    ComputeFitnesses();
-                }
+                //if (g % 20 == 0 && _variance < 1)
+                //{
+                //    ReinicializePopulation(POPULATION_SIZE / 5);
+                //    ComputeFitnesses();
+                //}
             }
 
             return Status.Ok;

@@ -171,7 +171,7 @@ namespace DARP.Services
                             order.UpdateState(OrderState.Accepted);
                             break;
                         }
-                        else if (mode == InsertionHeuristicsMode.BestFit)
+                        else if (mode == InsertionHeuristicsMode.LocalBestFit)
                         {
                             // Find best place where to insert order based in insertionScore
                             if (insertionScore > bestInsertionScore)
@@ -187,7 +187,7 @@ namespace DARP.Services
                 }
 
                 // Insert order to best position
-                if (mode == InsertionHeuristicsMode.BestFit && bestInsertionIndex >= 0)
+                if (mode == InsertionHeuristicsMode.LocalBestFit && bestInsertionIndex >= 0)
                 {
                     InsertOrder(bestRoute, order, bestInsertionIndex);
                     order.UpdateState(OrderState.Accepted);
@@ -261,7 +261,7 @@ namespace DARP.Services
                             insertionIndex = i + 1;
                             return true;
                         }
-                        else if (mode == InsertionHeuristicsMode.BestFit)
+                        else if (mode == InsertionHeuristicsMode.LocalBestFit)
                         {
                             int pointInserstionScore = -deliveryTime.ToInt32(); // TODO parametrize insertion score - deliveryTime is same as first fit
                             if (pointInserstionScore > bestIsertionScore) // Store best insertionIndex wrt score
@@ -292,7 +292,7 @@ namespace DARP.Services
                     insertionIndex = route.Points.Count;
                     return true;
                 }
-                else if (mode == InsertionHeuristicsMode.BestFit)
+                else if (mode == InsertionHeuristicsMode.LocalBestFit)
                 {
                     int appendScore = -deliveryTime.ToInt32();  // TODO parametrize insertion score - deliveryTime is same as first fit
                     if (appendScore > bestIsertionScore)
