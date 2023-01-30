@@ -19,5 +19,6 @@ namespace DARP.Services
         public Status RunGlobalBestFit(Time currentTime, IEnumerable<Order> newOrders);
         public bool GetInsertionIndexAndScore(Order newOrder, Route route, out int insertionIndex, out int insertionScore);
         public void InsertOrder(Route route, Order newOrder, int index);
+        public void RemoveOrder(Route route, int index);
     }
 }

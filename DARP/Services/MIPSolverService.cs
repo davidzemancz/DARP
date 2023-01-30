@@ -190,12 +190,6 @@ namespace DARP.Services
                     }
                 }
 
-                // Add orders to plan
-                foreach(Order order in newOrders)
-                {
-                    Plan.Orders.Add(order);
-                }
-
                 // Construct routes
                 Plan.Routes.Clear();
                 foreach (Vehicle vehicle in Plan.Vehicles)

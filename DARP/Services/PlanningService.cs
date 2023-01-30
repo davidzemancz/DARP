@@ -65,7 +65,7 @@ namespace DARP.Services
             // Try insertion heuristics
             
             sw.Restart();
-            _logger.Info($"Started insertion heuristic, {Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles");
+            _logger.Info($"Started insertion heuristic, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles");
             _insertionHeuristicsService.Run(currentTime, newOrders);
             sw.Stop();
             _logger.Info($"Finished insertion heuristic, running time {sw.Elapsed}");
@@ -83,7 +83,7 @@ namespace DARP.Services
             if (method == OptimizationMethod.MIP)
             {
                 sw.Restart();
-                _logger.Info($"Started MIP solver, {Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles");
+                _logger.Info($"Started MIP solver, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles");
                 Status mipStatus = _MIPSolverService.Run(currentTime, newOrders);
                 sw.Stop();
                 _logger.Info($"Finished MIP solver, status {mipStatus.Code}, running time {sw.Elapsed} s");
@@ -91,7 +91,7 @@ namespace DARP.Services
             else if (method == OptimizationMethod.Evolutionary)
             {
                 sw.Restart();
-                _logger.Info($"Started Evolutionary solver, {Plan.Orders.Count} orders, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles");
+                _logger.Info($"Started Evolutionary solver, {newOrders.Count()} new orders, {Plan.Vehicles.Count} vehicles");
                 Status evoStatus = _evolutionarySolverService.Run(currentTime, newOrders);
                 sw.Stop();
                 _logger.Info($"Finished Evolutionary solver, status {evoStatus.Code}, running time {sw.Elapsed} s");
@@ -101,7 +101,7 @@ namespace DARP.Services
             // Reject not accepted orders
             foreach (Order order in newOrders)
             {
-                if (Plan.Orders.Contains(order))
+                if (Plan.Routes.Any(r => r.Points.Any(rp => rp is OrderPickupRoutePoint oprp && oprp.Order == order)))
                 {
                     order.UpdateState(OrderState.Accepted);
                 }
@@ -149,7 +149,6 @@ namespace DARP.Services
                     {
                         // Remove handled order from plan
                         orderPickup.Order.UpdateState(OrderState.Handled);
-                        Plan.Orders.Remove(orderPickup.Order);
 
                         _logger.Info($"Order {orderPickup.Order.Id} handled by vehicle {route.Vehicle.Id}");
                         _logger.Info($"Vehicle {route.Vehicle.Id} moved to {route.Points[2].Location}");

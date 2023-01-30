@@ -11,9 +11,23 @@ namespace DARP.Models
     public class Plan
     {
         public List<Vehicle> Vehicles { get; set; } = new();
-        public List<Order> Orders { get; set; } = new();
         public List<Route> Routes { get; set; } = new();
-        
+        public IEnumerable<Order> Orders
+        {
+            get
+            {
+                foreach (Route route in Routes)
+                {
+                    foreach (RoutePoint point in route.Points)
+                    {
+                        if (point is OrderPickupRoutePoint orderPickup)
+                            yield return orderPickup.Order;
+                    }
+                }
+                yield break;
+            }
+        }
+
         [JsonIgnore]
         public Func<Cords, Cords, double> Metric { get; set; }
         
@@ -43,10 +57,17 @@ namespace DARP.Models
             double distance = 0;
             foreach (Route route in routes)
             {
-                for (int i = 0; i < route.Points.Count - 1; i++)
-                {
-                    distance += metric(route.Points[i].Location, route.Points[i + 1].Location);
-                }
+                distance += RouteDistance(metric, route);
+            }
+            return distance;
+        }
+
+        public static double RouteDistance(Func<Cords, Cords, double> metric, Route route)
+        {
+            double distance = 0;
+            for (int i = 0; i < route.Points.Count - 1; i++)
+            {
+                distance += metric(route.Points[i].Location, route.Points[i + 1].Location);
             }
             return distance;
         }

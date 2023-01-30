@@ -4,6 +4,7 @@ using DARP.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -151,29 +152,8 @@ namespace DARP.Services
                 // If new order can be inserted, check all following if they can be still delivered
                 if (newOrderCanBeInserted)
                 {
-                    Time time = deliveryTime;
-                    bool allOrdersCanBeDelivered = true;
-                    for (int j = i + 1; j < route.Points.Count - 1; j += 2)
-                    {
-                        time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location); // Travel time between last delivery and current pickup
-
-                        OrderPickupRoutePoint nRoutePointPickup = (OrderPickupRoutePoint)route.Points[j];
-                        OrderDeliveryRoutePoint nRoutePointDelivery = (OrderDeliveryRoutePoint)route.Points[j + 1];
-                        Order order = nRoutePointPickup.Order;
-
-                        time += Plan.TravelTime(nRoutePointPickup.Location, nRoutePointDelivery.Location); // Travel time between current pickup and delivery
-
-                        // Not needed to check lower bound, vehicle can wait at pickup location
-                        bool orderCanBeStillDelivered = time <= order.DeliveryTimeWindow.To;
-                        if (!orderCanBeStillDelivered)
-                        {
-                            allOrdersCanBeDelivered = false;
-                            break;
-                        }
-                    }
-
                     // All following orders can be delivered
-                    if (allOrdersCanBeDelivered)
+                    if (FollowingOrdersCanBeDelivered(route, deliveryTime, i))
                     {
                         // Return first index where new order fits
                         if (mode == InsertionHeuristicsMode.FirstFit)
@@ -233,6 +213,7 @@ namespace DARP.Services
                 }
             }
 
+            // Return best if exists
             if (bestIsertionIndex >= 0)
             {
                 insertionIndex = bestIsertionIndex;
@@ -243,10 +224,15 @@ namespace DARP.Services
             return false;
         }
 
+
+        public void RemoveOrder(Route route, int index)
+        {
+            route.Points.RemoveAt(index); // Pickup
+            route.Points.RemoveAt(index); // Delivery
+        }
+
         public void InsertOrder(Route route, Order newOrder, int index)
         {
-            Plan.Orders.Add(newOrder);
-
             Time pickupTime = route.Points[index - 1].Time + Plan.TravelTime(route.Points[index - 1].Location, newOrder.PickupLocation);
             Time deliveryTime = XMath.Max(
                     pickupTime + Plan.TravelTime(newOrder.PickupLocation, newOrder.DeliveryLocation),
@@ -263,8 +249,39 @@ namespace DARP.Services
             route.Points.Insert(index + 1, deliveryPoint);
 
             // Recalculate times for following orders
+            UpdateFollowingOrder(route, deliveryTime, index + 2);
+        }
+
+
+        private bool FollowingOrdersCanBeDelivered(Route route, Time deliveryTime, int insertionIndex)
+        {
             Time time = deliveryTime;
-            for (int j = index + 2; j < route.Points.Count - 1; j += 2)
+            bool allOrdersCanBeDelivered = true;
+            for (int j = insertionIndex + 1; j < route.Points.Count - 1; j += 2)
+            {
+                time += Plan.TravelTime(route.Points[j - 1].Location, route.Points[j].Location); // Travel time between last delivery and current pickup
+
+                OrderPickupRoutePoint nRoutePointPickup = (OrderPickupRoutePoint)route.Points[j];
+                OrderDeliveryRoutePoint nRoutePointDelivery = (OrderDeliveryRoutePoint)route.Points[j + 1];
+                Order order = nRoutePointPickup.Order;
+
+                time += Plan.TravelTime(nRoutePointPickup.Location, nRoutePointDelivery.Location); // Travel time between current pickup and delivery
+
+                // Not needed to check lower bound, vehicle can wait at pickup location
+                bool orderCanBeStillDelivered = time <= order.DeliveryTimeWindow.To;
+                if (!orderCanBeStillDelivered)
+                {
+                    allOrdersCanBeDelivered = false;
+                    break;
+                }
+            }
+            return allOrdersCanBeDelivered;
+        }
+
+        private void UpdateFollowingOrder(Route route, Time deliveryTime, int startIndex)
+        {
+            Time time = deliveryTime;
+            for (int j = startIndex; j < route.Points.Count - 1; j += 2)
             {
                 Order order = ((OrderPickupRoutePoint)route.Points[j]).Order;
 
@@ -275,6 +292,5 @@ namespace DARP.Services
                 ((OrderDeliveryRoutePoint)route.Points[j + 1]).Time = XMath.Max(time, order.DeliveryTimeWindow.From);
             }
         }
-
     }
 }
