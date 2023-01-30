@@ -36,10 +36,16 @@ namespace DARP.Utils
         Exception = 2,
     }
 
-    public enum ObjectiveFunction
+    public enum InsertionObjective
     {
-        MinimizeDistance,
-        MaximizeProfit
+        DeliveryTime = 0,
+        Distance = 1,
+    }
+
+    public enum OptimizationObjective
+    {
+        DeliveryTime = 0,
+        Distance = 1,
     }
 
     public enum OptimizationMethod

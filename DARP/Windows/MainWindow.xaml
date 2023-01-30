@@ -35,6 +35,12 @@
             </ToolBar>
             <ToolBar Band="1" Height="30">
                 <Button x:Name="btnRunSimulation" Background="CornflowerBlue" Content="Run simulation" Click="btnRunSimulation_Click"/>
+                <Label Content="Current time (minutes):"/>
+                <Label Content="{Binding CurrentTime}"/>
+                <Label Content="Total distance:"/>
+                <Label Content="{Binding TotalDistance}"/>
+                <Button Background="CornflowerBlue"  Content="Tick" Click="btnTick_Click"/>
+                <Button Background="CornflowerBlue"  Content="Update plan" Click="btnUpdatePlan_Click"/>
             </ToolBar>
         </ToolBarTray>
         <TabControl x:Name="tbcLeft" Grid.Row="1" Grid.Column="0" SelectionChanged="tbcLeft_SelectionChanged">
@@ -75,24 +81,12 @@
         </TabControl>
         <GridSplitter Grid.Column="1" Grid.Row="1" Width="5" HorizontalAlignment="Stretch" />
         <TabControl Grid.Row="1"  Grid.Column="2" >
-            <TabItem Header="Plan" Width="100">
+            <TabItem Header="Routes" Width="100">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
                         <RowDefinition/>
-                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
-                    <ToolBarTray  Grid.Row="0"  Height="30" >
-                        <ToolBar Height="30">
-                            <Label Content="Current time (minutes):"/>
-                            <Label Content="{Binding CurrentTime}"/>
-                            <Label Content="Total distance:"/>
-                            <Label Content="{Binding TotalDistance}"/>
-                            <Button Background="CornflowerBlue"  Content="Tick" Click="btnTick_Click"/>
-                            <Button Background="CornflowerBlue"  Content="Update plan" Click="btnUpdatePlan_Click"/>
-                        </ToolBar>
-                    </ToolBarTray>
-                    <ScrollViewer Grid.Row="1" >
+                    <ScrollViewer Grid.Row="0" >
                         <StackPanel x:Name="planRoutesStack"/>
                     </ScrollViewer>
                 </Grid>

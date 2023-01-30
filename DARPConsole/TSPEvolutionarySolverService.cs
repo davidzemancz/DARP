@@ -8,11 +8,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Automation;
-using static Google.Protobuf.WellKnownTypes.Field.Types;
 
 namespace DARP.Services
 {
-    public class EvolutionarySolverService : IEvolutionarySolverService
+    public class TSPEvolution
     {
         public Plan Plan { get; set; }
 
@@ -21,8 +20,8 @@ namespace DARP.Services
         private ImmutableDictionary<int, Order> _ordersById;
         private Random _random;
 
-        private const int POPULATION_SIZE = 100;
-        private const int GENERATIONS = 100;
+        private const int POPULATION_SIZE = 1;
+        private const int GENERATIONS = 5000;
         private const double MUT_SWAP_PROB = 1;
         private const double MUT_INV_PROB = 1;
         
@@ -31,13 +30,13 @@ namespace DARP.Services
         private int _generation;
         private double _variance;
 
-        public EvolutionarySolverService(ILoggerService logger)
+        public TSPEvolution(ILoggerService logger)
         {
             _logger = logger;
             _random = new((int)DateTime.Now.Ticks);
         }
 
-        public Status Solve(Time currentTime, IEnumerable<Order> newOrders)
+        public Status Run(Time currentTime, IEnumerable<Order> newOrders)
         {
             if (!newOrders.Any()) return Status.Ok;
 

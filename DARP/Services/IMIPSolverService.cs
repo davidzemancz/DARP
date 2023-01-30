@@ -13,6 +13,6 @@ namespace DARP.Services
     {
         Plan Plan { get; set; }
         public MIPSolverParamsProvider ParamsProvider { get; }
-        public Status Solve(Time currentTime, IEnumerable<Order> newOrders);
+        public Status Run(Time currentTime, IEnumerable<Order> newOrders);
     }
 }

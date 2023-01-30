@@ -352,11 +352,15 @@ namespace DARP.Windows
             _logger.TextWriters.Add(new TextBoxWriter(txtLog));
             _planningService.Init(new Plan(XMath.ManhattanMetric));
 
+            _planningService.ParamsProvider.RetrieveMethod = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.OptimizationMethod);
+
             _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPMultithreading);
             _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPTimeLimit);
-            _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke((() => WindowModel.Params.ObjectiveFunction));
+            _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke((() => WindowModel.Params.OptimizationObjective));
             _planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.VehicleCharge);
-            _planningService.InsertionHeuristicsParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionMode);
+            
+            _planningService.InsertionHeuristicsService.ParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionMode);
+            _planningService.InsertionHeuristicsService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionObjective);
 
             DrawLegened();
         }
@@ -641,8 +645,13 @@ namespace DARP.Windows
 
         // ------------ Optimization ------------------
         [Category("Optimization")]
-        [DisplayName("Method")]
+        [DisplayName("Optimization method")]
         public OptimizationMethod OptimizationMethod { get; set; } = OptimizationMethod.MIP;
+
+        [Category("Optimization")]
+        [DisplayName("Optimization objective")]
+        public OptimizationObjective OptimizationObjective { get; set; } = OptimizationObjective.Distance;
+
 
         [Category("Optimization")]
         [DisplayName("Insertion heuristics")]
@@ -650,9 +659,9 @@ namespace DARP.Windows
         public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.Disabled;
 
         [Category("Optimization")]
-        [DisplayName("Objective function")]
-        public ObjectiveFunction ObjectiveFunction { get; set; } = ObjectiveFunction.MinimizeDistance;
-
+        [DisplayName("Insertion objective")]
+        public InsertionObjective InsertionObjective { get; set; } = InsertionObjective.DeliveryTime;
+      
         // ------------ MIP solver ------------------
         [Category("MIP solver")]
         [DisplayName("Time limit [seconds]")]

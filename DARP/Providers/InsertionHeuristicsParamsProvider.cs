@@ -10,5 +10,6 @@ namespace DARP.Providers
     public class InsertionHeuristicsParamsProvider
     {
         public Func<InsertionHeuristicsMode> RetrieveMode { get; set; }
+        public Func<InsertionObjective> RetrieveObjective { get; set; }
     }
 }

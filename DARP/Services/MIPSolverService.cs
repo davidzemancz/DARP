@@ -24,7 +24,7 @@ namespace DARP.Services
             _logger = logger;
         }
 
-        public Status Solve(Time currentTime, IEnumerable<Order> newOrders)
+        public Status Run(Time currentTime, IEnumerable<Order> newOrders)
         {
             if (!newOrders.Any()) return Status.Ok;
 
@@ -150,18 +150,19 @@ namespace DARP.Services
             }
 
             // Objective
-            ObjectiveFunction objective = ParamsProvider.RetrieveObjective();
-            if (objective == ObjectiveFunction.MinimizeDistance)
+            OptimizationObjective objective = ParamsProvider.RetrieveObjective();
+            if (objective == OptimizationObjective.Distance)
             {
                 Variable[] allTravels = travelVariables.Select(kvp => kvp.Value).ToArray();
                 _solver.Minimize(new SumVarArray(allTravels));
             }
-            else if (objective == ObjectiveFunction.MaximizeProfit)
-            {
-                int vehicleCharge = ParamsProvider.RetrieveVehicleCharge();
-                Variable[] allTravels = travelVariables.Select(kvp => kvp.Value).ToArray();
-                _solver.Minimize(new SumVarArray(allTravels));
-            }
+            // TODO: MIP other objectives than Distance
+            //else if (objective == OptimizationObjective.MaximizeProfit)
+            //{
+            //    int vehicleCharge = ParamsProvider.RetrieveVehicleCharge();
+            //    Variable[] allTravels = travelVariables.Select(kvp => kvp.Value).ToArray();
+            //    _solver.Minimize(new SumVarArray(allTravels));
+            //}
 
             // Solve
             int timeLimitSecs = ParamsProvider.RetrieveTimeLimitSeconds();

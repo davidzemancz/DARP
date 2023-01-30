@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace DARP.Services
 {
-    public interface ITSPEvolutionarySolverService
+    public interface IEvolutionarySolverService
     {
         Plan Plan { get; set; }
-        public Status Solve(Time currentTime, IEnumerable<Order> newOrders);
+        public EvolutionarySolverParamsProvider ParamsProvider { get; }
+        public Status Run(Time currentTime, IEnumerable<Order> newOrders);
     }
 }
