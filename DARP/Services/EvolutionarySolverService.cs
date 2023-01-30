@@ -61,7 +61,7 @@ namespace DARP.Services
                 // Enviromental selection
                 EnviromentalSelection();
 
-                if (_variance < 1)
+                if (false && _variance < 1)
                 {
                     ReinicializePopulation(POPULATION_SIZE / 5);
                     ComputeFitnesses();
