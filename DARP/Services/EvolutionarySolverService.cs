@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Automation;
 using static Google.Protobuf.WellKnownTypes.Field.Types;
 
 namespace DARP.Services
@@ -16,16 +17,19 @@ namespace DARP.Services
         public Plan Plan { get; set; }
 
         private ILoggerService _logger;
+        private List<Order> _orders;
         private ImmutableDictionary<int, Order> _ordersById;
         private Random _random;
 
-        private const int POPULATION_SIZE = 200;
-        private const int GENERATIONS = 200;
+        private const int POPULATION_SIZE = 100;
+        private const int GENERATIONS = 500;
         private const double MUT_SWAP_PROB = 1;
         private const double MUT_INV_PROB = 1;
-
+        
         private Individual[] _population;
         private double[] _fitnesses;
+        private int _generation;
+        private double _variance;
 
         public EvolutionarySolverService(ILoggerService logger)
         {
@@ -37,12 +41,12 @@ namespace DARP.Services
         {
             if (!newOrders.Any()) return Status.Ok;
 
-            List<Order> orders = new List<Order>(Plan.Orders);
-            orders.AddRange(newOrders);
+            _orders = new List<Order>(Plan.Orders);
+            _orders.AddRange(newOrders);
 
-            _ordersById = orders.ToImmutableDictionary(o => o.Id, o => o);
+            _ordersById = _orders.ToImmutableDictionary(o => o.Id, o => o);
 
-            InitializePopulation(orders);
+            InitializePopulation();
             for (int g = 0; g < GENERATIONS; g++)
             {
                 // Compute fitness for all individuals
@@ -56,30 +60,53 @@ namespace DARP.Services
 
                 // Enviromental selection
                 EnviromentalSelection();
+
+                if (_variance < 1)
+                {
+                    ReinicializePopulation(POPULATION_SIZE / 5);
+                    ComputeFitnesses();
+                }
             }
 
             return Status.Ok;
         }
 
+        
         private void ComputeFitnesses()
         {
-            double sum = 0;
+            double sum = 0, min = double.MaxValue, max = double.MinValue;
             if (_fitnesses == null) _fitnesses = new double[POPULATION_SIZE];
             for (int i = 0; i < POPULATION_SIZE; i++)
             {
                 double fitness = Fitness(_population[i]);
                 _fitnesses[i] = fitness;
+                
                 sum += fitness;
+                if (-fitness < min) min = -fitness;
+                if (-fitness > max) max = -fitness;
             }
-            Console.WriteLine(-sum/POPULATION_SIZE);
 
+            double mean = -(sum / POPULATION_SIZE);
+            double diffSum = 0;
+            foreach(double fitness in _fitnesses)
+            {
+                diffSum += Math.Pow(-fitness - mean, 2);
+            }
+            _variance = diffSum / POPULATION_SIZE;
+
+            Console.WriteLine($"{_generation++}> Mean: {mean}, Min: {min}, Max: {max}, Variance: {_variance}");
         }
 
-        private void InitializePopulation(List<Order> orders)
+        private void InitializePopulation()
         {
             _population = new Individual[POPULATION_SIZE];
-            int[] orderIds = orders.Select(o => o.Id).ToArray();
-            for (int i = 0; i < POPULATION_SIZE; i++)
+            ReinicializePopulation(POPULATION_SIZE);
+        }
+
+        private void ReinicializePopulation(int size)
+        {
+            int[] orderIds = _orders.Select(o => o.Id).ToArray();
+            for (int i = 0; i < size; i++)
             {
                 _population[i] = Individual.CreateRandom(orderIds);
             }
@@ -95,17 +122,9 @@ namespace DARP.Services
                     while (true)
                     {
                         Individual newInd = ind.Copy();
-                        int index1 = _random.Next(0, ind.Length);
-                        int index2 = _random.Next(index1, ind.Length);
-
-
-                        int half = (index2 - index1) / 2 - 1;
-                        for (int j = index1; j < half; j++)
-                        {
-                            int tmp = newInd[j];
-                            newInd[j] = newInd[j + half];
-                            newInd[j + half] = tmp;
-                        }
+                        int index = _random.Next(0, ind.Length);
+                        int length = _random.Next(1, ind.Length - index);
+                        Array.Reverse(newInd.OrderIds, index, length);
 
                         if (Fitness(newInd) >= _fitnesses[i])
                         {
