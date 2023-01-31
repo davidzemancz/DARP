@@ -12,7 +12,7 @@ using System.Windows.Media;
 
 namespace DARP.Services
 {
-    public class PlanningService : IPlanningService
+    public class PlanningService
     {
         private ILoggerService _logger;
         private IInsertionHeuristicsService _insertionHeuristicsService;
@@ -144,11 +144,6 @@ namespace DARP.Services
                     }
                 }
             }
-        }
-
-        public double GetTotalDistance()
-        {
-            return Plan.TotalDistance();
         }
     }
 }

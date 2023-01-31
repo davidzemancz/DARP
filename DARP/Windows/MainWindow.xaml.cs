@@ -126,7 +126,6 @@ namespace DARP.Windows
 
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
-        private readonly IPlanningService _planningService;
         private readonly ILoggerService _logger;
 
         public MainWindow()
@@ -134,7 +133,6 @@ namespace DARP.Windows
             InitializeComponent();
             _orderService = ServiceProvider.Shared.GetService<IOrderDataService>();
             _vehicleService = ServiceProvider.Shared.GetService<IVehicleDataService>();
-            _planningService = ServiceProvider.Shared.GetService<IPlanningService>();
             _logger = ServiceProvider.Shared.GetService<ILoggerService>();
         }
 
