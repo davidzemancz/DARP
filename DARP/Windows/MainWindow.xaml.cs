@@ -132,10 +132,10 @@ namespace DARP.Windows
         public MainWindow()
         {
             InitializeComponent();
-            _orderService = ServiceProvider.Default.GetService<IOrderDataService>();
-            _vehicleService = ServiceProvider.Default.GetService<IVehicleDataService>();
-            _planningService = ServiceProvider.Default.GetService<IPlanningService>();
-            _logger = ServiceProvider.Default.GetService<ILoggerService>();
+            _orderService = ServiceProvider.Shared.GetService<IOrderDataService>();
+            _vehicleService = ServiceProvider.Shared.GetService<IVehicleDataService>();
+            _planningService = ServiceProvider.Shared.GetService<IPlanningService>();
+            _logger = ServiceProvider.Shared.GetService<ILoggerService>();
         }
 
         #region METHODS
@@ -144,30 +144,30 @@ namespace DARP.Windows
         {
             Time currentTime = Application.Current.Dispatcher.Invoke(() => WindowModel.CurrentTime);
 
-            foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
-            {
-                if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetModel()))
-                {
-                    _planningService.AddVehicle(currentTime, vehicleView.GetModel());
-                }
-            }
+            //foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
+            //{
+            //    if (!_planningService.Plan.Vehicles.Contains(vehicleView.GetModel()))
+            //    {
+            //        _planningService.AddVehicle(currentTime, vehicleView.GetModel());
+            //    }
+            //}
 
-            IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
-            _planningService.UpdatePlan(currentTime, newOrders);
+            //IEnumerable<Order> newOrders = _orderService.GetOrderViews().Where(ov => ov.State == OrderState.Created).Select(ov => ov.GetModel());
+            //_planningService.UpdatePlan(currentTime, newOrders);
         }
 
         private void RenderPlan()
         {
             dgOrders.Items.Refresh();
-            WindowModel.TotalDistance = _planningService.GetTotalDistance();
+            //WindowModel.TotalDistance = _planningService.GetTotalDistance();
 
             planRoutesStack.Children.Clear();
-            foreach (Route route in _planningService.Plan.Routes)
-            {
-                DataGrid dg = new() { Tag = route };
-                planRoutesStack.Children.Add(dg);
-                dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
-            }
+            //foreach (Route route in _planningService.Plan.Routes)
+            //{
+            //    DataGrid dg = new() { Tag = route };
+            //    planRoutesStack.Children.Add(dg);
+            //    dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
+            //}
 
             var orderViews = _orderService.GetOrderViews();
 
@@ -238,14 +238,14 @@ namespace DARP.Windows
                     _cords[(cordX, cordY)] = (x, y);
 
             // Routes
-            if (chbDrawRoutes.IsChecked ?? false)
-            {
-                foreach (Route route in _planningService.Plan.Routes)
-                {
-                    DrawVehicle(route.Vehicle);
-                    DrawRoute(route);
-                }
-            }
+            //if (chbDrawRoutes.IsChecked ?? false)
+            //{
+            //    foreach (Route route in _planningService.Plan.Routes)
+            //    {
+            //        DrawVehicle(route.Vehicle);
+            //        DrawRoute(route);
+            //    }
+            //}
 
             // Orders
             if (chbDrawOrders.IsChecked ?? false)
@@ -393,17 +393,17 @@ namespace DARP.Windows
 
             _random = new Random(WindowModel.Params.Seed);
             _logger.TextWriters.Add(new TextBoxWriter(txtLog));
-            _planningService.Init(new Plan(XMath.ManhattanMetric));
+            //_planningService.Init(new Plan(XMath.ManhattanMetric));
 
-            _planningService.ParamsProvider.RetrieveMethod = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.OptimizationMethod);
+            //_planningService.ParamsProvider.RetrieveMethod = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.OptimizationMethod);
 
-            _planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPMultithreading);
-            _planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPTimeLimit);
-            _planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke((() => WindowModel.Params.OptimizationObjective));
-            _planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.VehicleCharge);
+            //_planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPMultithreading);
+            //_planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPTimeLimit);
+            //_planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke((() => WindowModel.Params.OptimizationObjective));
+            //_planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.VehicleCharge);
             
-            _planningService.InsertionHeuristicsService.ParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionMode);
-            _planningService.InsertionHeuristicsService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionObjective);
+            //_planningService.InsertionHeuristicsService.ParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionMode);
+            //_planningService.InsertionHeuristicsService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionObjective);
 
             DrawLegened();
         }
@@ -576,11 +576,10 @@ namespace DARP.Windows
         {
             DrawManhattanMap();
         }
+
+
+        #endregion
     }
-
-
-    #endregion
-
 
     internal class MainWindowDataModel
     {
@@ -766,6 +765,5 @@ namespace DARP.Windows
             return $"Task {Name}, status {Task.Status}, created at {Created:T}";
         }
     }
-
 
 }

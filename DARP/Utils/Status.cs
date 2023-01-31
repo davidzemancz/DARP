@@ -8,7 +8,7 @@ namespace DARP.Utils
 {
     public class Status
     {
-        public static readonly Status Ok = new Status(StatusCode.Ok, "");
+        public static readonly Status Success = new Status(StatusCode.Ok, "");
         public static readonly Status Failed = new Status(StatusCode.Failed, "");
 
         public StatusCode Code { get; set; }

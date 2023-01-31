@@ -1,20 +1,14 @@
-﻿using DARP.Providers;
-using DARP.Models;
+﻿using DARP.Models;
+using DARP.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DARP.Utils;
 
-namespace DARP.Services
+namespace DARP.Solvers
 {
-    public interface IPlanningService
-    {
-        public IPlanningServiceOutput UpdatePlan(IPlanningServiceInput input);
-    }
-
-    public interface IPlanningServiceInput
+    public interface ISolverInput
     {
         Time Time { get; set; }
         Plan Plan { get; set; }
@@ -23,9 +17,14 @@ namespace DARP.Services
         Func<Cords, Cords, double> Metric { get; set; }
     }
 
-    public interface IPlanningServiceOutput
+    public interface ISolverOutput
     {
         Plan Plan { get; }
         Status Status { get; }
+    }
+
+    public interface ISolver
+    {
+        ISolverOutput Run(ISolverInput input);
     }
 }

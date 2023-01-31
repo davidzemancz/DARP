@@ -32,22 +32,6 @@ namespace DARP.Services
             _evolutionarySolverService = evolutionarySolverService;
         }
 
-        public Plan Init(Plan plan)
-        {
-            Plan = plan;
-            _MIPSolverService.Plan = Plan;
-            _evolutionarySolverService.Plan = Plan;
-            _insertionHeuristicsService.Plan = plan;
-
-            return Plan;
-        }
-
-        public void AddVehicle(Time currentTime, Vehicle vehicle)
-        {
-            Plan.Vehicles.Add(vehicle);
-            Plan.Routes.Add(new Route(vehicle) { Points = new() { new VehicleRoutePoint(vehicle) { Time = currentTime } } });
-        }
-
         public void UpdatePlan(Time currentTime, IEnumerable<Order> newOrdersEnumerable)
         {
             Stopwatch sw = new();

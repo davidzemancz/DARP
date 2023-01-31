@@ -10,7 +10,7 @@ namespace DARP.Services
     {
         private readonly ILoggerService _loggerService;
 
-        public static ServiceProvider Default { get; private set; } = new ServiceProvider();
+        public static ServiceProvider Shared { get; private set; } = new ServiceProvider();
 
         public ServiceProvider() 
         {

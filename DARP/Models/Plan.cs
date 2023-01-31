@@ -10,48 +10,13 @@ namespace DARP.Models
 {
     public class Plan
     {
-        public List<Vehicle> Vehicles { get; set; } = new();
         public List<Route> Routes { get; set; } = new();
-        public IEnumerable<Order> Orders
-        {
-            get
-            {
-                foreach (Route route in Routes)
-                {
-                    foreach (RoutePoint point in route.Points)
-                    {
-                        if (point is OrderPickupRoutePoint orderPickup)
-                            yield return orderPickup.Order;
-                    }
-                }
-                yield break;
-            }
-        }
-
-        [JsonIgnore]
-        public Func<Cords, Cords, double> Metric { get; set; }
         
         public Plan()
         {
 
         }
-
-        public Plan(Func<Cords, Cords, double> metric) 
-        {
-            Metric = metric;
-        }
-
-        public Time TravelTime(Cords from, Cords to)
-        {
-            const int vehicleSpeed = 1;
-            return new Time((int)(Metric(from, to) * vehicleSpeed));
-        }
-
-        public double TotalDistance()
-        {
-            return TotalDistance(Metric, Routes);
-        }
-
+      
         internal static double TotalDistance(Func<Cords, Cords, double> metric, IEnumerable<Route> routes) 
         {
             double distance = 0;

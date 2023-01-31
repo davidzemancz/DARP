@@ -49,7 +49,7 @@ namespace DARP.Services
 
         public void Serialize(Stream stream)
         {
-            ServiceProvider.Default.GetService<ModelViewSerializationService>().Serialize(stream, _collection, "Vehicles");
+            ServiceProvider.Shared.GetService<ModelViewSerializationService>().Serialize(stream, _collection, "Vehicles");
         }
     }
 }

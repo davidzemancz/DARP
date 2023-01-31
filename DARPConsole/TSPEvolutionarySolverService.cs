@@ -38,7 +38,7 @@ namespace DARP.Services
 
         public Status Run(Time currentTime, IEnumerable<Order> newOrders)
         {
-            if (!newOrders.Any()) return Status.Ok;
+            if (!newOrders.Any()) return Status.Success;
 
             _orders = new List<Order>(Plan.Orders);
             _orders.AddRange(newOrders);
@@ -67,7 +67,7 @@ namespace DARP.Services
                 //}
             }
 
-            return Status.Ok;
+            return Status.Success;
         }
 
         

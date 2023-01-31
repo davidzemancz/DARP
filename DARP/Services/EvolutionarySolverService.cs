@@ -24,7 +24,7 @@ namespace DARP.Services
         public EvolutionarySolverService(ILoggerService logger)
         {
             _logger = logger;
-            _insertionHeuristicsService = ServiceProvider.Default.GetService<IInsertionHeuristicsService>();
+            _insertionHeuristicsService = ServiceProvider.Shared.GetService<IInsertionHeuristicsService>();
             _insertionHeuristicsService.ParamsProvider.RetrieveObjective = () => InsertionObjective.DeliveryTime;
             _insertionHeuristicsService.ParamsProvider.RetrieveMode = () => InsertionHeuristicsMode.GlobalBestFit;
             _random = new Random((int)DateTime.Now.Ticks);
@@ -49,7 +49,7 @@ namespace DARP.Services
                 InsertOrderMutation();
             }
 
-            return Status.Ok;
+            return Status.Success;
         }
 
 
