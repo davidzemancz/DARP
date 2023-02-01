@@ -17,6 +17,16 @@ namespace DARP.Models
             Points.Add(new VehicleRoutePoint(vehicle) { Location = vehicle.Location, Time = time });
         }
 
+        public double GetTotalProfit()
+        {
+            return 0;
+        }
+
+        public double GetTotalTimeTraveled()
+        {
+            return 0;
+        }
+
         public bool CanInsertOrder(Order newOrder, int index, Func<Cords, Cords, Time> metric)
         {
             if (index < 1) return false; // Index 0 is vehicles location

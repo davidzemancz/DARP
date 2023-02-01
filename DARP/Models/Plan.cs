@@ -17,6 +17,26 @@ namespace DARP.Models
 
         }
         
+        public double GetTotalProfit()
+        {
+            double totalProfit = 0;
+            foreach (Route route in Routes)
+            {
+                totalProfit += route.GetTotalProfit();
+            }
+            return totalProfit;
+        }
+
+        public double GetTotalTimeTraveled()
+        {
+            double totalTime = 0;
+            foreach (Route route in Routes)
+            {
+                totalTime += route.GetTotalTimeTraveled();
+            }
+            return totalTime;
+        }
+
         public Plan Clone()
         {
             Plan plan = new Plan();
