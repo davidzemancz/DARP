@@ -180,7 +180,7 @@ namespace DARP.Windows
 
         private void AddRandomOrder()
         {
-            Time deliveryTwFrom = new Time(WindowModel.CurrentTime.ToInt32() + WindowModel.Params.DeliveryTime.Min + _random.Next(WindowModel.Params.DeliveryTime.Max));
+            Time deliveryTwFrom = new Time(WindowModel.CurrentTime.ToDouble() + WindowModel.Params.DeliveryTime.Min + _random.Next(WindowModel.Params.DeliveryTime.Max));
             _orderService.AddOrder(new Order()
             {
                 PickupLocation = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize)),

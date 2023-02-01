@@ -19,16 +19,18 @@ namespace DARP.Utils
             return x.CompareTo(y) < 0 ? x : y;
         }
 
-        public static double ManhattanMetric(Cords c1, Cords c2) 
+        public static Time ManhattanMetric(Cords c1, Cords c2) 
         {
-            return Math.Abs(c1.X - c2.X) + Math.Abs(c1.Y - c2.Y); 
+            double distance = Math.Abs(c1.X - c2.X) + Math.Abs(c1.Y - c2.Y);
+            return new Time(distance); 
         }
-        public static double EuclideanMetric(Cords c1, Cords c2)
+        public static Time EuclideanMetric(Cords c1, Cords c2)
         {
-            return Math.Sqrt(Math.Pow(c1.X + c2.X, 2) + Math.Pow(c1.Y + c2.Y, 2));
+            double distance = Math.Sqrt(Math.Pow(c1.X + c2.X, 2) + Math.Pow(c1.Y + c2.Y, 2));
+            return new Time(distance);
         }
 
-        public static Func<Cords, Cords, double>GetMetric(Metric metric)
+        public static Func<Cords, Cords, Time> GetMetric(Metric metric)
         {
             switch (metric)
             {

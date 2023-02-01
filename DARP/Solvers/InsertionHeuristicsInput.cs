@@ -16,6 +16,6 @@ namespace DARP.Solvers
         public Plan Plan { get; set; }
         public IEnumerable<Vehicle> Vehicles { get; set; }
         public IEnumerable<Order> Orders { get; set; }
-        public Func<Cords, Cords, double> Metric { get; set; }
+        public Func<Cords, Cords, Time> Metric { get; set; }
     }
 }

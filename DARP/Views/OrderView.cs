@@ -29,8 +29,8 @@ namespace DARP.Views
         public double PickupY { get => _order.PickupLocation.Y; set => _order.PickupLocation = new(_order.PickupLocation.X, value); }
         public double DeliveryX { get => _order.DeliveryLocation.X; set => _order.DeliveryLocation = new(value, _order.DeliveryLocation.Y); }
         public double DeliveryY { get => _order.DeliveryLocation.Y; set => _order.DeliveryLocation = new(_order.DeliveryLocation.X, value); }
-        public int DeliveryFromMins { get => _order.DeliveryTimeWindow.From.Minutes; set => _order.DeliveryTimeWindow = new (new(value), _order.DeliveryTimeWindow.To); }
-        public int DeliveryToMins { get => _order.DeliveryTimeWindow.To.Minutes; set => _order.DeliveryTimeWindow = new (_order.DeliveryTimeWindow.From, new(value)); }
+        public double DeliveryFromMins { get => _order.DeliveryTimeWindow.From.Minutes; set => _order.DeliveryTimeWindow = new (new(value), _order.DeliveryTimeWindow.To); }
+        public double DeliveryToMins { get => _order.DeliveryTimeWindow.To.Minutes; set => _order.DeliveryTimeWindow = new (_order.DeliveryTimeWindow.From, new(value)); }
         public int Cost { get => _order.Cost; set => _order.Cost = value; }
 
         public Order GetModel() => _order;

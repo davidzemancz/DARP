@@ -9,7 +9,7 @@ namespace DARP.Models
     public struct Time : IComparable<Time>
     {
         public static readonly Time Zero = new Time(0);
-        public int Minutes { get; set; }
+        public double Minutes { get; set; }
 
         public Time(int minutes)
         {
@@ -18,15 +18,15 @@ namespace DARP.Models
 
         public Time(double minutes)
         {
-            Minutes = (int)minutes;
+            Minutes = minutes;
         }
 
-        public void AddMinutes(int minutes)
+        public void AddMinutes(double minutes)
         {
             Minutes += minutes;
         }
 
-        public int ToInt32()
+        public double ToDouble()
         {
             return Minutes;
         }
@@ -72,7 +72,7 @@ namespace DARP.Models
 
         public int CompareTo(Time other)
         {
-            return Minutes - other.Minutes;
+            return (int)(Minutes - other.Minutes);
         }
 
         public override bool Equals(object obj)
