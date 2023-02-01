@@ -23,11 +23,18 @@ namespace DARP.Solvers
 
         public InsertionHeuristicsOutput Run(InsertionHeuristicsInput input)
         {
-            if (input.Mode == InsertionHeuristicsMode.FirstFit) return RunFirstFit(input);
-            else if (input.Mode == InsertionHeuristicsMode.LocalBestFit) return RunLocalBestFit(input);
-            else if (input.Mode == InsertionHeuristicsMode.GlobalBestFit) return RunGlobalBestFit(input);
-
-            throw new ArgumentException("Unspecified insertion mode", nameof(input.Mode));
+            switch (input.Mode)
+            {
+                case InsertionHeuristicsMode.Disabled:
+                    return new InsertionHeuristicsOutput(input.Plan, Status.Success);
+                case InsertionHeuristicsMode.FirstFit:
+                    return RunFirstFit(input);
+                case InsertionHeuristicsMode.LocalBestFit:
+                    return RunLocalBestFit(input);
+                case InsertionHeuristicsMode.GlobalBestFit:
+                    return RunGlobalBestFit(input);
+                default: throw new NotImplementedException();
+            }
         }
 
         public InsertionHeuristicsOutput RunFirstFit(InsertionHeuristicsInput input)

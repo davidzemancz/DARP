@@ -10,14 +10,15 @@ namespace DARP.Models
     {
         public Vehicle Vehicle { get; set; }
         public List<RoutePoint> Points { get; set; } = new();
-        public Route(Vehicle vehicle)
+        public Route(Vehicle vehicle, Time time)
         {
             Vehicle = vehicle;
+            Points.Add(new VehicleRoutePoint(vehicle) { Location = vehicle.Location, Time = time });
         }
 
         public Route Copy()
         {
-            Route route = new(Vehicle);
+            Route route = new(Vehicle, Points[0].Time);
             route.Points = Points.Select(p => p.Copy()).ToList();
             return route;
         }

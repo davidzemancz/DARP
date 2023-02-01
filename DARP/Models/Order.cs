@@ -24,10 +24,21 @@ namespace DARP.Models
 
     public enum OrderState
     {
-        Created,
-        Processing,
-        Accepted,
-        Rejected,
-        Handled,
+        /// <summary>
+        /// New order, has not been scheduled yet
+        /// </summary>
+        Created = 0,
+        /// <summary>
+        /// Allready scheduled order, has not been handled yet
+        /// </summary>
+        Accepted = 1,
+        /// <summary>
+        /// Rejected order
+        /// </summary>
+        Rejected = 2,
+        /// <summary>
+        /// Handled order
+        /// </summary>
+        Handled = 3,
     }
 }

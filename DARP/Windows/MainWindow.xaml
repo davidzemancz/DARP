@@ -38,6 +38,7 @@
                 <Button x:Name="btnRunInsertion" Background="CornflowerBlue" Content="Run insertion heuristics" Click="btnRunInsertion_Click"/>
                 <Button x:Name="btnRunMIP" Background="CornflowerBlue" Content="Run MIP solver" Click="btnRunMIP_Click"/>
                 <Button x:Name="btnRunEvo" Background="CornflowerBlue" Content="Run Evolutionary solver" Click="btnRunEvo_Click"/>
+                <Button x:Name="btnUpdateVehicles" Background="CornflowerBlue" Content="Update vehicles location" Click="btnUpdateVehicles_Click"/>
             </ToolBar>
             <ToolBar Band="0" Height="30">
                 <Label Content="Current time (minutes):"/>

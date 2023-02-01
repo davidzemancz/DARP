@@ -402,11 +402,14 @@ namespace DARP.Windows
         
         private void btwNewRandomVehicle_Click(object sender, RoutedEventArgs e)
         {
-            _vehicleService.GetVehicleViews().Add(new VehicleView(new Vehicle()
+            var vehicle = new Vehicle()
             {
                 Location = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, WindowModel.Params.MapSize)),
                 Color = GetRandomColor(),
-            }));
+            };
+
+            _vehicleService.GetVehicleViews().Add(new VehicleView(vehicle));
+            _planDataService.GetPlan().Routes.Add(new Route(vehicle, WindowModel.CurrentTime));
         }
 
         private void btnRunSimulation_Click(object sender, RoutedEventArgs e)
@@ -557,19 +560,34 @@ namespace DARP.Windows
             InsertionHeuristics insertion = new();
             InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
             {
-                Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Mode = WindowModel.Params.InsertionMode,
                 Objective = WindowModel.Params.InsertionObjective,
+                Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = _orderService.GetOrderViews().Select(ov => ov.GetModel()).ToList(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv  => vv.GetModel()), 
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
             });
+
+            RenderPlan();
         }
 
         private void btnRunMIP_Click(object sender, RoutedEventArgs e)
         {
+            MIPSolver solver = new();
+            MIPSolverOutput output = solver.Run(new MIPSolverInput() 
+            {
+                TimeLimit = WindowModel.Params.MIPTimeLimit,
+                Multithreading = WindowModel.Params.MIPMultithreading,
+                Objective = WindowModel.Params.MIPObjective,
+                Metric = XMath.GetMetric(WindowModel.Params.Metric),
+                Orders = _orderService.GetOrderViews().Select(ov => ov.GetModel()).ToList(),
+                Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
+                Time = WindowModel.CurrentTime,
+                Plan = _planDataService.GetPlan(),
+            });
 
+            RenderPlan();
         }
 
         private void btnRunEvo_Click(object sender, RoutedEventArgs e)
@@ -577,9 +595,13 @@ namespace DARP.Windows
 
         }
 
+
         #endregion
 
+        private void btnUpdateVehicles_Click(object sender, RoutedEventArgs e)
+        {
 
+        }
     }
 
     internal class MainWindowDataModel
@@ -675,11 +697,6 @@ namespace DARP.Windows
         [DisplayName("Optimization method")]
         public OptimizationMethod OptimizationMethod { get; set; } = OptimizationMethod.Evolutionary;
 
-        [Category("Simulation")]
-        [DisplayName("Insertion heuristics")]
-        [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
-        public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.Disabled;
-
         // ------------ Map ------------------
         [Category("Map")]
         [DisplayName("Size")]
@@ -704,9 +721,9 @@ namespace DARP.Windows
       
         // ------------ MIP solver ------------------
         [Category("MIP solver")]
-        [DisplayName("Time limit [seconds]")]
-        [Description("MIP solver time limit in seconds. If set to zero, then solving time is unlimited.")]
-        public int MIPTimeLimit { get; set; } = 10;
+        [DisplayName("Time limit [miliseconds]")]
+        [Description("MIP solver time limit in miliseconds. If set to zero, then solving time is unlimited.")]
+        public int MIPTimeLimit { get; set; } = 60_000;
 
         [Category("MIP solver")]
         [DisplayName("Multithreading")]
@@ -718,6 +735,10 @@ namespace DARP.Windows
         public OptimizationObjective MIPObjective { get; set; } = OptimizationObjective.Distance;
 
         // ------------ Insertion heuristics ------------------
+        [Category("Insertion heuristics")]
+        [DisplayName("Mode")]
+        [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
+        public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.Disabled;
         [Category("Insertion heuristics")]
         [DisplayName("Insertion objective")]
         public InsertionObjective InsertionObjective { get; set; } = InsertionObjective.DeliveryTime;

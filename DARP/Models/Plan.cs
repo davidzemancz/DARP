@@ -27,8 +27,6 @@ namespace DARP.Models
                     if (route.Points[1] is OrderPickupRoutePoint orderPickup) // Already pickedup an order -> need to deliver it too, so move vehicle to delivery location
                     {
                         // Remove handled order from plan
-                        orderPickup.Order.UpdateState(OrderState.Handled);
-
                         route.Points[0].Location = route.Points[2].Location;
                         route.Points[0].Time = route.Points[2].Time;
                         route.Points.RemoveAt(1); // Remove pickup

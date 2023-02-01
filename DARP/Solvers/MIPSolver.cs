@@ -182,14 +182,13 @@ namespace DARP.Solvers
                 }
 
                 // Construct routes
-                Plan newPlan = new();
+                // TODO Copy plan
+                input.Plan.Routes.Clear();
                 foreach (Vehicle vehicle in input.Vehicles)
                 {
-                    Route route = new(vehicle);
-
+                    Route route = new(vehicle, currentTime);
                     int modifiedVehicleId = GetModifiedVehicleId(vehicle.Id);
-                    route.Points.Add(new VehicleRoutePoint(vehicle) { Location = vehicle.Location, Time = currentTime });
-
+                    
                     if (map.ContainsKey(modifiedVehicleId))
                     {
                         (TravelVarKey travelKey, TimeVarKey timeKey) = map[modifiedVehicleId];
@@ -206,10 +205,10 @@ namespace DARP.Solvers
                         }
                     }
 
-                    newPlan.Routes.Add(route);
+                    input.Plan.Routes.Add(route);
                 }
 
-                return new MIPSolverOutput(newPlan, Status.Success);
+                return new MIPSolverOutput(input.Plan, Status.Success);
             }
             else
             {
