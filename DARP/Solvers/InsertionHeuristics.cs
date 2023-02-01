@@ -1,5 +1,4 @@
 ﻿using DARP.Models;
-using DARP.Services;
 using DARP.Utils;
 using Google.OrTools.LinearSolver;
 using System;
@@ -13,13 +12,11 @@ namespace DARP.Solvers
 {
     public class InsertionHeuristics : ISolver
     {
-        private ILoggerService _logger;
-        public InsertionHeuristics(ILoggerService logger) 
+        public InsertionHeuristics() 
         {
-            _logger = logger;
         }
 
-        public ISolverOutput Run(ISolverInput input)
+        ISolverOutput ISolver.Run(ISolverInput input)
         {
             return Run((InsertionHeuristicsInput)input);
         }
@@ -45,7 +42,6 @@ namespace DARP.Solvers
                     {
                         // Insert route to first possible place
                         InsertOrder(route, order, insertionIndex, input.Metric);
-                        order.UpdateState(OrderState.Accepted);
                         break;
 
                     }

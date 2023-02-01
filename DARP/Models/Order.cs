@@ -15,12 +15,6 @@ namespace DARP.Models
         public Cords DeliveryLocation { get; set; } = new(0, 0);
         public TimeWindow DeliveryTimeWindow { get; set; } = new TimeWindow(new Time(0), new Time(0));
         public int Cost { get; set; }
-        
-
-        public void UpdateState(OrderState state)
-        {
-            State = state;
-        }
 
         public override string ToString()
         {

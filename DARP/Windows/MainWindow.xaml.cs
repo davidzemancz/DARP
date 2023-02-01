@@ -1,6 +1,7 @@
 ﻿using DARP.Models;
 using DARP.Providers;
 using DARP.Services;
+using DARP.Solvers;
 using DARP.Utils;
 using DARP.Views;
 using Microsoft.Win32;
@@ -126,14 +127,14 @@ namespace DARP.Windows
 
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
-        private readonly ILoggerService _logger;
-
+        private readonly IPlanDataService _planDataService;
+        
         public MainWindow()
         {
             InitializeComponent();
-            _orderService = ServiceProvider.Shared.GetService<IOrderDataService>();
-            _vehicleService = ServiceProvider.Shared.GetService<IVehicleDataService>();
-            _logger = ServiceProvider.Shared.GetService<ILoggerService>();
+            _orderService = ServiceProvider.Instance.GetService<IOrderDataService>();
+            _vehicleService = ServiceProvider.Instance.GetService<IVehicleDataService>();
+            _planDataService = ServiceProvider.Instance.GetService<IPlanDataService>();
         }
 
         #region METHODS
@@ -157,15 +158,14 @@ namespace DARP.Windows
         private void RenderPlan()
         {
             dgOrders.Items.Refresh();
-            //WindowModel.TotalDistance = _planningService.GetTotalDistance();
-
+            
             planRoutesStack.Children.Clear();
-            //foreach (Route route in _planningService.Plan.Routes)
-            //{
-            //    DataGrid dg = new() { Tag = route };
-            //    planRoutesStack.Children.Add(dg);
-            //    dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
-            //}
+            foreach (Route route in _planDataService.GetPlan().Routes)
+            {
+                DataGrid dg = new() { Tag = route };
+                planRoutesStack.Children.Add(dg);
+                dg.ItemsSource = route.Points.Select(p => new RoutePointView(p));
+            }
 
             var orderViews = _orderService.GetOrderViews();
 
@@ -236,14 +236,14 @@ namespace DARP.Windows
                     _cords[(cordX, cordY)] = (x, y);
 
             // Routes
-            //if (chbDrawRoutes.IsChecked ?? false)
-            //{
-            //    foreach (Route route in _planningService.Plan.Routes)
-            //    {
-            //        DrawVehicle(route.Vehicle);
-            //        DrawRoute(route);
-            //    }
-            //}
+            if (chbDrawRoutes.IsChecked ?? false)
+            {
+                foreach (Route route in _planDataService.GetPlan().Routes)
+                {
+                    DrawVehicle(route.Vehicle);
+                    DrawRoute(route);
+                }
+            }
 
             // Orders
             if (chbDrawOrders.IsChecked ?? false)
@@ -390,19 +390,8 @@ namespace DARP.Windows
             pgSettings.ExpandAllProperties();
 
             _random = new Random(WindowModel.Params.Seed);
-            _logger.TextWriters.Add(new TextBoxWriter(txtLog));
-            //_planningService.Init(new Plan(XMath.ManhattanMetric));
-
-            //_planningService.ParamsProvider.RetrieveMethod = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.OptimizationMethod);
-
-            //_planningService.MIPSolverService.ParamsProvider.RetrieveMultithreading = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPMultithreading);
-            //_planningService.MIPSolverService.ParamsProvider.RetrieveTimeLimitSeconds = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.MIPTimeLimit);
-            //_planningService.MIPSolverService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke((() => WindowModel.Params.OptimizationObjective));
-            //_planningService.MIPSolverService.ParamsProvider.RetrieveVehicleCharge = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.VehicleCharge);
-            
-            //_planningService.InsertionHeuristicsService.ParamsProvider.RetrieveMode = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionMode);
-            //_planningService.InsertionHeuristicsService.ParamsProvider.RetrieveObjective = () => Application.Current.Dispatcher.Invoke(() => WindowModel.Params.InsertionObjective);
-
+            LoggerBase.Instance.TextWriters.Add(new TextBoxWriter(txtLog));
+         
             DrawLegened();
         }
 
@@ -410,9 +399,19 @@ namespace DARP.Windows
         {
             AddRandomOrder();
         }
+        
+        private void btwNewRandomVehicle_Click(object sender, RoutedEventArgs e)
+        {
+            _vehicleService.GetVehicleViews().Add(new VehicleView(new Vehicle()
+            {
+                Location = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, WindowModel.Params.MapSize)),
+                Color = GetRandomColor(),
+            }));
+        }
 
         private void btnRunSimulation_Click(object sender, RoutedEventArgs e)
         {
+            return;
             if (!WindowModel.SimulationRunning)
             {
                 if (_vehicleService.GetVehicleViews().Count == 0)
@@ -467,37 +466,16 @@ namespace DARP.Windows
             else
             {
                 WindowModel.SimulationRunning = false;
-                btnRunSimulation.Content = "Run simulation";
+                btnRunSimulation.Content = "Start simulation";
                 _timers.ForEach(timer => timer.Dispose());
                 _timers.Clear();
             }
 
         }
 
-        private void btwNewRandomVehicle_Click(object sender, RoutedEventArgs e)
-        {
-            _vehicleService.GetVehicleViews().Add(new VehicleView(new Vehicle()
-            {
-                Location = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, WindowModel.Params.MapSize)),
-                Color = GetRandomColor(),
-            }));
-        }
-
         private void btnTick_Click(object sender, RoutedEventArgs e)
         {
             WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
-        }
-
-        private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
-        {
-            if (_vehicleService.GetVehicleViews().Count == 0)
-            {
-                MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            UpdatePlan();
-            RenderPlan();
         }
 
         private void miSave_Click(object sender, RoutedEventArgs e)
@@ -569,14 +547,39 @@ namespace DARP.Windows
             txtLog.ScrollToEnd();
         }
 
-
         private void btnRefreshMap_Click(object sender, RoutedEventArgs e)
         {
             DrawManhattanMap();
         }
 
+        private void btnRunInsertion_Click(object sender, RoutedEventArgs e)
+        {
+            InsertionHeuristics insertion = new();
+            InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
+            {
+                Metric = XMath.GetMetric(WindowModel.Params.Metric),
+                Mode = WindowModel.Params.InsertionMode,
+                Objective = WindowModel.Params.InsertionObjective,
+                Orders = _orderService.GetOrderViews().Select(ov => ov.GetModel()).ToList(),
+                Vehicles = _vehicleService.GetVehicleViews().Select(vv  => vv.GetModel()), 
+                Time = WindowModel.CurrentTime,
+                Plan = _planDataService.GetPlan(),
+            });
+        }
+
+        private void btnRunMIP_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnRunEvo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
 
         #endregion
+
+
     }
 
     internal class MainWindowDataModel
@@ -668,6 +671,15 @@ namespace DARP.Windows
         [Description("[ExpectedOrdersCount] * [OrdersCountVariance] orders is generated independently with probability 1 / [OrdersCountVariance].")]
         public int OrdersCountVariance { get; set; } = 5;
 
+        [Category("Simulation")]
+        [DisplayName("Optimization method")]
+        public OptimizationMethod OptimizationMethod { get; set; } = OptimizationMethod.Evolutionary;
+
+        [Category("Simulation")]
+        [DisplayName("Insertion heuristics")]
+        [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
+        public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.Disabled;
+
         // ------------ Map ------------------
         [Category("Map")]
         [DisplayName("Size")]
@@ -689,24 +701,6 @@ namespace DARP.Windows
         [Description("Charge per distance unit of vehicle's route.")]
         public int VehicleCharge { get; set; } = 1;
 
-        // ------------ Optimization ------------------
-        [Category("Optimization")]
-        [DisplayName("Optimization method")]
-        public OptimizationMethod OptimizationMethod { get; set; } = OptimizationMethod.Evolutionary;
-
-        [Category("Optimization")]
-        [DisplayName("Optimization objective")]
-        public OptimizationObjective OptimizationObjective { get; set; } = OptimizationObjective.Distance;
-
-
-        [Category("Optimization")]
-        [DisplayName("Insertion heuristics")]
-        [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
-        public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.Disabled;
-
-        [Category("Optimization")]
-        [DisplayName("Insertion objective")]
-        public InsertionObjective InsertionObjective { get; set; } = InsertionObjective.DeliveryTime;
       
         // ------------ MIP solver ------------------
         [Category("MIP solver")]
@@ -718,6 +712,16 @@ namespace DARP.Windows
         [DisplayName("Multithreading")]
         [Description("Enable multithreading for MIP solver. Uses half of available threads.")]
         public bool MIPMultithreading { get; set; } = false;
+
+        [Category("MIP solver")]
+        [DisplayName("Objective")]
+        public OptimizationObjective MIPObjective { get; set; } = OptimizationObjective.Distance;
+
+        // ------------ Insertion heuristics ------------------
+        [Category("Insertion heuristics")]
+        [DisplayName("Insertion objective")]
+        public InsertionObjective InsertionObjective { get; set; } = InsertionObjective.DeliveryTime;
+
 
     }
 

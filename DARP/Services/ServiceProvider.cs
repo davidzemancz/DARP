@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DARP.Utils;
 
 namespace DARP.Services
 {
     public class ServiceProvider : IServiceProvider
     {
-        private readonly ILoggerService _loggerService;
-
-        public static ServiceProvider Shared { get; private set; } = new ServiceProvider();
+        public static ServiceProvider Instance { get; private set; } = new ServiceProvider();
 
         public ServiceProvider() 
         {
-            _loggerService = new LoggerBaseService();
         }
 
         public T GetService<T>()
@@ -25,10 +23,9 @@ namespace DARP.Services
 
         public object GetService(Type serviceType)
         {
-            if (serviceType == typeof(IOrderDataService)) return new OrderDataService(_loggerService);
+            if (serviceType == typeof(IOrderDataService)) return new OrderDataService();
             else if (serviceType == typeof(IVehicleDataService)) return new VehicleDataService();
-            else if (serviceType == typeof(ILoggerService)) return _loggerService;
-            else if (serviceType == typeof(ModelViewSerializationService)) return new ModelViewSerializationService();
+            else if (serviceType == typeof(IPlanDataService)) return new PlanDataService();
             return null;
         }
     }

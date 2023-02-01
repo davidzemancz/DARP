@@ -1,5 +1,4 @@
 ﻿using DARP.Models;
-using DARP.Services;
 using DARP.Utils;
 using Google.OrTools.LinearSolver;
 using System;
@@ -13,12 +12,9 @@ namespace DARP.Solvers
     public class MIPSolver : ISolver
     {
         private Solver _solver;
-        private ILoggerService _logger;
-
       
-        public MIPSolver(ILoggerService logger)
+        public MIPSolver()
         {
-            _logger = logger;
         }
 
         ISolverOutput ISolver.Run(ISolverInput input)
@@ -30,19 +26,17 @@ namespace DARP.Solvers
         {
             Time currentTime = input.Time;
             OptimizationObjective objective = input.Objective;
-            List<Order> orders = input.Orders;
-            List<Vehicle> vehicles = input.Vehicles;
-
+            
             // Solver
             _solver = Solver.CreateSolver("SCIP");
 
-            // Variables for traveling between orders (and vehicles locations)
+            // Variables for traveling between input.Orders (and input.Vehicles locations)
             Dictionary<TravelVarKey, Variable> travelVariables = new();
             Dictionary<TimeVarKey, Variable> timeVariables = new();
-            foreach (Order orderTo in orders)
+            foreach (Order orderTo in input.Orders)
             {
                 // Travel vars
-                foreach (Order orderFrom in orders)
+                foreach (Order orderFrom in input.Orders)
                 {
                     if (orderFrom == orderTo) continue;
 
@@ -50,7 +44,7 @@ namespace DARP.Solvers
                     Variable travelVar = _solver.MakeBoolVar(travelKey.ToString());
                     travelVariables.Add(travelKey, travelVar);
                 }
-                foreach (Vehicle vehicle in vehicles)
+                foreach (Vehicle vehicle in input.Vehicles)
                 {
                     TravelVarKey travelKey = new(GetModifiedVehicleId(vehicle.Id), orderTo.Id);
                     Variable travelVar = _solver.MakeBoolVar(travelKey.ToString());
@@ -59,17 +53,17 @@ namespace DARP.Solvers
             }
 
 
-            // Time vars for orders
-            double maxTime = orders.Max(o => o.DeliveryTimeWindow.To).ToInt32() + 1;
-            foreach (Order order in orders)
+            // Time vars for input.Orders
+            double maxTime = input.Orders.Max(o => o.DeliveryTimeWindow.To).ToInt32() + 1;
+            foreach (Order order in input.Orders)
             {
                 TimeVarKey timeKey = new(order.Id);
                 Variable timeVar = _solver.MakeNumVar(0, maxTime, timeKey.ToString());
                 timeVariables.Add(timeKey, timeVar);
             }
 
-            // Time vars for vehicles
-            foreach (Vehicle vehicle in vehicles)
+            // Time vars for input.Vehicles
+            foreach (Vehicle vehicle in input.Vehicles)
             {
                 TimeVarKey timeKey = new(GetModifiedVehicleId(vehicle.Id));
                 Variable timeVar = _solver.MakeNumVar(0, maxTime, timeKey.ToString());
@@ -87,7 +81,7 @@ namespace DARP.Solvers
             }
 
             // 2) Vehicle can leave its original location using at most one edge
-            foreach (Vehicle vehicle in vehicles)
+            foreach (Vehicle vehicle in input.Vehicles)
             {
                 Variable[] travels = travelVariables.Where(kvp => kvp.Key.FromId == GetModifiedVehicleId(vehicle.Id)).Select(kvp => kvp.Value).ToArray();
                 _solver.Add(new SumVarArray(travels) == 1); // Each vehicle must be used 
@@ -103,8 +97,8 @@ namespace DARP.Solvers
                 _solver.Add(new SumVarArray(successors) <= 1);
             }
 
-            // 4) All orders must be handled
-            foreach (Order order in orders)
+            // 4) All input.Orders must be handled
+            foreach (Order order in input.Orders)
             {
                 Variable[] predecessors = travelVariables.Where(kvp => kvp.Key.ToId == order.Id).Select(kvp => kvp.Value).ToArray();
                 _solver.Add(new SumVarArray(predecessors) == 1);
@@ -116,15 +110,15 @@ namespace DARP.Solvers
                 Time travelTime = Time.Zero;
                 if (IsModifiedVehicleId(travel1Key.FromId)) // Travel from vehicle location to order pickup and then to delivery
                 {
-                    Vehicle vehicle = vehicles.First(v => v.Id == GetVehicleId(travel1Key.FromId));
-                    Order order = orders.First(o => o.Id == travel1Key.ToId);
+                    Vehicle vehicle = input.Vehicles.First(v => v.Id == GetVehicleId(travel1Key.FromId));
+                    Order order = input.Orders.First(o => o.Id == travel1Key.ToId);
 
                     travelTime = TravelTime(input.Metric, vehicle.Location, order.PickupLocation) + TravelTime(input.Metric, order.PickupLocation, order.DeliveryLocation);
                 }
                 else
                 {
-                    Order order1 = orders.First(o => o.Id == travel1Key.FromId);
-                    Order order2 = orders.First(o => o.Id == travel1Key.ToId);
+                    Order order1 = input.Orders.First(o => o.Id == travel1Key.FromId);
+                    Order order2 = input.Orders.First(o => o.Id == travel1Key.ToId);
 
                     travelTime = TravelTime(input.Metric, order1.DeliveryLocation, order2.PickupLocation) + TravelTime(input.Metric, order2.PickupLocation, order2.DeliveryLocation);
                 }
@@ -134,15 +128,15 @@ namespace DARP.Solvers
                 _solver.Add(timeVarFrom + travelTime.ToInt32() - M * (1 - travel1) <= timeVarTo);
             }
 
-            // 6) Vehicles time
-            foreach (Vehicle vehicle in vehicles)
+            // 6) input.Vehicles time
+            foreach (Vehicle vehicle in input.Vehicles)
             {
                 Variable timeVar = timeVariables.First(kvp => kvp.Key.Id == GetModifiedVehicleId(vehicle.Id)).Value;
                 timeVar.SetLb(currentTime.ToInt32());
             }
 
-            // 7) Orders time windows
-            foreach (var order in orders)
+            // 7) input.Orders time windows
+            foreach (var order in input.Orders)
             {
                 Variable timeVar = timeVariables.First(kvp => kvp.Key.Id == order.Id).Value;
                 _solver.Add(timeVar <= order.DeliveryTimeWindow.To.ToInt32());
@@ -168,12 +162,12 @@ namespace DARP.Solvers
             if (input.TimeLimit > 0) _solver.SetTimeLimit(input.TimeLimit);
             if (input.Multithreading) _solver.SetNumThreads(Math.Max((int)(Environment.ProcessorCount * 0.5), 1));
             Solver.ResultStatus result = _solver.Solve(solverParameters);
-            _logger.Info($"MIP result {result}");
+            LoggerBase.Instance.Info($"MIP result {result}");
 
             // Construct routes
             if (result == Solver.ResultStatus.OPTIMAL || result == Solver.ResultStatus.FEASIBLE)
             {
-                // Print to log
+                // Get variables values
                 Dictionary<int, (TravelVarKey, TimeVarKey)> map = new(); // From->To
                 foreach ((TravelVarKey travelKey, Variable travel) in travelVariables)
                 {
@@ -181,7 +175,7 @@ namespace DARP.Solvers
                     if (val > 0)
                     {
                         TimeVarKey timeKey = timeVariables.First(kvp => kvp.Key.Id == travelKey.ToId).Key;
-                        _logger.Info($"{travelKey}, arrive at {timeVariables[timeKey].SolutionValue()}");
+                       // LoggerBase.Instance.Info($"{travelKey}, arrive at {timeVariables[timeKey].SolutionValue()}");
 
                         map.Add(travelKey.FromId, (travelKey, timeKey));
                     }
@@ -189,7 +183,7 @@ namespace DARP.Solvers
 
                 // Construct routes
                 Plan newPlan = new();
-                foreach (Vehicle vehicle in vehicles)
+                foreach (Vehicle vehicle in input.Vehicles)
                 {
                     Route route = new(vehicle);
 
@@ -201,8 +195,7 @@ namespace DARP.Solvers
                         (TravelVarKey travelKey, TimeVarKey timeKey) = map[modifiedVehicleId];
                         while (true)
                         {
-                            Order order = orders.First(o => o.Id == travelKey.ToId);
-                            order.UpdateState(OrderState.Handled);
+                            Order order = input.Orders.First(o => o.Id == travelKey.ToId);
                             Time arrivalTime = new Time(timeVariables[timeKey].SolutionValue());
 
                             route.Points.Add(new OrderPickupRoutePoint(order) { Location = order.PickupLocation, Time = arrivalTime - TravelTime(input.Metric, order.PickupLocation, order.DeliveryLocation) });

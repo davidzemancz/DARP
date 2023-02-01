@@ -5,10 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DARP.Services
+namespace DARP.Utils
 {
-    public class LoggerBaseService : ILoggerService
+    public interface ILogger
     {
+        public IList<TextWriter> TextWriters { get; }
+        void Debug(string message);
+        void Info(string message);
+        void Warn(string message);
+        void Error(string message);
+        void Fatal(string message);
+        void Log(LogLevel level, string message);
+    }
+
+    public class LoggerBase : ILogger
+    {
+        public static LoggerBase Instance { get; protected set; } = new LoggerBase();
+
         public virtual IList<TextWriter> TextWriters { get; protected set; } = new List<TextWriter>();
 
         public void Debug(string message)
@@ -33,7 +46,7 @@ namespace DARP.Services
 
         public virtual void Log(LogLevel level, string message)
         {
-            foreach(TextWriter writer in TextWriters)
+            foreach (TextWriter writer in TextWriters)
             {
                 writer.WriteLine($"[{level}] {message}");
             }

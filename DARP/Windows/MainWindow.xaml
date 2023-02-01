@@ -25,7 +25,7 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <ToolBarTray Grid.Row="0" VerticalAlignment="Stretch" Grid.ColumnSpan="100">
-            <ToolBar Band="1" Height="30">
+            <ToolBar Band="0" Height="30">
                 <Menu>
                     <MenuItem Header="_File">
                         <MenuItem Header="_Save" InputGestureText="Ctrl+S" Click="miSave_Click"/>
@@ -33,14 +33,16 @@
                     </MenuItem>
                 </Menu>
             </ToolBar>
-            <ToolBar Band="1" Height="30">
-                <Button x:Name="btnRunSimulation" Background="CornflowerBlue" Content="Run simulation" Click="btnRunSimulation_Click"/>
+            <ToolBar Band="0" Height="30">
+                <Button x:Name="btnRunSimulation" Background="CornflowerBlue" Content="Start simulation" Click="btnRunSimulation_Click"/>
+                <Button x:Name="btnRunInsertion" Background="CornflowerBlue" Content="Run insertion heuristics" Click="btnRunInsertion_Click"/>
+                <Button x:Name="btnRunMIP" Background="CornflowerBlue" Content="Run MIP solver" Click="btnRunMIP_Click"/>
+                <Button x:Name="btnRunEvo" Background="CornflowerBlue" Content="Run Evolutionary solver" Click="btnRunEvo_Click"/>
+            </ToolBar>
+            <ToolBar Band="0" Height="30">
                 <Label Content="Current time (minutes):"/>
                 <Label Content="{Binding CurrentTime}"/>
-                <Label Content="Total distance:"/>
-                <Label Content="{Binding TotalDistance}"/>
                 <Button Background="CornflowerBlue"  Content="Tick" Click="btnTick_Click"/>
-                <Button Background="CornflowerBlue"  Content="Update plan" Click="btnUpdatePlan_Click"/>
             </ToolBar>
         </ToolBarTray>
         <TabControl x:Name="tbcLeft" Grid.Row="1" Grid.Column="0" SelectionChanged="tbcLeft_SelectionChanged">

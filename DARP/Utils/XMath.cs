@@ -27,6 +27,19 @@ namespace DARP.Utils
         {
             return Math.Sqrt(Math.Pow(c1.X + c2.X, 2) + Math.Pow(c1.Y + c2.Y, 2));
         }
+
+        public static Func<Cords, Cords, double>GetMetric(Metric metric)
+        {
+            switch (metric)
+            {
+                case Metric.Manhattan:
+                    return ManhattanMetric;
+                case Metric.Euclidean:
+                    return EuclideanMetric;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 
 }

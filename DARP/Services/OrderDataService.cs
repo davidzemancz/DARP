@@ -1,4 +1,5 @@
 ﻿using DARP.Models;
+using DARP.Utils;
 using DARP.Views;
 using System;
 using System.Collections.Generic;
@@ -12,16 +13,21 @@ using System.Threading.Tasks;
 
 namespace DARP.Services
 {
+    public interface IOrderDataService
+    {
+        public ObservableCollection<OrderView> GetOrderViews();
+        public void AddOrder(Order order);
+        public void Clear();
+    }
+
     public class OrderDataService : IOrderDataService
     {
         private readonly ObservableCollection<OrderView> _collection;
-        private readonly ILoggerService _logger;
         private int _lastId;
 
-        public OrderDataService(ILoggerService logger) 
+        public OrderDataService() 
         {
             _collection = new();
-            _logger = logger;
             _collection.CollectionChanged += _collection_CollectionChanged;
         }
 
@@ -39,7 +45,6 @@ namespace DARP.Services
         public void AddOrder(Order order)
         {
             _collection.Add(new OrderView(order));
-            _logger.Info($"Added order {order.Id}");
         }
 
         public void Clear()
@@ -51,9 +56,6 @@ namespace DARP.Services
             return _collection;
         }
 
-        public void Serialize(Stream stream)
-        {
-            ServiceProvider.Shared.GetService<ModelViewSerializationService>().Serialize(stream, _collection, "Orders");
-        }
+      
     }
 }
