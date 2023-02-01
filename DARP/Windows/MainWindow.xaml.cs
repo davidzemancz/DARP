@@ -185,12 +185,12 @@ namespace DARP.Windows
 
             double totalProfit = WindowModel.Params.OrderProfitPerMinute * XMath.GetMetric(WindowModel.Params.Metric)(pickup, delivery).Minutes;
 
-            Time deliveryTwFrom = new Time(WindowModel.CurrentTime.ToDouble() + WindowModel.Params.DeliveryTime.Min + _random.Next(WindowModel.Params.DeliveryTime.Max));
+            Time maxDeliveryTime = new Time(WindowModel.CurrentTime.ToDouble() + WindowModel.Params.MaxDeliveryTime.Min + _random.Next(WindowModel.Params.MaxDeliveryTime.Max));
             _orderService.AddOrder(new Order()
             {
                 PickupLocation = pickup,
                 DeliveryLocation = delivery,
-                DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(WindowModel.Params.DeliveryTimeWindow.Min, WindowModel.Params.DeliveryTimeWindow.Max))),
+                MaxDeliveryTime = maxDeliveryTime,
                 TotalProfit = totalProfit
             });
         }
@@ -670,7 +670,7 @@ namespace DARP.Windows
         [DisplayName("Delivery time")]
         [Description("Delivery time since current time.")]
         [ExpandableObject]
-        public PropertyRange<int> DeliveryTime { get; set; } = new(30, 60);
+        public PropertyRange<int> MaxDeliveryTime { get; set; } = new(30, 60);
 
         [Category("Order generation")]
         [DisplayName("Profit")]

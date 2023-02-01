@@ -55,7 +55,7 @@ namespace DARP.Solvers
 
 
             // Time vars for input.Orders
-            double maxTime = input.Orders.Max(o => o.DeliveryTimeWindow.To).ToDouble() + 1;
+            double maxTime = input.Orders.Max(o => o.MaxDeliveryTime).ToDouble() + 1;
             foreach (Order order in input.Orders)
             {
                 TimeVarKey timeKey = new(order.Id);
@@ -144,7 +144,7 @@ namespace DARP.Solvers
             foreach (var order in input.Orders)
             {
                 Variable timeVar = timeVariables.First(kvp => kvp.Key.Id == order.Id).Value;
-                _solver.Add(timeVar <= order.DeliveryTimeWindow.To.ToDouble());
+                _solver.Add(timeVar <= order.MaxDeliveryTime.ToDouble());
             }
 
             // Objective

@@ -37,12 +37,10 @@ namespace DARP.Models
             RoutePoint routePoint1 = Points[index - 1];
 
             pickupTime = routePoint1.Time + metric(routePoint1.Location, newOrder.PickupLocation);
-            deliveryTime = XMath.Max(
-                    pickupTime + metric(newOrder.PickupLocation, newOrder.DeliveryLocation),
-                    newOrder.DeliveryTimeWindow.From);
+            deliveryTime = pickupTime + metric(newOrder.PickupLocation, newOrder.DeliveryLocation);
 
             // Not needed to check lower bound, vehicle can wait at pickup location
-            bool newOrderCanBeInserted = deliveryTime <= newOrder.DeliveryTimeWindow.To;
+            bool newOrderCanBeInserted = deliveryTime <= newOrder.MaxDeliveryTime;
 
            return newOrderCanBeInserted && FollowingOrdersCanBeDelivered(deliveryTime, index, metric);
         }
@@ -51,9 +49,7 @@ namespace DARP.Models
         {
             // Compute pickup & delivery time
             Time pickupTime = Points[index - 1].Time + metric(Points[index - 1].Location, newOrder.PickupLocation);
-            Time deliveryTime = XMath.Max(
-                    pickupTime + metric(newOrder.PickupLocation, newOrder.DeliveryLocation),
-                    newOrder.DeliveryTimeWindow.From);
+            Time deliveryTime = pickupTime + metric(newOrder.PickupLocation, newOrder.DeliveryLocation);
 
             // Insert new order
             OrderPickupRoutePoint pickupPoint = new OrderPickupRoutePoint(newOrder);
@@ -108,7 +104,7 @@ namespace DARP.Models
                 ((OrderPickupRoutePoint)Points[j]).Time = time;
 
                 time += metric(Points[j].Location, Points[j + 1].Location); // Travel time between current pickup and delivery
-                ((OrderDeliveryRoutePoint)Points[j + 1]).Time = XMath.Max(time, order.DeliveryTimeWindow.From);
+                ((OrderDeliveryRoutePoint)Points[j + 1]).Time = time;
             }
         }
 
@@ -127,7 +123,7 @@ namespace DARP.Models
                 time += metric(nRoutePointPickup.Location, nRoutePointDelivery.Location); // Travel time between current pickup and delivery
 
                 // Not needed to check lower bound, vehicle can wait at pickup location
-                bool orderCanBeStillDelivered = time <= order.DeliveryTimeWindow.To;
+                bool orderCanBeStillDelivered = time <= order.MaxDeliveryTime;
                 if (!orderCanBeStillDelivered)
                 {
                     allOrdersCanBeDelivered = false;

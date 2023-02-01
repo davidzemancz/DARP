@@ -41,7 +41,7 @@ namespace DARP.Solvers
         {
             InsertionHeuristicsMode mode = input.Mode;
             InsertionObjective objective = input.Objective;
-            foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.DeliveryTimeWindow.To))
+            foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.MaxDeliveryTime))
             {
                 bool inserted = false;
                 foreach (Route route in input.Plan.Routes)
@@ -65,7 +65,7 @@ namespace DARP.Solvers
         {
             InsertionHeuristicsMode mode = input.Mode;
             InsertionObjective objective = input.Objective;
-            foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.DeliveryTimeWindow.To))
+            foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.MaxDeliveryTime))
             {
                 //Route bestRoute = null;
                 //int bestInsertionIndex = -1;
@@ -109,7 +109,7 @@ namespace DARP.Solvers
                 //int globalBestInsertionIndex = -1;
                 //double globalBestInsertionScore = double.MinValue;
 
-                foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.DeliveryTimeWindow.To))
+                foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.MaxDeliveryTime))
                 {
                     bool inserted = false;
                     foreach (Route route in input.Plan.Routes)
