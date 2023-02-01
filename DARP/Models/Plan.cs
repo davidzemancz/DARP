@@ -16,44 +16,13 @@ namespace DARP.Models
         {
 
         }
-
-        private void UpdateVehiclesLocation(Time currentTime)
+        
+        public Plan Clone()
         {
-            foreach (Route route in Routes)
-            {
-                // Remove all route point which were visited before current time
-                while (route.Points.Count > 1 && route.Points[1].Time < currentTime)
-                {
-                    if (route.Points[1] is OrderPickupRoutePoint orderPickup) // Already pickedup an order -> need to deliver it too, so move vehicle to delivery location
-                    {
-                        // Remove handled order from plan
-                        route.Points[0].Location = route.Points[2].Location;
-                        route.Points[0].Time = route.Points[2].Time;
-                        route.Points.RemoveAt(1); // Remove pickup
-                        route.Points.RemoveAt(1); // Remove delivery
-                    }
-                }
-            }
+            Plan plan = new Plan();
+            plan.Routes = Routes.Select(r => r.Clone()).ToList();
+            return plan;
         }
-
-        internal static double TotalDistance(Func<Cords, Cords, double> metric, IEnumerable<Route> routes) 
-        {
-            double distance = 0;
-            foreach (Route route in routes)
-            {
-                distance += RouteDistance(metric, route);
-            }
-            return distance;
-        }
-
-        public static double RouteDistance(Func<Cords, Cords, double> metric, Route route)
-        {
-            double distance = 0;
-            for (int i = 0; i < route.Points.Count - 1; i++)
-            {
-                distance += metric(route.Points[i].Location, route.Points[i + 1].Location);
-            }
-            return distance;
-        }
+       
     }
 }

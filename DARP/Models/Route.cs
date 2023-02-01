@@ -69,6 +69,23 @@ namespace DARP.Models
             Points.Remove(delivery);
         }
 
+        private void UpdateVehiclesLocation(Time currentTime)
+        {
+            // Remove all route point which were visited before current time
+            while (Points.Count > 1 && Points[1].Time < currentTime)
+            {
+                if (Points[1] is OrderPickupRoutePoint orderPickup) // Already pickedup an order -> need to deliver it too, so move vehicle to delivery location
+                {
+                    // Remove handled order from plan
+                    Points[0].Location = Points[2].Location;
+                    Points[0].Time = Points[2].Time;
+                    Points.RemoveAt(1); // Remove pickup
+                    Points.RemoveAt(1); // Remove delivery
+                }
+            }
+        }
+
+
         private void UpdateFollowingOrder(Time deliveryTime, int startIndex, Func<Cords, Cords, Time> metric)
         {
             // Move following orders after insertion
@@ -110,10 +127,12 @@ namespace DARP.Models
             return allOrdersCanBeDelivered;
         }
 
-        public Route Copy()
+      
+
+        public Route Clone()
         {
             Route route = new(Vehicle, Points[0].Time);
-            route.Points = Points.Select(p => p.Copy()).ToList();
+            route.Points = Points.Select(p => p.Clone()).ToList();
             return route;
         }
 

@@ -78,7 +78,7 @@ namespace DARP.Solvers
                     {
                         if (route.CanInsertOrder(order, index, input.Metric))
                         {
-                            Route newRoute = route.Copy();
+                            Route newRoute = route.Clone();
                             route.InsertOrder(order, index, input.Metric);
                             inserted = true;
                             // TODO route score, local best fit
@@ -118,7 +118,7 @@ namespace DARP.Solvers
                         {
                             if (route.CanInsertOrder(order, index, input.Metric))
                             {
-                                Route newRoute = route.Copy();
+                                Route newRoute = route.Clone();
                                 route.InsertOrder(order, index, input.Metric);
                                 inserted = true;
                                 //remainingOrders.Remove(globalBestOrder);
