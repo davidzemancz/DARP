@@ -25,7 +25,6 @@ namespace DARP.Models
             Time deliveryTime;
            
             RoutePoint routePoint1 = Points[index - 1];
-            OrderPickupRoutePoint routePoint2 = (OrderPickupRoutePoint)Points[index];
 
             pickupTime = routePoint1.Time + metric(routePoint1.Location, newOrder.PickupLocation);
             deliveryTime = XMath.Max(
