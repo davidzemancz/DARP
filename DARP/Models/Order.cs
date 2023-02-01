@@ -14,7 +14,7 @@ namespace DARP.Models
         public Cords PickupLocation { get; set; } = new(0, 0);
         public Cords DeliveryLocation { get; set; } = new(0, 0);
         public TimeWindow DeliveryTimeWindow { get; set; } = new TimeWindow(new Time(0), new Time(0));
-        public int Cost { get; set; }
+        public double TotalProfit { get; set; }
 
         public override string ToString()
         {

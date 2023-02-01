@@ -38,14 +38,25 @@ namespace DARP.Utils
 
     public enum InsertionObjective
     {
-        DeliveryTime = 0,
-        Distance = 1,
+        MinimizeDeliveryTime = 0,
+        MinimizeDistance = 1,
+        MaximizeProfit = 2,
     }
 
     public enum OptimizationObjective
     {
-        DeliveryTime = 0,
-        Distance = 1,
+        /// <summary>
+        /// Not supported yet
+        /// </summary>
+        MinimizeDeliveryTime = 0,
+        /// <summary>
+        /// Minimizes distance traveled by vehicles. All orders must be handled for optimality.
+        /// </summary>
+        MinimizeTime = 1,
+        /// <summary>
+        /// Maximizes profit. Not all orders must be handled for optimality.
+        /// </summary>
+        MaximizeProfit = 2,
     }
 
     public enum OptimizationMethod

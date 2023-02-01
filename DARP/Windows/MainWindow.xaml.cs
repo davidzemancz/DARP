@@ -180,13 +180,18 @@ namespace DARP.Windows
 
         private void AddRandomOrder()
         {
+            Cords pickup = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize));
+            Cords delivery = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize));
+
+            double totalProfit = WindowModel.Params.OrderProfitPerMinute * XMath.GetMetric(WindowModel.Params.Metric)(pickup, delivery).Minutes;
+
             Time deliveryTwFrom = new Time(WindowModel.CurrentTime.ToDouble() + WindowModel.Params.DeliveryTime.Min + _random.Next(WindowModel.Params.DeliveryTime.Max));
             _orderService.AddOrder(new Order()
             {
-                PickupLocation = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize)),
-                DeliveryLocation = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize)),
+                PickupLocation = pickup,
+                DeliveryLocation = delivery,
                 DeliveryTimeWindow = new TimeWindow(deliveryTwFrom, new Time(deliveryTwFrom.Minutes + _random.Next(WindowModel.Params.DeliveryTimeWindow.Min, WindowModel.Params.DeliveryTimeWindow.Max))),
-                Cost = WindowModel.Params.OrderCostPerDistanceUnit
+                TotalProfit = totalProfit
             });
         }
 
@@ -567,6 +572,7 @@ namespace DARP.Windows
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv  => vv.GetModel()), 
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
+                VehicleChargePerMinute = WindowModel.Params.VehicleChargePerMinute,
             });
 
             RenderPlan();
@@ -585,6 +591,7 @@ namespace DARP.Windows
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
+                VehicleChargePerMinute = WindowModel.Params.VehicleChargePerMinute,
             });
 
             RenderPlan();
@@ -666,9 +673,9 @@ namespace DARP.Windows
         public PropertyRange<int> DeliveryTime { get; set; } = new(30, 60);
 
         [Category("Order generation")]
-        [DisplayName("Cost")]
-        [Description("Cost per distance unit.")]
-        public int OrderCostPerDistanceUnit { get; set; } = 3;
+        [DisplayName("Profit")]
+        [Description("Profit per minute.")]
+        public double OrderProfitPerMinute { get; set; } = 3;
 
         // ------------ Randomization ------------------
         [Category("Randomization")]
@@ -714,9 +721,9 @@ namespace DARP.Windows
         public int Speed { get; set; } = 1;
 
         [Category("Vehicles")]
-        [DisplayName("Charge")]
-        [Description("Charge per distance unit of vehicle's route.")]
-        public int VehicleCharge { get; set; } = 1;
+        [DisplayName("Charge per minute")]
+        [Description("Charge per minute of drive.")]
+        public int VehicleChargePerMinute { get; set; } = 1;
 
       
         // ------------ MIP solver ------------------
@@ -732,7 +739,7 @@ namespace DARP.Windows
 
         [Category("MIP solver")]
         [DisplayName("Objective")]
-        public OptimizationObjective MIPObjective { get; set; } = OptimizationObjective.Distance;
+        public OptimizationObjective MIPObjective { get; set; } = OptimizationObjective.MaximizeProfit;
 
         // ------------ Insertion heuristics ------------------
         [Category("Insertion heuristics")]
@@ -741,7 +748,7 @@ namespace DARP.Windows
         public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.Disabled;
         [Category("Insertion heuristics")]
         [DisplayName("Insertion objective")]
-        public InsertionObjective InsertionObjective { get; set; } = InsertionObjective.DeliveryTime;
+        public InsertionObjective InsertionObjective { get; set; } = InsertionObjective.MinimizeDeliveryTime;
 
 
     }

@@ -15,6 +15,7 @@ namespace DARP.Solvers
         IEnumerable<Vehicle> Vehicles { get; set; }
         IEnumerable<Order> Orders { get; set; }
         Func<Cords, Cords, Time> Metric { get; set; }
+        double VehicleChargePerMinute { get; set; }
     }
 
     public interface ISolverOutput

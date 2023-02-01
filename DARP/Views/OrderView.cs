@@ -31,7 +31,7 @@ namespace DARP.Views
         public double DeliveryY { get => _order.DeliveryLocation.Y; set => _order.DeliveryLocation = new(_order.DeliveryLocation.X, value); }
         public double DeliveryFromMins { get => _order.DeliveryTimeWindow.From.Minutes; set => _order.DeliveryTimeWindow = new (new(value), _order.DeliveryTimeWindow.To); }
         public double DeliveryToMins { get => _order.DeliveryTimeWindow.To.Minutes; set => _order.DeliveryTimeWindow = new (_order.DeliveryTimeWindow.From, new(value)); }
-        public int Cost { get => _order.Cost; set => _order.Cost = value; }
+        public double Profit { get => _order.TotalProfit; set => _order.TotalProfit = value; }
 
         public Order GetModel() => _order;
         object IModelView.GetModelObj() => GetModel();

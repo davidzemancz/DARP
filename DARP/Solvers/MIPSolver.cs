@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace DARP.Solvers
 {
@@ -101,7 +102,11 @@ namespace DARP.Solvers
             foreach (Order order in input.Orders)
             {
                 Variable[] predecessors = travelVariables.Where(kvp => kvp.Key.ToId == order.Id).Select(kvp => kvp.Value).ToArray();
-                _solver.Add(new SumVarArray(predecessors) == 1);
+
+                if (objective == OptimizationObjective.MinimizeTime)
+                    _solver.Add(new SumVarArray(predecessors) == 1);
+                else if (objective == OptimizationObjective.MaximizeProfit)
+                    _solver.Add(new SumVarArray(predecessors) <= 1);
             }
 
             // 5) Travel time
@@ -144,25 +149,70 @@ namespace DARP.Solvers
 
             // Objective
             
-            if (objective == OptimizationObjective.Distance)
+            if (objective == OptimizationObjective.MinimizeTime)
             {
-                Variable[] allTravels = travelVariables.Select(kvp => kvp.Value).ToArray();
-                _solver.Minimize(new SumVarArray(allTravels));
+                LinearExpr[] travelTime = new LinearExpr[travelVariables.Count];
+                int i = 0;
+                foreach ((TravelVarKey key, Variable var) in travelVariables)
+                {
+                    Time time = Time.Zero;
+                    if (IsModifiedVehicleId(key.FromId))
+                    {
+                        Vehicle vehicle = input.Vehicles.First(v => v.Id == GetVehicleId(key.FromId));
+                        Order order = input.Orders.First(o => o.Id == key.ToId);
+                        time = input.Metric(vehicle.Location, order.PickupLocation) + input.Metric(order.PickupLocation, order.DeliveryLocation); 
+                    }
+                    else
+                    {
+                        Order order1 = input.Orders.First(o => o.Id == key.FromId);
+                        Order order2 = input.Orders.First(o => o.Id == key.ToId);
+                        time = input.Metric(order1.DeliveryLocation, order2.PickupLocation) + input.Metric(order2.PickupLocation, order2.DeliveryLocation);
+                    }
+                    travelTime[i++] = var * time.ToDouble();
+                }
+                _solver.Minimize(new SumArray(travelTime));
             }
-            // TODO: MIP other objectives than Distance
-            //else if (objective == OptimizationObjective.MaximizeProfit)
-            //{
-            //    int vehicleCharge = ParamsProvider.RetrieveVehicleCharge();
-            //    Variable[] allTravels = travelVariables.Select(kvp => kvp.Value).ToArray();
-            //    _solver.Minimize(new SumVarArray(allTravels));
-            //}
+            else if (objective == OptimizationObjective.MaximizeProfit)
+            {
+                // Travel costs & order profits
+                LinearExpr[] travelCosts = new LinearExpr[travelVariables.Count];
+                LinearExpr[] ordersProfit = new LinearExpr[travelVariables.Count];
+                int i = 0;
+                foreach ((TravelVarKey key, Variable var) in travelVariables)
+                {
+                    Time time = Time.Zero;
+                    double profit = 0;
+                    if (IsModifiedVehicleId(key.FromId))
+                    {
+                        Vehicle vehicle = input.Vehicles.First(v => v.Id == GetVehicleId(key.FromId));
+                        Order order = input.Orders.First(o => o.Id == key.ToId);
+                        time = input.Metric(vehicle.Location, order.PickupLocation) + input.Metric(order.PickupLocation, order.DeliveryLocation);
+
+                        profit = order.TotalProfit;
+                    }
+                    else
+                    {
+                        Order order1 = input.Orders.First(o => o.Id == key.FromId);
+                        Order order2 = input.Orders.First(o => o.Id == key.ToId);
+                        time = input.Metric(order1.DeliveryLocation, order2.PickupLocation) + input.Metric(order2.PickupLocation, order2.DeliveryLocation);
+
+                        profit = order2.TotalProfit;
+                    }
+                    ordersProfit[i] = var * profit;
+                    travelCosts[i] = var * time.ToDouble() * input.VehicleChargePerMinute;
+
+                    i++;
+                }
+
+                _solver.Maximize(new SumArray(ordersProfit) - new SumArray(travelCosts));
+            }
 
             // Solve
             MPSolverParameters solverParameters = new();
             if (input.TimeLimit > 0) _solver.SetTimeLimit(input.TimeLimit);
             if (input.Multithreading) _solver.SetNumThreads(Math.Max((int)(Environment.ProcessorCount * 0.5), 1));
             Solver.ResultStatus result = _solver.Solve(solverParameters);
-            LoggerBase.Instance.Info($"MIP result {result}");
+            LoggerBase.Instance.Info($"MIP result {result} {_solver.Objective().Value()}");
 
             // Construct routes
             if (result == Solver.ResultStatus.OPTIMAL || result == Solver.ResultStatus.FEASIBLE)
