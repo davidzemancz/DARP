@@ -17,12 +17,12 @@ namespace DARP.Models
 
         }
         
-        public double GetTotalProfit()
+        public double GetTotalProfit(Func<Cords, Cords, Time> metric, double vehicleCharge)
         {
             double totalProfit = 0;
             foreach (Route route in Routes)
             {
-                totalProfit += route.GetTotalProfit();
+                totalProfit += route.GetTotalProfit(metric, vehicleCharge);
             }
             return totalProfit;
         }

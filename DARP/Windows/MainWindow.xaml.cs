@@ -174,6 +174,8 @@ namespace DARP.Windows
             WindowModel.Stats.AcceptedOrders = orderViews.Where(o => o.State == OrderState.Handled || o.State == OrderState.Accepted).Count();
             WindowModel.Stats.RejectedOrders = orderViews.Where(o => o.State == OrderState.Rejected).Count();
 
+            WindowModel.Stats.TotalTimeTraveled = _planDataService.GetPlan().GetTotalTimeTraveled();
+            WindowModel.Stats.TotalProfit = _planDataService.GetPlan().GetTotalProfit(XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
             // TODO optimality index
 
         }
@@ -650,7 +652,11 @@ namespace DARP.Windows
         public int HandledOrders { get; set; }
         public int AcceptedOrders { get; set; }
         public int RejectedOrders { get; set; }
+        public double TotalTimeTraveled { get; set; }
+        public double TotalProfit { get; set; }
 
+        public string TotalTimeTraveledStr { get => $"Total time travelled: {TotalTimeTraveled} minutes"; }
+        public string TotalProfitStr { get => $"Total profit: {TotalProfit}"; }
         public string TotalOrdersStr { get => $"Total orders: {TotalOrders}"; }
         public string AcceptedOrdersStr { get => $"Accepted orders: {AcceptedOrders} ({100 * AcceptedOrders / TotalOrders}%)"; }
         public string HandledOrdersStr { get => $"Handled orders: {HandledOrders} ({100 * HandledOrders / TotalOrders}%)"; }

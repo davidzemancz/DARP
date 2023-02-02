@@ -85,7 +85,7 @@ namespace DARP.Solvers
             foreach (Vehicle vehicle in input.Vehicles)
             {
                 Variable[] travels = travelVariables.Where(kvp => kvp.Key.FromId == GetModifiedVehicleId(vehicle.Id)).Select(kvp => kvp.Value).ToArray();
-                _solver.Add(new SumVarArray(travels) == 1); // Each vehicle must be used 
+                _solver.Add(new SumVarArray(travels) <= 1); // Each vehicle must be used 
             }
 
             // 3) Cycles are not allowed, just paths
@@ -212,7 +212,7 @@ namespace DARP.Solvers
             if (input.TimeLimit > 0) _solver.SetTimeLimit(input.TimeLimit);
             if (input.Multithreading) _solver.SetNumThreads(Math.Max((int)(Environment.ProcessorCount * 0.5), 1));
             Solver.ResultStatus result = _solver.Solve(solverParameters);
-            LoggerBase.Instance.Info($"MIP result {result} {_solver.Objective().Value()}");
+            LoggerBase.Instance.Info($"MIP result {result}, objective {_solver.Objective().Value()}");
 
             // Construct routes
             if (result == Solver.ResultStatus.OPTIMAL || result == Solver.ResultStatus.FEASIBLE)

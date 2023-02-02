@@ -13,7 +13,6 @@ namespace DARP.Models
         public string Name { get; set; }
         public Cords Location { get; set; } = new(0, 0);
         public Color Color { get; set; }
-
         public override string ToString()
         {
             return $"{nameof(Vehicle)} {Id}";

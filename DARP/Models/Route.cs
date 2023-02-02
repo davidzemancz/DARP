@@ -17,14 +17,26 @@ namespace DARP.Models
             Points.Add(new VehicleRoutePoint(vehicle) { Location = vehicle.Location, Time = time });
         }
 
-        public double GetTotalProfit()
+        public double GetTotalProfit(Func<Cords, Cords, Time> metric, double vehicleCharge)
         {
-            return 0;
+            double ordersProfit = 0;
+            double travelCosts = 0;
+
+            for (int i = 0; i < Points.Count - 1; i++)
+            {
+                travelCosts += metric(Points[i].Location, Points[i + 1].Location).ToDouble() * vehicleCharge;
+                if (Points[i] is OrderPickupRoutePoint oprp)
+                {
+                    ordersProfit += oprp.Order.TotalProfit;
+                }
+            }
+
+            return ordersProfit - travelCosts;
         }
 
         public double GetTotalTimeTraveled()
         {
-            return 0;
+            return Points[^1].Time.ToDouble();
         }
 
         public bool CanInsertOrder(Order newOrder, int index, Func<Cords, Cords, Time> metric)
