@@ -17,7 +17,7 @@ namespace DARP.Models
             Points.Add(new VehicleRoutePoint(vehicle) { Location = vehicle.Location, Time = time });
         }
 
-        public double GetTotalProfit(Func<Cords, Cords, Time> metric, double vehicleCharge)
+        public double GetTotalProfit(MetricFunc metric, double vehicleCharge)
         {
             double ordersProfit = 0;
             double travelCosts = 0;
@@ -34,12 +34,17 @@ namespace DARP.Models
             return ordersProfit - travelCosts;
         }
 
+        public bool Contains(Order order)
+        {
+            return Points.Any(p => p is  OrderPickupRoutePoint oprp && oprp.Order == order);
+        }
+
         public double GetTotalTimeTraveled()
         {
             return Points[^1].Time.ToDouble();
         }
 
-        public bool CanInsertOrder(Order newOrder, int index, Func<Cords, Cords, Time> metric)
+        public bool CanInsertOrder(Order newOrder, int index, MetricFunc metric)
         {
             if (index < 1) return false; // Index 0 is vehicles location
             
@@ -57,7 +62,7 @@ namespace DARP.Models
            return newOrderCanBeInserted && FollowingOrdersCanBeDelivered(deliveryTime, index, metric);
         }
 
-        public void InsertOrder(Order newOrder, int index, Func<Cords, Cords, Time> metric)
+        public void InsertOrder(Order newOrder, int index, MetricFunc metric)
         {
             // Compute pickup & delivery time
             Time pickupTime = Points[index - 1].Time + metric(Points[index - 1].Location, newOrder.PickupLocation);
@@ -87,13 +92,21 @@ namespace DARP.Models
             Points.Remove(delivery);
         }
 
-        private void UpdateVehiclesLocation(Time currentTime)
+        public (double profit, List<Order> removedOrders) UpdateVehiclesLocation(Time time, MetricFunc metric, double vehicleCharge)
         {
             // Remove all route point which were visited before current time
-            while (Points.Count > 1 && Points[1].Time < currentTime)
+            double ordersProfit = 0;
+            double travelCosts = 0;
+
+            List<Order> removedOrders = new();
+            while (Points.Count > 1 && Points[1].Time < time)
             {
                 if (Points[1] is OrderPickupRoutePoint orderPickup) // Already pickedup an order -> need to deliver it too, so move vehicle to delivery location
                 {
+                    removedOrders.Add(orderPickup.Order);
+                    travelCosts += (metric(Points[0].Location, Points[1].Location).ToDouble() + metric(Points[1].Location, Points[2].Location).ToDouble()) * vehicleCharge;
+                    ordersProfit += orderPickup.Order.TotalProfit;
+
                     // Remove handled order from plan
                     Points[0].Location = Points[2].Location;
                     Points[0].Time = Points[2].Time;
@@ -101,10 +114,12 @@ namespace DARP.Models
                     Points.RemoveAt(1); // Remove delivery
                 }
             }
+
+            return (ordersProfit - travelCosts, removedOrders);
         }
 
 
-        private void UpdateFollowingOrder(Time deliveryTime, int startIndex, Func<Cords, Cords, Time> metric)
+        private void UpdateFollowingOrder(Time deliveryTime, int startIndex, MetricFunc metric)
         {
             // Move following orders after insertion
             Time time = deliveryTime;
@@ -120,7 +135,7 @@ namespace DARP.Models
             }
         }
 
-        private bool FollowingOrdersCanBeDelivered(Time deliveryTime, int insertionIndex, Func<Cords, Cords, Time> metric)
+        private bool FollowingOrdersCanBeDelivered(Time deliveryTime, int insertionIndex, MetricFunc metric)
         {
             Time time = deliveryTime;
             bool allOrdersCanBeDelivered = true;

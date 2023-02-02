@@ -10,11 +10,24 @@ namespace DARP.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public OrderState State { get; set; }
+        public OrderState State { get; protected set; } = OrderState.Created;
         public Cords PickupLocation { get; set; } = new(0, 0);
         public Cords DeliveryLocation { get; set; } = new(0, 0);
         public Time MaxDeliveryTime { get; set; } = new Time(0);
         public double TotalProfit { get; set; }
+
+        public void Accept()
+        {
+            State = OrderState.Accepted;
+        }
+        public void Reject()
+        {
+            State = OrderState.Rejected;
+        }
+        public void Handle()
+        {
+            State = OrderState.Handled;
+        }
 
         public override string ToString()
         {

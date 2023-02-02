@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
     <PackageReference Include="Google.OrTools" Version="9.5.2237" />
+    <PackageReference Include="OxyPlot.Wpf" Version="2.1.2" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
   </ItemGroup>
 

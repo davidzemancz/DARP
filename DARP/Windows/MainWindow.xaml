@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
@@ -95,15 +96,30 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Statistics"  Width="100">
-                <StackPanel>
-                    <Label Content="{Binding Stats.TotalOrdersStr}"/>
-                    <Label Content="{Binding Stats.HandledOrdersStr}"/>
-                    <Label Content="{Binding Stats.AcceptedOrdersStr}"/>
-                    <Label Content="{Binding Stats.RejectedOrdersStr}"/>
-                    <Separator/>
-                    <Label Content="{Binding Stats.TotalTimeTraveledStr}"/>
-                    <Label Content="{Binding Stats.TotalProfitStr}"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50*"/>
+                        <RowDefinition Height="50*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <Label Content="{Binding Stats.TotalOrdersStr}"/>
+                        <Label Content="{Binding Stats.HandledOrdersStr}"/>
+                        <Label Content="{Binding Stats.AcceptedOrdersStr}"/>
+                        <Label Content="{Binding Stats.RejectedOrdersStr}"/>
+                        <Separator/>
+                        <Label Content="{Binding Stats.TotalTimeTraveledStr}"/>
+                        <Label Content="{Binding Stats.TotalProfitStr}"/>
+                        <Separator/>
+                    </StackPanel>
+                    <TabControl Grid.Row="1">
+                        <TabItem Header="Current profit" Width="100">
+                            <oxy:PlotView Model="{Binding CurrentProfitPlot}"/>
+                        </TabItem>
+                        <TabItem Header="Total profit" Width="100">
+                            <oxy:PlotView Model="{Binding TotalProfitPlot}"/>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
             </TabItem>
             <TabItem Header="Map"  Width="100">
                 <Grid>
@@ -137,7 +153,7 @@
             </TabItem>
         </TabControl>
         <ToolBar Grid.Row="2" Height="30" Grid.ColumnSpan="100">
-            
+
         </ToolBar>
     </Grid>
 

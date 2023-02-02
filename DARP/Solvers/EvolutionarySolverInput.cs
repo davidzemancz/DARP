@@ -1,4 +1,5 @@
 ﻿using DARP.Models;
+using DARP.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace DARP.Solvers
         public Plan Plan { get; set; }
         public IEnumerable<Vehicle> Vehicles { get; set; }
         public IEnumerable<Order> Orders { get; set; }
-        public Func<Cords, Cords, Time> Metric { get; set; }
+        public MetricFunc Metric { get; set; }
         public double VehicleChargePerMinute { get; set; }
     }
 }

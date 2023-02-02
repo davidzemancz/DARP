@@ -5,6 +5,9 @@ using DARP.Solvers;
 using DARP.Utils;
 using DARP.Views;
 using Microsoft.Win32;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
@@ -125,6 +128,11 @@ namespace DARP.Windows
             new Point(2, 3),
         };
 
+        private LineSeries _currentProfitSeries;
+        private LineSeries _totalProfitSeries;
+        private double _totalProfit;
+
+
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
         private readonly IPlanDataService _planDataService;
@@ -139,9 +147,23 @@ namespace DARP.Windows
 
         #region METHODS
 
+        private void Tick()
+        {
+            WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
+
+            _currentProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.TotalProfit));
+            WindowModel.CurrentProfitPlot.InvalidatePlot(true);
+        }
+
+        private List<Order> GetOrdersToSchedule()
+        {
+            return _orderService.GetOrderViews().Select(ov => ov.GetModel()).Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted).ToList();
+        }
+
         private void UpdatePlan()
         {
-            Time currentTime = Application.Current.Dispatcher.Invoke(() => WindowModel.CurrentTime);
+
+            //Time currentTime = Application.Current.Dispatcher.Invoke(() => WindowModel.CurrentTime);
 
             //foreach (VehicleView vehicleView in _vehicleService.GetVehicleViews())
             //{
@@ -157,6 +179,19 @@ namespace DARP.Windows
 
         private void RenderPlan()
         {
+            foreach(Order order in GetOrdersToSchedule())
+            {
+                bool planned = _planDataService.GetPlan().Contains(order);
+                if (planned)
+                {
+                    order.Accept();
+                }
+                else
+                {
+                    order.Reject();
+                }
+            }
+            
             dgOrders.Items.Refresh();
             
             planRoutesStack.Children.Clear();
@@ -176,8 +211,6 @@ namespace DARP.Windows
 
             WindowModel.Stats.TotalTimeTraveled = _planDataService.GetPlan().GetTotalTimeTraveled();
             WindowModel.Stats.TotalProfit = _planDataService.GetPlan().GetTotalProfit(XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
-            // TODO optimality index
-
         }
 
         private void AddRandomOrder()
@@ -207,6 +240,7 @@ namespace DARP.Windows
             }
         }
 
+        #region MAP
 
         private void DrawManhattanMap()
         {
@@ -262,7 +296,7 @@ namespace DARP.Windows
             }
         }
 
-        private void DrawLegened()
+        private void DrawMapLegened()
         {
             // TODO draw legend
 
@@ -387,8 +421,10 @@ namespace DARP.Windows
 
         #endregion
 
-        #region EVENT METHODS
+        #endregion
 
+        #region EVENT METHODS
+      
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             dgOrders.ItemsSource = _orderService.GetOrderViews();
@@ -399,9 +435,20 @@ namespace DARP.Windows
             _random = new Random(WindowModel.Params.Seed);
             LoggerBase.Instance.TextWriters.Add(new TextBoxWriter(txtLog));
          
-            DrawLegened();
-        }
+            DrawMapLegened();
 
+            WindowModel.CurrentProfitPlot = new PlotModel { Title = "Current profit" };
+            _currentProfitSeries = new() { };
+            WindowModel.CurrentProfitPlot.Series.Add(_currentProfitSeries);
+            WindowModel.CurrentProfitPlot.InvalidatePlot(true);
+
+            WindowModel.TotalProfitPlot = new PlotModel { Title = "Total profit" };
+            _totalProfitSeries = new() { };
+            WindowModel.TotalProfitPlot.Series.Add(_totalProfitSeries);
+            WindowModel.TotalProfitPlot.InvalidatePlot(true);
+
+        }
+            
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
         {
             AddRandomOrder();
@@ -439,7 +486,7 @@ namespace DARP.Windows
                     {
                         Application.Current.Dispatcher.BeginInvoke(() =>
                         {
-                            WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
+                           Tick();
                         });
                     },
                     null, 0, 1000),
@@ -485,7 +532,7 @@ namespace DARP.Windows
 
         private void btnTick_Click(object sender, RoutedEventArgs e)
         {
-            WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
+            Tick();
         }
 
         private void miSave_Click(object sender, RoutedEventArgs e)
@@ -526,7 +573,6 @@ namespace DARP.Windows
 
                     foreach (var order in dataModel.Orders)
                     {
-                        order.State = OrderState.Created;
                         _orderService.AddOrder(order);
                     }
                     foreach (var vehicle in dataModel.Vehicles)
@@ -562,6 +608,7 @@ namespace DARP.Windows
             DrawManhattanMap();
         }
 
+      
         private void btnRunInsertion_Click(object sender, RoutedEventArgs e)
         {
             InsertionHeuristics insertion = new();
@@ -570,7 +617,7 @@ namespace DARP.Windows
                 Mode = WindowModel.Params.InsertionMode,
                 Objective = WindowModel.Params.InsertionObjective,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
-                Orders = _orderService.GetOrderViews().Select(ov => ov.GetModel()).ToList(),
+                Orders = GetOrdersToSchedule(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv  => vv.GetModel()), 
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
@@ -589,7 +636,7 @@ namespace DARP.Windows
                 Multithreading = WindowModel.Params.MIPMultithreading,
                 Objective = WindowModel.Params.MIPObjective,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
-                Orders = _orderService.GetOrderViews().Select(ov => ov.GetModel()).ToList(),
+                Orders = GetOrdersToSchedule(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
@@ -604,13 +651,20 @@ namespace DARP.Windows
 
         }
 
-
-        #endregion
-
         private void btnUpdateVehicles_Click(object sender, RoutedEventArgs e)
         {
+            (double profit, List<Order> removedOrders) = _planDataService.GetPlan().UpdateVehiclesLocation(WindowModel.CurrentTime, XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
+            removedOrders.ForEach(o => o.Handle());
 
+            _totalProfit += profit;
+
+            _totalProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), _totalProfit));
+            WindowModel.TotalProfitPlot.InvalidatePlot(true);
+
+            RenderPlan();
         }
+
+        #endregion
     }
 
     internal class MainWindowDataModel
@@ -643,6 +697,8 @@ namespace DARP.Windows
         public MainWindowStats Stats { get; set; } = new();
         public List<TaskItem> Tasks { get; set; } = new List<TaskItem>();
         public MainWindowParams Params { get; set; } = new();
+        public PlotModel CurrentProfitPlot { get; set; }
+        public PlotModel TotalProfitPlot { get; set; }
     }
 
     [AddINotifyPropertyChangedInterface]
