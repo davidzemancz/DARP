@@ -21,7 +21,7 @@ namespace DARP.Solvers
             Random random = new((int)DateTime.Now.Ticks);
 
             const int GENERATIONS = 2000;
-            const int POP_SIZE = 100;
+            const int POP_SIZE = 200;
 
             // Initialize population
             List<Individual> population = new List<Individual>();
@@ -35,15 +35,19 @@ namespace DARP.Solvers
             for (int g  = 0; g < GENERATIONS; g++)
             {
                 // Compute fitnesses
-                double mean = 0;
+                double mean = 0, min = double.MaxValue, max = double.MinValue;
                 for (int i = 0; i < POP_SIZE; i++)
                 {
                     Individual ind = population[i];
-                    fitnesses[i] = ind.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-                    mean += fitnesses[i];
+                    double fitness = ind.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+                    mean += fitness;
+                    if (fitness < min) min = fitness;
+                    if (fitness > max) max = fitness;
+
+                    fitnesses[i] = fitness;
                 }
                 mean /= POP_SIZE;
-                LoggerBase.Instance.Info($"{g}> Fitness {mean}");
+                LoggerBase.Instance.Info($"{g}> Fitness {mean},{min},{max}");
 
                 // Corssover
 
