@@ -1,4 +1,5 @@
 ﻿using DARP.Utils;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,17 @@ namespace DARP.Models
     {
         public Vehicle Vehicle { get; set; }
         public List<RoutePoint> Points { get; set; } = new();
+        public IEnumerable<Order> Orders
+        {
+            get
+            {
+                foreach (var point in Points) 
+                    if (point is OrderPickupRoutePoint oprp) 
+                        yield return oprp.Order;
+                yield break;
+            }
+        }
+
         public Route(Vehicle vehicle, Time time)
         {
             Vehicle = vehicle;
@@ -46,7 +58,7 @@ namespace DARP.Models
 
         public bool CanInsertOrder(Order newOrder, int index, MetricFunc metric)
         {
-            if (index < 1) return false; // Index 0 is vehicles location
+            if (index % 2 == 0) return false; // Index 0 is vehicles location
             
             Time pickupTime;
             Time deliveryTime;
@@ -165,7 +177,7 @@ namespace DARP.Models
         public Route Clone()
         {
             Route route = new(Vehicle, Points[0].Time);
-            route.Points = Points.Select(p => p.Clone()).ToList();
+            route.Points = new(Points.Select(p => p.Clone()));
             return route;
         }
 

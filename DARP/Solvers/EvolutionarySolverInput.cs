@@ -8,13 +8,9 @@ using System.Threading.Tasks;
 
 namespace DARP.Solvers
 {
-    public class EvolutionarySolverInput : ISolverInput
+    public class EvolutionarySolverInput : SolverInputBase
     {
-        public Time Time { get; set; }
-        public Plan Plan { get; set; }
-        public IEnumerable<Vehicle> Vehicles { get; set; }
-        public IEnumerable<Order> Orders { get; set; }
-        public MetricFunc Metric { get; set; }
-        public double VehicleChargePerMinute { get; set; }
+        public EvolutionarySolverInput() { }
+        public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
     }
 }

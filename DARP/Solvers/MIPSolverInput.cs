@@ -8,16 +8,13 @@ using System.Threading.Tasks;
 
 namespace DARP.Solvers
 {
-    public class MIPSolverInput : ISolverInput
+    public class MIPSolverInput : SolverInputBase
     {
         public bool Multithreading { get; set; }
         public long TimeLimit { get; set; }
-        public OptimizationObjective Objective { get; set; }
-        public Time Time { get; set; }
-        public Plan Plan { get; set; }
-        public IEnumerable<Vehicle> Vehicles { get; set; }
-        public IEnumerable<Order> Orders { get; set; }
-        public MetricFunc Metric { get; set; }
-        public double VehicleChargePerMinute { get; set; }
+        public OptimizationObjective Objective { get; set; } = OptimizationObjective.MaximizeProfit;
+       
+        public MIPSolverInput() { }
+        public MIPSolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
     }
 }

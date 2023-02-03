@@ -8,15 +8,12 @@ using System.Threading.Tasks;
 
 namespace DARP.Solvers
 {
-    public class InsertionHeuristicsInput : ISolverInput
+    public class InsertionHeuristicsInput : SolverInputBase
     {
         public InsertionHeuristicsMode Mode { get; set; }
         public InsertionObjective Objective { get; set; }
-        public Time Time { get; set; }
-        public Plan Plan { get; set; }
-        public IEnumerable<Vehicle> Vehicles { get; set; }
-        public IEnumerable<Order> Orders { get; set; }
-        public MetricFunc Metric { get; set; }
-        public double VehicleChargePerMinute { get; set; }
+
+        public InsertionHeuristicsInput() { }
+        public InsertionHeuristicsInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
     }
 }
