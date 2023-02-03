@@ -4,6 +4,7 @@ using Google.OrTools.LinearSolver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,12 +40,14 @@ namespace DARP.Solvers
 
         public InsertionHeuristicsOutput RunFirstFit(InsertionHeuristicsInput input)
         {
+            Plan plan = input.Plan.Clone();
+
             InsertionHeuristicsMode mode = input.Mode;
             InsertionObjective objective = input.Objective;
             foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
             {
                 bool inserted = false;
-                foreach (Route route in input.Plan.Routes)
+                foreach (Route route in plan.Routes)
                 {
                     for (int index = 1; index < route.Points.Count + 1; index += 2)
                     {
@@ -58,11 +61,13 @@ namespace DARP.Solvers
                     if (inserted) break;
                 }
             }
-            return new InsertionHeuristicsOutput(input.Plan, Status.Success);
+            return new InsertionHeuristicsOutput(plan, Status.Success);
         }
 
         public InsertionHeuristicsOutput RunLocalBestFit(InsertionHeuristicsInput input)
         {
+            Plan plan = input.Plan.Clone();
+
             InsertionHeuristicsMode mode = input.Mode;
             InsertionObjective objective = input.Objective;
             foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
@@ -71,7 +76,7 @@ namespace DARP.Solvers
                 int bestInsertionIndex = -1;
                 double bestProfit = double.MinValue;
 
-                foreach (Route route in input.Plan.Routes)
+                foreach (Route route in plan.Routes)
                 {
                     for (int index = 1; index < route.Points.Count + 1; index += 2)
                     {
@@ -97,11 +102,13 @@ namespace DARP.Solvers
                     bestRoute.InsertOrder(order, bestInsertionIndex, input.Metric);
                 }
             }
-            return new InsertionHeuristicsOutput(input.Plan, Status.Success);
+            return new InsertionHeuristicsOutput(plan, Status.Success);
         }
 
         public InsertionHeuristicsOutput RunGlobalBestFit(InsertionHeuristicsInput input)
         {
+            Plan plan = input.Plan.Clone();
+
             InsertionHeuristicsMode mode = input.Mode;
             InsertionObjective objective = input.Objective;
             List<Order> remainingOrders = new(input.Orders);
@@ -112,10 +119,10 @@ namespace DARP.Solvers
                 int globalBestInsertionIndex = -1;
                 double globalBestProfit = double.MinValue;
 
-                foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.MaxDeliveryTime))
+                foreach (Order order in remainingOrders)
                 {
                     bool inserted = false;
-                    foreach (Route route in input.Plan.Routes)
+                    foreach (Route route in plan.Routes)
                     {
                         for (int index = 1; index < route.Points.Count + 1; index += 2)
                         {
@@ -142,10 +149,11 @@ namespace DARP.Solvers
                 if (globalBestInsertionIndex >= 0)
                 {
                     globalBestRoute.InsertOrder(globalBestOrder, globalBestInsertionIndex, input.Metric);
+                    remainingOrders.Remove(globalBestOrder);
                 }
                 else break;
             }
-            return new InsertionHeuristicsOutput(input.Plan, Status.Success);
+            return new InsertionHeuristicsOutput(plan, Status.Success);
         }
     }
 }

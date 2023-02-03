@@ -21,9 +21,11 @@ namespace DARP.Solvers
             Random random = new((int)DateTime.Now.Ticks);
 
             const int GENERATIONS = 2000;
-            const int POP_SIZE = 200;
+            const int POP_SIZE = 100;
 
             // Initialize population
+            Individual bestInd = new();
+
             List<Individual> population = new();
             for (int i = 0; i < POP_SIZE; i++)
             {
@@ -31,7 +33,6 @@ namespace DARP.Solvers
             }
 
             // Evolution
-            double[] fitnesses = new double[POP_SIZE];
             for (int g  = 0; g < GENERATIONS; g++)
             {
                 // Compute fitnesses
@@ -44,7 +45,9 @@ namespace DARP.Solvers
                     if (fitness < min) min = fitness;
                     if (fitness > max) max = fitness;
 
-                    fitnesses[i] = fitness;
+                    ind.Fitness = fitness;
+
+                    if(ind.Fitness > bestInd.Fitness) bestInd = ind;
                 }
                 mean /= POP_SIZE;
                 LoggerBase.Instance.Info($"{g}> Fitness {mean},{min},{max}");
@@ -55,8 +58,8 @@ namespace DARP.Solvers
                 for (int i = 0; i < POP_SIZE; i++)
                 {
                     const double PROB_REMOVE_ORDER = 0.4;
-                    const double PROB_INSERT_ORDER = 0.6;
-                    const double PROB_INSHEUR = 0.4;
+                    const double PROB_INSERT_ORDER = 0.5;
+                    const double PROB_INSHEUR = 0.5;
 
                     Individual indClone = population[i].Clone();
                     
@@ -76,8 +79,9 @@ namespace DARP.Solvers
                             population.Add(indClone);
                         }
                     }
+                    
                     // Insert order by random choice of index
-                    else if (random.NextDouble() < PROB_INSERT_ORDER && indClone.RemaingOrders.Any())
+                    if (random.NextDouble() < PROB_INSERT_ORDER && indClone.RemaingOrders.Any())
                     {
                         int orderIndex = random.Next(indClone.RemaingOrders.Count);
                         Order order = indClone.RemaingOrders[orderIndex];
@@ -91,8 +95,9 @@ namespace DARP.Solvers
                         }
                         population.Add(indClone);
                     }
+
                     // Insertion heuristics
-                    else if (random.NextDouble() < PROB_INSHEUR && indClone.RemaingOrders.Any())
+                    if (random.NextDouble() < PROB_INSHEUR && indClone.RemaingOrders.Any())
                     {
                         int orderIndex = random.Next(indClone.RemaingOrders.Count);
                         Order order = indClone.RemaingOrders[orderIndex];
@@ -117,13 +122,14 @@ namespace DARP.Solvers
 
             }
 
-            return new EvolutionarySolverOutput();
+            return new EvolutionarySolverOutput(bestInd.Plan, Status.Success);
         }
 
         public class Individual
         {
             public Plan Plan {  get; set; }
             public List<Order> RemaingOrders { get; set; } = new();
+            public double Fitness { get; set; }
 
             public Individual Clone()
             {

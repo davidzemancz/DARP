@@ -12,5 +12,21 @@ namespace DARP.Solvers
     {
         public Plan Plan { get; }
         public Status Status { get; }
+
+        public EvolutionarySolverOutput()
+        {
+        }
+
+        public EvolutionarySolverOutput(Status status)
+        {
+            Status = status;
+        }
+
+        public EvolutionarySolverOutput(Plan plan, Status status)
+        {
+            Plan = plan;
+            Status = status;
+        }
+
     }
 }

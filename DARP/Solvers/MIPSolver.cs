@@ -233,7 +233,8 @@ namespace DARP.Solvers
 
                 // Construct routes
                 // TODO Copy plan
-                input.Plan.Routes.Clear();
+                Plan plan = input.Plan.Clone();
+                plan.Routes.Clear();
                 foreach (Vehicle vehicle in input.Vehicles)
                 {
                     Route route = new(vehicle, currentTime);
@@ -255,10 +256,10 @@ namespace DARP.Solvers
                         }
                     }
 
-                    input.Plan.Routes.Add(route);
+                    plan.Routes.Add(route);
                 }
 
-                return new MIPSolverOutput(input.Plan, Status.Success);
+                return new MIPSolverOutput(plan, Status.Success);
             }
             else
             {
