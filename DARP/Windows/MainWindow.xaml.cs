@@ -478,7 +478,7 @@ namespace DARP.Windows
                 }
 
                 WindowModel.SimulationRunning = true;
-                btnRunSimulation.Content = "Stop simulation";
+                //btnRunSimulation.Content = "Stop simulation";
 
                 _timers = new() {
                     // Time
@@ -523,7 +523,7 @@ namespace DARP.Windows
             else
             {
                 WindowModel.SimulationRunning = false;
-                btnRunSimulation.Content = "Start simulation";
+                //btnRunSimulation.Content = "Start simulation";
                 _timers.ForEach(timer => timer.Dispose());
                 _timers.Clear();
             }
