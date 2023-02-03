@@ -41,7 +41,7 @@ namespace DARP.Solvers
         {
             InsertionHeuristicsMode mode = input.Mode;
             InsertionObjective objective = input.Objective;
-            foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.MaxDeliveryTime))
+            foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
             {
                 bool inserted = false;
                 foreach (Route route in input.Plan.Routes)
@@ -65,34 +65,37 @@ namespace DARP.Solvers
         {
             InsertionHeuristicsMode mode = input.Mode;
             InsertionObjective objective = input.Objective;
-            foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.MaxDeliveryTime))
+            foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
             {
-                //Route bestRoute = null;
-                //int bestInsertionIndex = -1;
-                //double bestInsertionScore = double.MinValue;
+                Route bestRoute = null;
+                int bestInsertionIndex = -1;
+                double bestProfit = double.MinValue;
 
-                bool inserted = false;
                 foreach (Route route in input.Plan.Routes)
                 {
                     for (int index = 1; index < route.Points.Count + 1; index += 2)
                     {
                         if (route.CanInsertOrder(order, index, input.Metric))
                         {
-                            Route newRoute = route.Clone();
-                            route.InsertOrder(order, index, input.Metric);
-                            inserted = true;
-                            // TODO route score, local best fit
-                            break;
+                            Route routeClone = route.Clone();
+                            routeClone.InsertOrder(order, index, input.Metric);
+                            double routeProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+                            
+                            if (routeProfit > bestProfit)
+                            {
+                                bestRoute = route;
+                                bestInsertionIndex = index;
+                                bestProfit = routeProfit;
+                            }
                         }
                     }
-                    if (inserted) break;
                 }
 
-                //// Insert order to best position
-                //if (bestInsertionIndex >= 0)
-                //{
-                //    bestRoute.InsertOrder(order, bestInsertionIndex, input.Metric);
-                //}
+                // Insert order to best position
+                if (bestInsertionIndex >= 0)
+                {
+                    bestRoute.InsertOrder(order, bestInsertionIndex, input.Metric);
+                }
             }
             return new InsertionHeuristicsOutput(input.Plan, Status.Success);
         }
@@ -101,13 +104,13 @@ namespace DARP.Solvers
         {
             InsertionHeuristicsMode mode = input.Mode;
             InsertionObjective objective = input.Objective;
-            //List<Order> remainingOrders = new(input.Orders.Where(o => o.State == OrderState.Created));
-            //while (remainingOrders.Any())
+            List<Order> remainingOrders = new(input.Orders);
+            while (remainingOrders.Any())
             {
-                //Route globalBestRoute = null;
-                //Order globalBestOrder = null;
-                //int globalBestInsertionIndex = -1;
-                //double globalBestInsertionScore = double.MinValue;
+                Route globalBestRoute = null;
+                Order globalBestOrder = null;
+                int globalBestInsertionIndex = -1;
+                double globalBestProfit = double.MinValue;
 
                 foreach (Order order in input.Orders.Where(o => o.State == OrderState.Created).OrderBy(o => o.MaxDeliveryTime))
                 {
@@ -118,25 +121,29 @@ namespace DARP.Solvers
                         {
                             if (route.CanInsertOrder(order, index, input.Metric))
                             {
-                                Route newRoute = route.Clone();
-                                route.InsertOrder(order, index, input.Metric);
-                                inserted = true;
-                                //remainingOrders.Remove(globalBestOrder);
-                                // TODO route score, local best fit
-                                break;
+                                Route routeClone = route.Clone();
+                                routeClone.InsertOrder(order, index, input.Metric);
+                                double routeProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+
+                                if (routeProfit > globalBestProfit)
+                                {
+                                    globalBestOrder = order;
+                                    globalBestRoute = route;
+                                    globalBestInsertionIndex = index;
+                                    globalBestProfit = routeProfit;
+                                }
                             }
                         }
                         if (inserted) break;
                     }
                 }
 
-                //// Insert globaly best order to its best position
-                //if (globalBestInsertionIndex >= 0)
-                //{
-                //    globalBestRoute.InsertOrder(globalBestOrder, globalBestInsertionIndex, input.Metric);
-                    
-                //}
-                //else break;
+                // Insert globaly best order to its best position
+                if (globalBestInsertionIndex >= 0)
+                {
+                    globalBestRoute.InsertOrder(globalBestOrder, globalBestInsertionIndex, input.Metric);
+                }
+                else break;
             }
             return new InsertionHeuristicsOutput(input.Plan, Status.Success);
         }

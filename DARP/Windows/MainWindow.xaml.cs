@@ -160,6 +160,11 @@ namespace DARP.Windows
             return _orderService.GetOrderViews().Select(ov => ov.GetModel()).Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted).ToList();
         }
 
+        private List<Order> GetOrdersToInsert()
+        {
+            return _orderService.GetOrderViews().Select(ov => ov.GetModel()).Where(o => o.State == OrderState.Created ).ToList();
+        }
+
         private void UpdatePlan()
         {
 
@@ -617,7 +622,7 @@ namespace DARP.Windows
                 Mode = WindowModel.Params.InsertionMode,
                 Objective = WindowModel.Params.InsertionObjective,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
-                Orders = GetOrdersToSchedule(),
+                Orders = GetOrdersToInsert(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv  => vv.GetModel()), 
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),

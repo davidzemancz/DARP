@@ -24,7 +24,7 @@ namespace DARP.Solvers
             const int POP_SIZE = 200;
 
             // Initialize population
-            List<Individual> population = new List<Individual>();
+            List<Individual> population = new();
             for (int i = 0; i < POP_SIZE; i++)
             {
                 population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders) });
@@ -55,7 +55,8 @@ namespace DARP.Solvers
                 for (int i = 0; i < POP_SIZE; i++)
                 {
                     const double PROB_REMOVE_ORDER = 0.4;
-                    const double PROB_INSERT_ORDER = 1;
+                    const double PROB_INSERT_ORDER = 0.6;
+                    const double PROB_INSHEUR = 0.4;
 
                     Individual indClone = population[i].Clone();
                     
@@ -75,9 +76,8 @@ namespace DARP.Solvers
                             population.Add(indClone);
                         }
                     }
-
                     // Insert order by random choice of index
-                    if (random.NextDouble() < PROB_INSERT_ORDER && indClone.RemaingOrders.Any())
+                    else if (random.NextDouble() < PROB_INSERT_ORDER && indClone.RemaingOrders.Any())
                     {
                         int orderIndex = random.Next(indClone.RemaingOrders.Count);
                         Order order = indClone.RemaingOrders[orderIndex];
@@ -89,6 +89,19 @@ namespace DARP.Solvers
                             route.InsertOrder(order, insertionIndex, input.Metric);
                             indClone.RemaingOrders.Remove(order);
                         }
+                        population.Add(indClone);
+                    }
+                    // Insertion heuristics
+                    else if (random.NextDouble() < PROB_INSHEUR && indClone.RemaingOrders.Any())
+                    {
+                        int orderIndex = random.Next(indClone.RemaingOrders.Count);
+                        Order order = indClone.RemaingOrders[orderIndex];
+
+                        InsertionHeuristicsInput insHInput = new(input);
+                        insHInput.Plan = indClone.Plan;
+                        insHInput.Orders = new[] { order };
+                        InsertionHeuristics insH = new();
+                        insH.RunLocalBestFit(insHInput);
 
                         population.Add(indClone);
                     }
