@@ -12,34 +12,20 @@ namespace DARPConsole
         static void Main(string[] args)
         {
             Time time = Time.Zero;
+            Random random = new((int)DateTime.Now.Ticks);
+
             SolverInputBase input = new()
             {
                 Metric = XMath.ManhattanMetric,
                 Time = time,
-                Vehicles = new[]
-                {
-                    new Vehicle {Id = 1, Location = new Cords(0,9) },
-                    new Vehicle {Id = 2, Location = new Cords(1,4) },
-                    new Vehicle {Id = 3, Location = new Cords(5,5) },
-                    new Vehicle {Id = 4, Location = new Cords(7,2) },
-                    new Vehicle {Id = 5, Location = new Cords(17,2) },
-                    new Vehicle {Id = 6, Location = new Cords(4,12) },
-                    new Vehicle {Id = 7, Location = new Cords(6,18) },
-                    new Vehicle {Id = 8, Location = new Cords(13,11) },
-                },
                 VehicleChargePerMinute = 2,
                 Plan = new(),
             };
-            foreach (var vehicle in input.Vehicles)
-            {
-                input.Plan.Routes.Add(new Route(vehicle, time));
-            }
 
             List<Order> orders = new();
-            Random random = new((int)DateTime.Now.Ticks);
             const int MAP_SIZE = 20;
             const int PROFIT_PM = 5;
-            const int ORDERS = 40;
+            const int ORDERS = 80;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords pickup = new Cords(random.Next(0, MAP_SIZE), random.Next(0, (int)MAP_SIZE));
@@ -59,6 +45,20 @@ namespace DARPConsole
             };
             input.Orders = orders;
 
+            const int VEHICLES = 20;
+            List<Vehicle> vehicles = new();
+            for (int v = 0; v < VEHICLES; v++)
+            {
+                Vehicle vehicle = new()
+                {
+                    Id = v,
+                    Location = new Cords(random.Next(0, MAP_SIZE), random.Next(0, (int)MAP_SIZE))
+                };
+                vehicles.Add(vehicle);
+                input.Plan.Routes.Add(new Route(vehicle, time));
+            }
+            input.Vehicles = vehicles;
+
             LoggerBase.Instance.TextWriters.Add(Console.Out);
 
             Stopwatch sw = new();
@@ -69,11 +69,11 @@ namespace DARPConsole
             Console.WriteLine(sw.Elapsed);
             sw.Reset();
 
-            sw.Start();
-            MIPSolver ms = new();
-            ms.Run(new MIPSolverInput(input) { Multithreading = true, TimeLimit = 5 * 60_000 });
-            sw.Stop();
-            Console.WriteLine(sw.Elapsed);
+            //sw.Start();
+            //MIPSolver ms = new();
+            //ms.Run(new MIPSolverInput(input) { Multithreading = true, TimeLimit = 5 * 60_000 });
+            //sw.Stop();
+            //Console.WriteLine(sw.Elapsed);
         }
     }
 }

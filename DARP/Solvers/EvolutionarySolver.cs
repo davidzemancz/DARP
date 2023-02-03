@@ -20,7 +20,7 @@ namespace DARP.Solvers
         {
             Random random = new((int)DateTime.Now.Ticks);
 
-            const int GENERATIONS = 500;
+            const int GENERATIONS = 2000;
             const int POP_SIZE = 100;
 
             // Initialize population
@@ -91,6 +91,7 @@ namespace DARP.Solvers
                    
                 }
 
+                // Elitism
                 population = population
                    .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute))
                    .Take(POP_SIZE)
