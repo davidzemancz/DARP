@@ -50,8 +50,8 @@ namespace DARP.Solvers
                 // Mutate
                 for (int i = 0; i < POP_SIZE; i++)
                 {
-                    const double PROB_REMOVE_ORDER = 0.2;
-                    const double PROB_INSERT_ORDER = 0.8;
+                    const double PROB_REMOVE_ORDER = 0.4;
+                    const double PROB_INSERT_ORDER = 1;
 
                     Individual indClone = population[i].Clone();
                     
@@ -92,6 +92,7 @@ namespace DARP.Solvers
                 }
 
                 // Elitism
+                // TODO think about roullete wheel enviromental selection
                 population = population
                    .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute))
                    .Take(POP_SIZE)
