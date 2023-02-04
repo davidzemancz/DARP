@@ -1,13 +1,17 @@
-﻿using DARP.Models;
+﻿using ClosedXML.Excel;
+using DARP.Models;
 using DARP.Providers;
 using DARP.Services;
 using DARP.Solvers;
 using DARP.Utils;
 using DARP.Views;
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.Win32;
 using OxyPlot;
 using OxyPlot.Axes;
+using OxyPlot.Legends;
 using OxyPlot.Series;
+using OxyPlot.Wpf;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
@@ -147,7 +151,8 @@ namespace DARP.Windows
         private Random _random;
         private List<Timer> _timers;
         private Dictionary<(double, double), (double, double)> _cords;
-        private LineSeries _currentProfitSeries;
+        private LineSeries _handledOrdersSeries;
+        private LineSeries _rejectedOrdersSeries;
         private LineSeries _totalProfitSeries;
 
         private readonly IOrderDataService _orderService;
@@ -224,8 +229,7 @@ namespace DARP.Windows
             WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
             LoggerBase.Instance.Debug($"Tick {WindowModel.CurrentTime}");
 
-            _currentProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.CurrentProfit));
-            WindowModel.CurrentProfitPlot.InvalidatePlot(true);
+
         }
 
         #endregion
@@ -255,7 +259,7 @@ namespace DARP.Windows
             _planDataService.SetPlan(output.Plan);
             return output;
         }
-            
+
         private MIPSolverOutput RunMIPSolver()
         {
             LoggerBase.Instance.Debug($"Run MIP");
@@ -289,9 +293,8 @@ namespace DARP.Windows
             EvolutionarySolver solver = new();
             EvolutionarySolverOutput output = solver.Run(new EvolutionarySolverInput()
             {
-                //TimeLimit = WindowModel.Params.MIPTimeLimit,
-                //Multithreading = WindowModel.Params.MIPMultithreading,
-                //Objective = WindowModel.Params.MIPObjective,
+                Generations = WindowModel.Params.EvoGenerations,
+                PopulationSize = WindowModel.Params.EvoPopSize,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToSchedule(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
@@ -324,6 +327,15 @@ namespace DARP.Windows
                 case OptimizationMethod.AntColony:
                     throw new NotImplementedException();
             }
+
+            // Reject old orders
+            foreach (OrderView orderView in _orderService.GetOrderViews())
+            {
+                if (orderView.State != OrderState.Handled && orderView.DeliveryToMins < WindowModel.CurrentTime.Minutes)
+                {
+                    orderView.GetModel().Reject();
+                }
+            }
         }
 
         private void UpdatePlan()
@@ -341,21 +353,8 @@ namespace DARP.Windows
 
         private void RenderPlan()
         {
-            foreach(Order order in GetOrdersToSchedule())
-            {
-                bool planned = _planDataService.GetPlan().Contains(order);
-                if (planned)
-                {
-                    order.Accept();
-                }
-                else
-                {
-                    order.Reject();
-                }
-            }
-            
             dgOrders.Items.Refresh();
-            
+
             planRoutesStack.Children.Clear();
             foreach (Route route in _planDataService.GetPlan().Routes)
             {
@@ -373,6 +372,13 @@ namespace DARP.Windows
 
             WindowModel.Stats.TotalTimeTraveled = _planDataService.GetPlan().GetTotalTimeTraveled();
             WindowModel.Stats.CurrentProfit = _planDataService.GetPlan().GetTotalProfit(XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
+
+            double handledOrdersPercent = 100 * (WindowModel.Stats.HandledOrders / (double)WindowModel.Stats.TotalOrders);
+            double rejectedOrderPercent = 100 * (WindowModel.Stats.RejectedOrders / (double)WindowModel.Stats.TotalOrders);
+
+            _handledOrdersSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), handledOrdersPercent));
+            _rejectedOrdersSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), rejectedOrderPercent));
+            WindowModel.OrdersStatePlot.InvalidatePlot(true);
         }
 
         #region Map
@@ -519,8 +525,8 @@ namespace DARP.Windows
                 Width = ORDER_POINT_SIZE,
                 Height = ORDER_POINT_SIZE,
                 Stretch = Stretch.Fill,
-                RenderTransform = new ScaleTransform(1,-1),
-                RenderTransformOrigin = new Point(0.5,0.5)
+                RenderTransform = new ScaleTransform(1, -1),
+                RenderTransformOrigin = new Point(0.5, 0.5)
             };
             cMap.Children.Add(deliveryShape);
             Canvas.SetTop(deliveryShape, deliveryY - ORDER_POINT_SIZE / 2);
@@ -576,18 +582,18 @@ namespace DARP.Windows
                     Application.Current.Dispatcher.BeginInvoke(() => Tick()),
                     null, 0, tickEachMillis),
                     // New orders
-                    new Timer((state) => 
-                    Application.Current.Dispatcher.BeginInvoke(() => AddRandomOrders(WindowModel.Params.ExpectedOrdersCount)), 
+                    new Timer((state) =>
+                    Application.Current.Dispatcher.BeginInvoke(() => AddRandomOrders(WindowModel.Params.ExpectedOrdersCount)),
                     null, 0, WindowModel.Params.GenerateNewOrderMins * tickEachMillis),
                     // Plan update
                     new Timer((state) =>
                     {
                         Task task = new(async () => await Application.Current.Dispatcher.InvokeAsync(() => RunPlan()));
                         task.Start();
-                        task.ContinueWith(_ => Application.Current.Dispatcher.BeginInvoke(() => 
+                        task.ContinueWith(_ => Application.Current.Dispatcher.BeginInvoke(() =>
                         {
                             UpdatePlan();
-                            RenderPlan(); 
+                            RenderPlan();
                         }
                         ));
                     }, null, WindowModel.Params.UpdatePlanMins * tickEachMillis, WindowModel.Params.UpdatePlanMins * tickEachMillis),
@@ -602,80 +608,54 @@ namespace DARP.Windows
 
         #endregion
 
+        #region Random
+
+        private void ResetRandom()
+        {
+            _random = new Random(WindowModel.Params.Seed);
+        }
+
         #endregion
 
-        #region EVENT METHODS
+        #region
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private XLWorkbook _workbook;
+        private const string WS_PROFIT = "Profit";
+        private const string WS_ORDERS = "Orders";
+        private void CreateExcelReport()
         {
-            dgOrders.ItemsSource = _orderService.GetOrderViews();
-            dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
-
-            pgSettings.ExpandAllProperties();
-
-            _random = new Random(WindowModel.Params.Seed);
-            LoggerBase.Instance.TextWriters.Add(new TextBoxWriter(txtLog));
-         
-            DrawMapLegened();
-
-            WindowModel.CurrentProfitPlot = new PlotModel { Title = "Current profit" };
-            _currentProfitSeries = new() { };
-            WindowModel.CurrentProfitPlot.Series.Add(_currentProfitSeries);
-            WindowModel.CurrentProfitPlot.InvalidatePlot(true);
-
-            WindowModel.TotalProfitPlot = new PlotModel { Title = "Total profit" };
-            _totalProfitSeries = new() { };
-            WindowModel.TotalProfitPlot.Series.Add(_totalProfitSeries);
-            WindowModel.TotalProfitPlot.InvalidatePlot(true);
-
-        }
-            
-        private void newRandomOrder_Click(object sender, RoutedEventArgs e)
-        {
-            AddRandomOrder();
-        }
-        
-        private void btwNewRandomVehicle_Click(object sender, RoutedEventArgs e)
-        {
-            AddRandomVehicle();  
+            _workbook = new();
+            _workbook.AddWorksheet(WS_PROFIT);
+            _workbook.AddWorksheet(WS_ORDERS);
         }
 
-        private void btnRunSimulation_Click(object sender, RoutedEventArgs e)
+        private void Report()
         {
-            if (!WindowModel.SimulationRunning)
+            // TODO reporting
+        }
+
+        private void SaveExcelReport()
+        {
+            SaveFileDialog sfd = new();
+            sfd.DefaultExt = "xlsx";
+            sfd.Filter = "Excel Files | *.xlsx";
+            sfd.FileName = $"darp_report_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx";
+            if (sfd.ShowDialog() == true)
             {
-                if (_vehicleService.GetVehicleViews().Count == 0)
-                {
-                    MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                WindowModel.SimulationRunning = true;
-                btnRunSimulation.Content = "Stop simulation";
-
-                StartSimulation();
+                _workbook.SaveAs(sfd.FileName);
             }
-            else
-            {
-                WindowModel.SimulationRunning = false;
-                btnRunSimulation.Content = "Start simulation";
-
-                StopSimulation();
-            }
-
         }
 
-        private void btnTick_Click(object sender, RoutedEventArgs e)
-        {
-            Tick();
-        }
+        #endregion
 
-        private void miSave_Click(object sender, RoutedEventArgs e)
+        #region Data
+
+        private void SaveData()
         {
             SaveFileDialog sfd = new();
             sfd.DefaultExt = "json";
             sfd.Filter = "JSON Files | *.json";
-            sfd.FileName = $"darp_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json";
+            sfd.FileName = $"darp_data_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json";
             if (sfd.ShowDialog() == true)
             {
                 using (StreamWriter sw = new StreamWriter(sfd.FileName))
@@ -691,7 +671,7 @@ namespace DARP.Windows
             }
         }
 
-        private void miOpen_Click(object sender, RoutedEventArgs e)
+        private void LoadData()
         {
             OpenFileDialog ofd = new();
             ofd.DefaultExt = "json";
@@ -725,6 +705,145 @@ namespace DARP.Windows
             }
         }
 
+        #endregion
+
+        #region Plots
+
+        private void InitPlots()
+        {
+            WindowModel.OrdersStatePlot = new PlotModel { Title = "Orders"};
+            WindowModel.OrdersStatePlot.Legends.Add(new Legend()
+            {
+                LegendPosition = LegendPosition.RightTop,
+            });
+            WindowModel.OrdersStatePlot.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = 0, Maximum = 100, Unit = "%" });
+            WindowModel.OrdersStatePlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "minutes" });
+            _handledOrdersSeries = new LineSeries() { Color = OxyColor.FromRgb(0, 255, 0), Title = "Handled orders" };
+            _rejectedOrdersSeries = new LineSeries() { Color = OxyColor.FromRgb(255, 0, 0), Title = "Rejected orders" };
+            WindowModel.OrdersStatePlot.Series.Add(_handledOrdersSeries);
+            WindowModel.OrdersStatePlot.Series.Add(_rejectedOrdersSeries);
+            WindowModel.OrdersStatePlot.InvalidatePlot(true);
+
+            WindowModel.TotalProfitPlot = new PlotModel { Title = "Total profit" };
+            _totalProfitSeries = new() { };
+            WindowModel.TotalProfitPlot.Series.Add(_totalProfitSeries);
+            WindowModel.TotalProfitPlot.InvalidatePlot(true);
+        }
+
+        private void SavePlot(PlotModel model)
+        {
+            SaveFileDialog sfd = new();
+            sfd.DefaultExt = "png";
+            sfd.Filter = "PNG Files | *.png";
+            sfd.FileName = $"darp_plot_{model.Title}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.png";
+            if (sfd.ShowDialog() == true)
+            {
+                var pngExporter = new PngExporter() { Width = 600, Height = 400 };
+                pngExporter.ExportToFile(model, sfd.FileName);
+            }
+        }
+
+        private void CopyPlotToClipboard(PlotModel model)
+        {
+            var pngExporter = new PngExporter { Width = 600, Height = 400 };
+            var bitmap = pngExporter.ExportToBitmap(model);
+            Clipboard.SetImage(bitmap);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region EVENT METHODS
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            dgOrders.ItemsSource = _orderService.GetOrderViews();
+            dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
+
+            pgSettings.ExpandAllProperties();
+
+            LoggerBase.Instance.TextWriters.Add(new TextBoxWriter(txtLog));
+
+            ResetRandom();
+
+            DrawMapLegened();
+
+            InitPlots();
+        }
+
+        private void newRandomOrder_Click(object sender, RoutedEventArgs e)
+        {
+            AddRandomOrder();
+        }
+
+        private void btwNewRandomVehicle_Click(object sender, RoutedEventArgs e)
+        {
+            AddRandomVehicle();
+        }
+
+        private void btnSimulation_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowModel.SimulationState == MainWindowModel.SimulationStateEnum.Ready)
+            {
+                if (_vehicleService.GetVehicleViews().Count == 0)
+                {
+                    btnSimulation.IsChecked = false;
+                    MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                btnSimulation.IsChecked = true;
+                WindowModel.SimulationState = MainWindowModel.SimulationStateEnum.Running;
+                btnSimulation.Content = "Stop simulation";
+
+                StartSimulation();
+            }
+            else
+            {
+                btnSimulation.IsChecked = false;
+                WindowModel.SimulationState = MainWindowModel.SimulationStateEnum.Ready;
+                btnSimulation.Content = "Start simulation";
+
+                StopSimulation();
+            }
+        }
+
+        private void btnReport_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowModel.ReportingState == MainWindowModel.ReportingStateEnum.Ready)
+            {
+                btnReport.IsChecked = true;
+                WindowModel.ReportingState = MainWindowModel.ReportingStateEnum.Running;
+                btnReport.Content = "Stop reporting and save file";
+
+                CreateExcelReport();
+            }
+            else
+            {
+                btnReport.IsChecked = false;
+                WindowModel.ReportingState = MainWindowModel.ReportingStateEnum.Ready;
+                btnReport.Content = "Start reporting";
+
+                SaveExcelReport();
+            }
+        }
+
+        private void btnTick_Click(object sender, RoutedEventArgs e)
+        {
+            Tick();
+        }
+
+        private void btnSaveData_Click(object sender, RoutedEventArgs e)
+        {
+            SaveData();
+        }
+
+        private void btnLoadData_Click(object sender, RoutedEventArgs e)
+        {
+            LoadData();
+        }
+
         private void tbcLeft_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (tbcLeft.SelectedItem == tbiLog)
@@ -742,7 +861,7 @@ namespace DARP.Windows
         {
             DrawManhattanMap();
         }
-      
+
         private void btnRunInsertion_Click(object sender, RoutedEventArgs e)
         {
             RunInsertionHeuristics();
@@ -766,8 +885,24 @@ namespace DARP.Windows
             UpdatePlan();
             RenderPlan();
         }
+        private void btnReserRandom_Click(object sender, RoutedEventArgs e)
+        {
+            ResetRandom();
+        }
+
+        private void btnSavePlot_Click(object sender, RoutedEventArgs e)
+        {
+            SavePlot((PlotModel)((TabItem)tcPlots.SelectedItem).Tag);
+        }
+
+        private void btnCopyPlotToClipboard_Click(object sender, RoutedEventArgs e)
+        {
+            CopyPlotToClipboard((PlotModel)((TabItem)tcPlots.SelectedItem).Tag);
+        }
 
         #endregion
+
+
     }
 
     #region CLASSES
@@ -798,12 +933,25 @@ namespace DARP.Windows
     {
         public Time CurrentTime { get; set; }
         public double TotalDistance { get; set; }
-        public bool SimulationRunning { get; set; }
+        public SimulationStateEnum SimulationState { get; set; }
+        public ReportingStateEnum ReportingState { get; set; }
         public MainWindowStats Stats { get; set; } = new();
         public List<TaskItem> Tasks { get; set; } = new List<TaskItem>();
         public MainWindowParams Params { get; set; } = new();
-        public PlotModel CurrentProfitPlot { get; set; }
+        public PlotModel OrdersStatePlot { get; set; }
         public PlotModel TotalProfitPlot { get; set; }
+
+        public enum SimulationStateEnum
+        {
+            Ready = 0,
+            Running = 1,
+        }
+
+        public enum ReportingStateEnum
+        {
+            Ready = 0,
+            Running = 1,
+        }
     }
 
     [AddINotifyPropertyChangedInterface]
@@ -874,7 +1022,7 @@ namespace DARP.Windows
 
         [Category("Simulation")]
         [DisplayName("Use insertion heuristics")]
-        public bool UseInsertionHeuristics { get; set; } = true;
+        public bool UseInsertionHeuristics { get; set; } = false;
 
         // ------------ Map ------------------
         [Category("Map")]
@@ -897,7 +1045,7 @@ namespace DARP.Windows
         [Description("Charge per minute of drive.")]
         public int VehicleChargePerMinute { get; set; } = 1;
 
-      
+
         // ------------ MIP solver ------------------
         [Category("MIP solver")]
         [DisplayName("Time limit [miliseconds]")]
@@ -912,6 +1060,17 @@ namespace DARP.Windows
         [Category("MIP solver")]
         [DisplayName("Objective")]
         public OptimizationObjective MIPObjective { get; set; } = OptimizationObjective.MaximizeProfit;
+
+
+        // ------------ Evolution ------------------
+        [Category("Evolution")]
+        [DisplayName("Generations")]
+        public int EvoGenerations { get; set; } = 1_000;
+
+        [Category("Evolution")]
+        [DisplayName("Population size")]
+        public int EvoPopSize { get; set; } = 100;
+
 
         // ------------ Insertion heuristics ------------------
         [Category("Insertion heuristics")]

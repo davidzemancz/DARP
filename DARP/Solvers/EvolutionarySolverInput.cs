@@ -10,6 +10,9 @@ namespace DARP.Solvers
 {
     public class EvolutionarySolverInput : SolverInputBase
     {
+        public int Generations { get; set; }
+        public int PopulationSize { get; set; }
+
         public EvolutionarySolverInput() { }
         public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
     }

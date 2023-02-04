@@ -20,24 +20,21 @@ namespace DARP.Solvers
         {
             Random random = new((int)DateTime.Now.Ticks);
 
-            const int GENERATIONS = 1000;
-            const int POP_SIZE = 100;
-
             // Initialize population
             Individual bestInd = new();
 
             List<Individual> population = new();
-            for (int i = 0; i < POP_SIZE; i++)
+            for (int i = 0; i < input.PopulationSize; i++)
             {
                 population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders) });
             }
 
             // Evolution
-            for (int g  = 0; g < GENERATIONS; g++)
+            for (int g  = 0; g < input.Generations; g++)
             {
                 // Compute fitnesses
                 double mean = 0, min = double.MaxValue, max = double.MinValue;
-                for (int i = 0; i < POP_SIZE; i++)
+                for (int i = 0; i < input.PopulationSize; i++)
                 {
                     Individual ind = population[i];
                     double fitness = ind.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
@@ -49,12 +46,12 @@ namespace DARP.Solvers
 
                     if(ind.Fitness > bestInd.Fitness) bestInd = ind;
                 }
-                mean /= POP_SIZE;
+                mean /= input.PopulationSize;
               
                 // TODO  Corssover
 
                 // Mutate
-                for (int i = 0; i < POP_SIZE; i++)
+                for (int i = 0; i < input.PopulationSize; i++)
                 {
                     const double PROB_REMOVE_ORDER = 0.6;
                     const double PROB_INSERT_ORDER = 0.5;
@@ -118,8 +115,8 @@ namespace DARP.Solvers
                 }
 
                 // Tournament enviromental selection
-                List<Individual> newPopulation = new(POP_SIZE);
-                for (int i = 0; i < POP_SIZE; i++)
+                List<Individual> newPopulation = new(input.PopulationSize);
+                for (int i = 0; i < input.PopulationSize; i++)
                 {
                     int first = random.Next(population.Count);
                     int second = random.Next(population.Count);
@@ -138,7 +135,7 @@ namespace DARP.Solvers
                 // Elitims selection
                 //population = population
                 //   .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute))
-                //   .Take(POP_SIZE)
+                //   .Take(input.PopulationSize)
                 //   .ToList();
 
             }
