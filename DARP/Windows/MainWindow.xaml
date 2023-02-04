@@ -54,7 +54,6 @@
             </Grid.ColumnDefinitions>
             <ScrollViewer>
                 <StackPanel Grid.Column="0">
-
                     <GroupBox Header="Time">
                         <StackPanel>
                             <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0} minutes'}" Margin="0,3"/>
@@ -66,7 +65,7 @@
                             <Button Content="Ant colony" Margin="0,3"/>
                             <Button Content="Evolution" Margin="0,3" Click="btnRunEvo_Click"/>
                             <Button Content="Insertion heuristics" Margin="0,3" Click="btnRunInsertion_Click"/>
-                            <Button Content="MIP solver" Margin="0,3" Click="btnRunInsertion_Click"/>
+                            <Button Content="MIP solver" Margin="0,3" Click="btnRunMIP_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Plan">
@@ -79,48 +78,10 @@
                         <StackPanel>
                             <TextBlock Text="State: Ready" Margin="0,3"/>
                             <Button x:Name="btnRunSimulation" Content="Start" Margin="0,3" Click="btnRunSimulation_Click"/>
-                            <GroupBox Header="Outputs">
-                                <StackPanel>
-                                    <CheckBox Content="Total profit"/>
-                                    <CheckBox Content="Handled orders"/>
-                                </StackPanel>
-                            </GroupBox>
-                            <Label Content="Output format:" Padding="0" Margin="0,3"/>
-                            <ComboBox>
-                                <ComboBoxItem IsSelected="True" Content="csv"/>
-                                <ComboBoxItem Content="xlsx"/>
-                            </ComboBox>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Testing">
                         <StackPanel>
-                            <TextBlock Text="State: Ready" Margin="0,3"/>
-                            <Label Content="Runs:" Padding="0" Margin="0,3"/>
-                            <xctk:IntegerUpDown Value="10"/>
-                            <GroupBox Header="Optimization">
-                                <StackPanel>
-                                    <CheckBox Content="Ant colony"/>
-                                    <CheckBox Content="Evolution"/>
-                                    <CheckBox Content="Insertion heuristics"/>
-                                    <CheckBox Content="MIP (guaranties optimality)"/>
-                                </StackPanel>
-                            </GroupBox>
-                            <GroupBox Header="Settings">
-                                <StackPanel>
-                                    <CheckBox Content="Mesaure time"/>
-                                </StackPanel>
-                            </GroupBox>
-                            <GroupBox Header="Outputs">
-                                <StackPanel>
-                                    <CheckBox Content="Total profit"/>
-                                    <CheckBox Content="Handled orders"/>
-                                </StackPanel>
-                            </GroupBox>
-                            <Label Content="Output format:" Padding="0" Margin="0,3"/>
-                            <ComboBox>
-                                <ComboBoxItem IsSelected="True" Content="csv"/>
-                                <ComboBoxItem Content="xlsx"/>
-                            </ComboBox>
                             <Button Content="Run tests" Margin="0,3"/>
                         </StackPanel>
                     </GroupBox>

@@ -212,7 +212,7 @@ namespace DARP.Solvers
             if (input.TimeLimit > 0) _solver.SetTimeLimit(input.TimeLimit);
             if (input.Multithreading) _solver.SetNumThreads(Math.Max((int)(Environment.ProcessorCount * 0.5), 1));
             Solver.ResultStatus result = _solver.Solve(solverParameters);
-            LoggerBase.Instance.Info($"MIP result {result}, objective {_solver.Objective().Value()}");
+            LoggerBase.Instance.Debug($"MIP result {result}, objective {_solver.Objective().Value()}");
 
             // Construct routes
             if (result == Solver.ResultStatus.OPTIMAL || result == Solver.ResultStatus.FEASIBLE)

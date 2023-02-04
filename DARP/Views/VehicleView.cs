@@ -1,4 +1,5 @@
 ﻿using DARP.Models;
+using OxyPlot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,9 @@ namespace DARP.Views
         public string Name { get => _vehicle.Name; set => _vehicle.Name = value; }
         public double LocationX { get => _vehicle.Location.X; set => _vehicle.Location = new(value, _vehicle.Location.Y); }
         public double LocationY { get => _vehicle.Location.Y; set => _vehicle.Location = new(_vehicle.Location.X, value); }
-        public Color Color { get => _vehicle.Color; set => _vehicle.Color = value; }
+        public Color Color { get; set; }
+        public bool ShowOnMap { get; set; }
+
 
         public Vehicle GetModel() => _vehicle;
         object IModelView.GetModelObj() => GetModel();

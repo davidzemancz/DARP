@@ -37,7 +37,7 @@ namespace DARPConsole
 
             List<Order> orders = new();
             const int MAP_SIZE = 20;
-            const int PROFIT_PM = 5;
+            const int PROFIT_PM = 3;
             const int ORDERS = 20;
             for (int o = 1; o <= ORDERS; o++)
             {

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -164,13 +165,12 @@ namespace DARP.Windows
             var vehicle = new Vehicle()
             {
                 Location = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, WindowModel.Params.MapSize)),
-                Color = GetRandomColor(),
             };
 
-            _vehicleService.GetVehicleViews().Add(new VehicleView(vehicle));
+            _vehicleService.GetVehicleViews().Add(new VehicleView(vehicle) { Color = GetRandomColor(), ShowOnMap = true }); ;
             _planDataService.GetPlan().Routes.Add(new Route(vehicle, WindowModel.CurrentTime));
 
-            LoggerBase.Instance.Info($"Added vehicle {vehicle.Id}");
+            LoggerBase.Instance.Debug($"Added vehicle {vehicle.Id}");
         }
 
         #endregion
@@ -193,7 +193,7 @@ namespace DARP.Windows
             };
             _orderService.AddOrder(order);
 
-            LoggerBase.Instance.Info($"Added order {order.Id}");
+            LoggerBase.Instance.Debug($"Added order {order.Id}");
         }
 
         private void AddRandomOrders(int expectedCount)
@@ -222,7 +222,7 @@ namespace DARP.Windows
         private void Tick()
         {
             WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
-            LoggerBase.Instance.Info($"Tick {WindowModel.CurrentTime}");
+            LoggerBase.Instance.Debug($"Tick {WindowModel.CurrentTime}");
 
             _currentProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.CurrentProfit));
             WindowModel.CurrentProfitPlot.InvalidatePlot(true);
@@ -234,7 +234,8 @@ namespace DARP.Windows
 
         private InsertionHeuristicsOutput RunInsertionHeuristics()
         {
-            LoggerBase.Instance.Info($"Run insertion heuristics");
+            LoggerBase.Instance.Debug($"Run insertion heuristics");
+            LoggerBase.Instance.StopwatchStart();
 
             InsertionHeuristics insertion = new();
             InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
@@ -248,12 +249,17 @@ namespace DARP.Windows
                 Plan = _planDataService.GetPlan(),
                 VehicleChargePerMinute = WindowModel.Params.VehicleChargePerMinute,
             });
+
+            LoggerBase.Instance.StopwatchStop();
+
+            _planDataService.SetPlan(output.Plan);
             return output;
         }
             
         private MIPSolverOutput RunMIPSolver()
         {
-            LoggerBase.Instance.Info($"Run MIP");
+            LoggerBase.Instance.Debug($"Run MIP");
+            LoggerBase.Instance.StopwatchStart();
 
             MIPSolver solver = new();
             MIPSolverOutput output = solver.Run(new MIPSolverInput()
@@ -268,12 +274,16 @@ namespace DARP.Windows
                 Plan = _planDataService.GetPlan(),
                 VehicleChargePerMinute = WindowModel.Params.VehicleChargePerMinute,
             });
+
+            LoggerBase.Instance.StopwatchStop();
+
+            _planDataService.SetPlan(output.Plan);
             return output;
         }
 
         private EvolutionarySolverOutput RunEvolution()
         {
-            LoggerBase.Instance.Info($"Run evolution");
+            LoggerBase.Instance.Debug($"Run evolution");
             LoggerBase.Instance.StopwatchStart();
 
             EvolutionarySolver solver = new();
@@ -289,25 +299,27 @@ namespace DARP.Windows
                 Plan = _planDataService.GetPlan(),
                 VehicleChargePerMinute = WindowModel.Params.VehicleChargePerMinute,
             });
+
             LoggerBase.Instance.StopwatchStop();
 
+            _planDataService.SetPlan(output.Plan);
             return output;
         }
 
         private void RunPlan()
         {
             if (WindowModel.Params.UseInsertionHeuristics)
-                _planDataService.SetPlan(RunInsertionHeuristics().Plan);
+                RunInsertionHeuristics();
 
             switch (WindowModel.Params.OptimizationMethod)
             {
                 case OptimizationMethod.Disabled:
                     break;
                 case OptimizationMethod.MIP:
-                    _planDataService.SetPlan(RunMIPSolver().Plan);
+                    RunMIPSolver();
                     break;
                 case OptimizationMethod.Evolutionary:
-                    _planDataService.SetPlan(RunEvolution().Plan);
+                    RunEvolution();
                     break;
                 case OptimizationMethod.AntColony:
                     throw new NotImplementedException();
@@ -316,7 +328,7 @@ namespace DARP.Windows
 
         private void UpdatePlan()
         {
-            LoggerBase.Instance.Info($"Update plan");
+            LoggerBase.Instance.Debug($"Update plan");
 
             (double profit, List<Order> removedOrders) = _planDataService.GetPlan().UpdateVehiclesLocation(WindowModel.CurrentTime, XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
             removedOrders.ForEach(o => o.Handle());
@@ -404,17 +416,21 @@ namespace DARP.Windows
             {
                 foreach (Route route in _planDataService.GetPlan().Routes)
                 {
-                    DrawVehicle(route.Vehicle);
-                    DrawRoute(route);
+                    VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetModel() == route.Vehicle);
+                    if (vv.ShowOnMap)
+                    {
+                        DrawVehicle(route.Vehicle);
+                        DrawRoute(route);
+                    }
                 }
             }
 
             // Orders
             if (chbDrawOrders.IsChecked ?? false)
             {
-                foreach (OrderView orderView in _orderService.GetOrderViews())
+                foreach (Order order in GetOrdersToSchedule())
                 {
-                    DrawOrder(orderView.GetModel());
+                    DrawOrder(order);
                 }
             }
         }
@@ -448,20 +464,22 @@ namespace DARP.Windows
                 (double p1X, double p1Y) = _cords[(point1.Location.X, point1.Location.Y)];
                 (double p2X, double p2Y) = _cords[(point2.Location.X, point2.Location.Y)];
 
-                DrawPath(p1X, p2X, p1Y, p2Y, route.Vehicle.Color);
+                VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetModel() == route.Vehicle);
+                DrawPath(p1X, p2X, p1Y, p2Y, vv.Color);
             }
         }
 
         private void DrawVehicle(Vehicle vehicle)
         {
             const int VEHICLE_SIZE = 16;
+            VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetModel() == vehicle);
 
             (double vehicleX, double vehicleY) = _cords[(vehicle.Location.X, vehicle.Location.Y)];
 
             Polygon vehicleShape = new()
             {
                 Points = _vehicleShapePoints,
-                Fill = new SolidColorBrush(vehicle.Color),
+                Fill = new SolidColorBrush(vv.Color),
                 Width = VEHICLE_SIZE,
                 Height = VEHICLE_SIZE,
                 Stretch = Stretch.Fill,
@@ -739,7 +757,7 @@ namespace DARP.Windows
 
         private void btnRunEvo_Click(object sender, RoutedEventArgs e)
         {
-            RunMIPSolver();
+            RunEvolution();
             RenderPlan();
         }
 

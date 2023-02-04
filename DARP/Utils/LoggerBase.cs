@@ -12,7 +12,6 @@ namespace DARP.Utils
     {
         public IList<TextWriter> TextWriters { get; }
         void Debug(string message);
-        void Info(string message);
         void Warn(string message);
         void Error(string message);
         void Fatal(string message);
@@ -33,19 +32,14 @@ namespace DARP.Utils
             Stopwatch sw = new();
             _stopwatches.Push(sw);
             sw.Start();
-            Info($"Stopwatch {sw.GetHashCode()} started");
+            Debug($"Stopwatch {sw.GetHashCode()} started");
         }
 
         public void StopwatchStop()
         {
             Stopwatch sw = _stopwatches.Pop();
             sw.Stop();
-            Info($"Stopwatch {sw.GetHashCode()} stopped, time {sw.Elapsed}");
-        }
-
-        public void Debug(string message)
-        {
-            Log(LogLevel.Debug, message);
+            Debug($"Stopwatch {sw.GetHashCode()} stopped, time {sw.Elapsed}");
         }
 
         public void Error(string message)
@@ -58,16 +52,16 @@ namespace DARP.Utils
             Log(LogLevel.Fatal, message);
         }
 
-        public void Info(string message)
+        public void Debug(string message)
         {
-            Log(LogLevel.Info, message);
+            Log(LogLevel.Debug, message);
         }
 
         public virtual void Log(LogLevel level, string message)
         {
             foreach (TextWriter writer in TextWriters)
             {
-                writer.WriteLine($"{++_lineCounter}> [{level}] {message}");
+                writer.WriteLine($"{++_lineCounter}> {message}");
             }
         }
 
