@@ -52,7 +52,7 @@ namespace DARP.Solvers
                 mean /= POP_SIZE;
                 LoggerBase.Instance.Info($"{g}> Fitness {mean},{min},{max}");
 
-                // Corssover
+                // TODO  Corssover
 
                 // Mutate
                 for (int i = 0; i < POP_SIZE; i++)
@@ -113,7 +113,9 @@ namespace DARP.Solvers
                         }
 
                         population.Add(indClone);
-                    }                  
+                    }      
+                    
+                    // TODO switch mutation
                 }
 
                 // Tournament enviromental selection
