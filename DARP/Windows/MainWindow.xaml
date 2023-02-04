@@ -28,15 +28,15 @@
             </MenuItem>
             <MenuItem Header="_Run" Padding="20, 1">
                 <MenuItem Header="_Ant colony"/>
-                <MenuItem Header="_Evolution"/>
-                <MenuItem Header="_Insertion heuristics"/>
-                <MenuItem Header="_MIP solver"/>
+                <MenuItem Header="_Evolution" Click="btnRunEvo_Click"/>
+                <MenuItem Header="_Insertion heuristics" Click="btnRunInsertion_Click"/>
+                <MenuItem Header="_MIP solver" Click="btnRunMIP_Click"/>
             </MenuItem>
             <MenuItem Header="_Plan" Padding="20, 1">
-                <MenuItem Header="_Update"/>
+                <MenuItem Header="_Update" Click="btnUpdatePlan_Click"/>
             </MenuItem>
             <MenuItem Header="_Simulation" Padding="20, 1">
-                <MenuItem Header="_Start"/>
+                <MenuItem Header="_Start" Click="btnRunSimulation_Click"/>
             </MenuItem>
         </Menu>
         <ToolBarTray Grid.Row="1" VerticalAlignment="Stretch" Grid.ColumnSpan="100">
@@ -57,29 +57,39 @@
 
                     <GroupBox Header="Time">
                         <StackPanel>
-                            <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0}'}" Margin="0,3"/>
-                            <Button Content="Tick" Margin="0,3"/>
-                            <Button Content="Reset" Margin="0,3"/>
+                            <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0} minutes'}" Margin="0,3"/>
+                            <Button Content="Tick (minutes++)" Margin="0,3" Click="btnTick_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Run optimization">
                         <StackPanel>
                             <Button Content="Ant colony" Margin="0,3"/>
-                            <Button Content="Evolution" Margin="0,3"/>
-                            <Button Content="Insertion heuristics" Margin="0,3"/>
-                            <Button Content="MIP solver" Margin="0,3"/>
+                            <Button Content="Evolution" Margin="0,3" Click="btnRunEvo_Click"/>
+                            <Button Content="Insertion heuristics" Margin="0,3" Click="btnRunInsertion_Click"/>
+                            <Button Content="MIP solver" Margin="0,3" Click="btnRunInsertion_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Plan">
                         <StackPanel>
-                            <Button Content="Update" Margin="0,3"/>
+                            <Button Content="Update" Margin="0,3" Click="btnUpdatePlan_Click"/>
                             <TextBlock TextWrapping="WrapWithOverflow" FontSize="9" Text="Update vehicles locations and remove old orders"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Simulation">
                         <StackPanel>
                             <TextBlock Text="State: Ready" Margin="0,3"/>
-                            <Button Content="Start" Margin="0,3"/>
+                            <Button x:Name="btnRunSimulation" Content="Start" Margin="0,3" Click="btnRunSimulation_Click"/>
+                            <GroupBox Header="Outputs">
+                                <StackPanel>
+                                    <CheckBox Content="Total profit"/>
+                                    <CheckBox Content="Handled orders"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <Label Content="Output format:" Padding="0" Margin="0,3"/>
+                            <ComboBox>
+                                <ComboBoxItem IsSelected="True" Content="csv"/>
+                                <ComboBoxItem Content="xlsx"/>
+                            </ComboBox>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Testing">
@@ -103,7 +113,7 @@
                             <GroupBox Header="Outputs">
                                 <StackPanel>
                                     <CheckBox Content="Total profit"/>
-                                    <CheckBox Content="Convergence"/>
+                                    <CheckBox Content="Handled orders"/>
                                 </StackPanel>
                             </GroupBox>
                             <Label Content="Output format:" Padding="0" Margin="0,3"/>
@@ -112,7 +122,6 @@
                                 <ComboBoxItem Content="xlsx"/>
                             </ComboBox>
                             <Button Content="Run tests" Margin="0,3"/>
-
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
@@ -127,7 +136,7 @@
                         </Grid.RowDefinitions>
                         <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
                             <ToolBar Height="30">
-                                <Button   Content="Generate order" Click="newRandomOrder_Click"/>
+                                <Button   Content="Add order" Click="newRandomOrder_Click"/>
                             </ToolBar>
                         </ToolBarTray>
                         <DataGrid Grid.Row="1" x:Name="dgOrders"/>
@@ -141,7 +150,7 @@
                         </Grid.RowDefinitions>
                         <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
                             <ToolBar Height="30">
-                                <Button   Content="New random vehicle" Click="btwNewRandomVehicle_Click"/>
+                                <Button   Content="Add vehicle" Click="btwNewRandomVehicle_Click"/>
                             </ToolBar>
 
                         </ToolBarTray>
@@ -179,15 +188,16 @@
                             <Label Content="{Binding Stats.RejectedOrdersStr}"/>
                             <Separator/>
                             <Label Content="{Binding Stats.TotalTimeTraveledStr}"/>
+                            <Label Content="{Binding Stats.CurrentProfitStr}"/>
                             <Label Content="{Binding Stats.TotalProfitStr}"/>
                             <Separator/>
                         </StackPanel>
                         <TabControl Grid.Row="1">
-                            <TabItem Header="Current profit" Width="100">
-                                <oxy:PlotView Model="{Binding CurrentProfitPlot}"/>
-                            </TabItem>
                             <TabItem Header="Total profit" Width="100">
                                 <oxy:PlotView Model="{Binding TotalProfitPlot}"/>
+                            </TabItem>
+                            <TabItem Header="Current profit" Width="100">
+                                <oxy:PlotView Model="{Binding CurrentProfitPlot}"/>
                             </TabItem>
                         </TabControl>
                     </Grid>

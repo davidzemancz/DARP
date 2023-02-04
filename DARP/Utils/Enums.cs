@@ -14,19 +14,18 @@ namespace DARP.Utils
 
     public enum InsertionHeuristicsMode
     {
-        Disabled = 0,
         /// <summary>
         /// Gets orders in order and inserts them to first possible place
         /// </summary>
-        FirstFit = 1,
+        FirstFit = 0,
         /// <summary>
         /// Gets orders in order and inserts them to best possible place
         /// </summary>
-        LocalBestFit = 2,
+        LocalBestFit = 1,
         /// <summary>
         /// Finds best fitting order and inserts it until there are none
         /// </summary>
-        GlobalBestFit = 3,
+        GlobalBestFit = 2,
     }
 
     public enum StatusCode

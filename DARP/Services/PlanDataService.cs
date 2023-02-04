@@ -10,6 +10,7 @@ namespace DARP.Services
     public interface IPlanDataService
     {
         Plan GetPlan();
+        void SetPlan (Plan plan);
     }
 
     public class PlanDataService : IPlanDataService
@@ -22,5 +23,7 @@ namespace DARP.Services
         }
 
         public Plan GetPlan() => _plan;
+
+        public void SetPlan(Plan plan) => _plan = plan;
     }
 }

@@ -50,8 +50,7 @@ namespace DARP.Solvers
                     if(ind.Fitness > bestInd.Fitness) bestInd = ind;
                 }
                 mean /= POP_SIZE;
-                LoggerBase.Instance.Info($"{g}> Fitness {mean},{min},{max}");
-
+              
                 // TODO  Corssover
 
                 // Mutate

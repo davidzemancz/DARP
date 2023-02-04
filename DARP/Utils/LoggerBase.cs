@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,27 @@ namespace DARP.Utils
 
     public class LoggerBase : ILogger
     {
+        private long _lineCounter = 0;
+        private Stack<Stopwatch> _stopwatches = new();
+        
         public static LoggerBase Instance { get; protected set; } = new LoggerBase();
 
         public virtual IList<TextWriter> TextWriters { get; protected set; } = new List<TextWriter>();
+
+        public void StopwatchStart()
+        {
+            Stopwatch sw = new();
+            _stopwatches.Push(sw);
+            sw.Start();
+            Info($"Stopwatch {sw.GetHashCode()} started");
+        }
+
+        public void StopwatchStop()
+        {
+            Stopwatch sw = _stopwatches.Pop();
+            sw.Stop();
+            Info($"Stopwatch {sw.GetHashCode()} stopped, time {sw.Elapsed}");
+        }
 
         public void Debug(string message)
         {
@@ -48,7 +67,7 @@ namespace DARP.Utils
         {
             foreach (TextWriter writer in TextWriters)
             {
-                writer.WriteLine($"[{level}] {message}");
+                writer.WriteLine($"{++_lineCounter}> [{level}] {message}");
             }
         }
 

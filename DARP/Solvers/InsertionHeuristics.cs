@@ -26,8 +26,6 @@ namespace DARP.Solvers
         {
             switch (input.Mode)
             {
-                case InsertionHeuristicsMode.Disabled:
-                    return new InsertionHeuristicsOutput(input.Plan, Status.Success);
                 case InsertionHeuristicsMode.FirstFit:
                     return RunFirstFit(input);
                 case InsertionHeuristicsMode.LocalBestFit:
