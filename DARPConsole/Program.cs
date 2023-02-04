@@ -38,7 +38,7 @@ namespace DARPConsole
             List<Order> orders = new();
             const int MAP_SIZE = 20;
             const int PROFIT_PM = 5;
-            const int ORDERS = 40;
+            const int ORDERS = 20;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords pickup = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
@@ -58,7 +58,7 @@ namespace DARPConsole
             };
             input.Orders = orders;
 
-            const int VEHICLES = 10;
+            const int VEHICLES = 5;
             List<Vehicle> vehicles = new();
             for (int v = 1; v <= VEHICLES; v++)
             {
@@ -85,11 +85,18 @@ namespace DARPConsole
             InsertionHeuristics insH = new();
             InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
             double iProfit = insHOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-            Console.WriteLine($"Insertion heuristics {iProfit}, time {sw.Elapsed}");
+            Console.WriteLine($"Insertion heuristics (best fit) {iProfit}, time {sw.Elapsed}");
+
+            sw.Restart();
+            InsertionHeuristicsInput insHInput2 = new(input);
+            InsertionHeuristics insH2 = new();
+            InsertionHeuristicsOutput insHOutput2 = insH2.RunFirstFit(insHInput2);
+            double iProfit2 = insHOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+            Console.WriteLine($"Insertion heuristics (first fit) {iProfit2}, time {sw.Elapsed}");
 
             sw.Restart();
             MIPSolverInput mipInput = new(input);
-            mipInput.TimeLimit = 30_000;
+            mipInput.TimeLimit = 10_000;
             MIPSolver ms = new();
             MIPSolverOutput mipOutput = ms.Run(mipInput);
             double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);

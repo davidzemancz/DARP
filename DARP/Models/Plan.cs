@@ -64,7 +64,7 @@ namespace DARP.Models
         public Plan Clone()
         {
             Plan plan = new Plan();
-            plan.Routes = Routes.Select(r => r.Clone()).ToList();
+            plan.Routes = new(Routes.Select(r => r.Clone()));
             return plan;
         }
        

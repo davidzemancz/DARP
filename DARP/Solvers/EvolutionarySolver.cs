@@ -20,7 +20,7 @@ namespace DARP.Solvers
         {
             Random random = new((int)DateTime.Now.Ticks);
 
-            const int GENERATIONS = 2000;
+            const int GENERATIONS = 1000;
             const int POP_SIZE = 100;
 
             // Initialize population
@@ -57,7 +57,7 @@ namespace DARP.Solvers
                 // Mutate
                 for (int i = 0; i < POP_SIZE; i++)
                 {
-                    const double PROB_REMOVE_ORDER = 0.4;
+                    const double PROB_REMOVE_ORDER = 0.6;
                     const double PROB_INSERT_ORDER = 0.5;
                     const double PROB_INSHEUR = 0.5;
 
@@ -107,18 +107,38 @@ namespace DARP.Solvers
                         insHInput.Orders = new[] { order };
                         InsertionHeuristics insH = new();
                         insH.RunLocalBestFit(insHInput);
+                        if (indClone.Plan.Contains(order))
+                        {
+                            indClone.RemaingOrders.Remove(order);
+                        }
 
                         population.Add(indClone);
-                    }
-                   
+                    }                  
                 }
 
-                // Elitism
-                // TODO think about roullete wheel enviromental selection
-                population = population
-                   .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute))
-                   .Take(POP_SIZE)
-                   .ToList();
+                // Tournament enviromental selection
+                List<Individual> newPopulation = new(POP_SIZE);
+                for (int i = 0; i < POP_SIZE; i++)
+                {
+                    int first = random.Next(population.Count);
+                    int second = random.Next(population.Count);
+
+                    double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+                    double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+
+                    if (firstProfit > secondProfit)
+                        newPopulation.Add(population[first]);
+                    else
+                        newPopulation.Add(population[second]);
+                }
+                population = newPopulation;
+
+
+                // Elitims selection
+                //population = population
+                //   .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute))
+                //   .Take(POP_SIZE)
+                //   .ToList();
 
             }
 
