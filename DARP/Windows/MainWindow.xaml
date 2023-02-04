@@ -29,8 +29,8 @@
             <MenuItem Header="_Run" Padding="20, 1">
                 <MenuItem Header="_Ant colony"/>
                 <MenuItem Header="_Evolution"/>
+                <MenuItem Header="_Insertion heuristics"/>
                 <MenuItem Header="_MIP solver"/>
-                <MenuItem Header="_PSO"/>
             </MenuItem>
             <MenuItem Header="_Plan" Padding="20, 1">
                 <MenuItem Header="_Update"/>
@@ -40,28 +40,85 @@
             </MenuItem>
         </Menu>
         <ToolBarTray Grid.Row="1" VerticalAlignment="Stretch" Grid.ColumnSpan="100">
-            <ToolBar Band="0" Height="30">
-                <Button x:Name="btnRunSimulation"  Content="Start simulation" Click="btnRunSimulation_Click"/>
-                <Button x:Name="btnRunInsertion"  Content="Run insertion heuristics" Click="btnRunInsertion_Click"/>
-                <Button x:Name="btnRunMIP"  Content="Run MIP solver" Click="btnRunMIP_Click"/>
-                <Button x:Name="btnRunEvo"  Content="Run Evolutionary solver" Click="btnRunEvo_Click"/>
-                <Button x:Name="btnUpdateVehicles"  Content="Update vehicles location" Click="btnUpdateVehicles_Click"/>
-            </ToolBar>
-            <ToolBar Band="0" Height="30">
-                <Label Content="Time:"/>
-                <Label Content="{Binding CurrentTime}"/>
-                <Button Content="Tick" Click="btnTick_Click"/>
-            </ToolBar>
+          
         </ToolBarTray>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="45*" />
+                <ColumnDefinition Width="13*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="32*" />
                 <ColumnDefinition Width="10" />
                 <ColumnDefinition Width="35*" />
                 <ColumnDefinition Width="10"/>
                 <ColumnDefinition Width="20*"/>
             </Grid.ColumnDefinitions>
-            <TabControl x:Name="tbcLeft"  Grid.Column="0" SelectionChanged="tbcLeft_SelectionChanged">
+            <ScrollViewer>
+                <StackPanel Grid.Column="0">
+
+                    <GroupBox Header="Time">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0}'}" Margin="0,3"/>
+                            <Button Content="Tick" Margin="0,3"/>
+                            <Button Content="Reset" Margin="0,3"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Run optimization">
+                        <StackPanel>
+                            <Button Content="Ant colony" Margin="0,3"/>
+                            <Button Content="Evolution" Margin="0,3"/>
+                            <Button Content="Insertion heuristics" Margin="0,3"/>
+                            <Button Content="MIP solver" Margin="0,3"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Plan">
+                        <StackPanel>
+                            <Button Content="Update" Margin="0,3"/>
+                            <TextBlock TextWrapping="WrapWithOverflow" FontSize="9" Text="Update vehicles locations and remove old orders"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Simulation">
+                        <StackPanel>
+                            <TextBlock Text="State: Ready" Margin="0,3"/>
+                            <Button Content="Start" Margin="0,3"/>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Testing">
+                        <StackPanel>
+                            <TextBlock Text="State: Ready" Margin="0,3"/>
+                            <Label Content="Runs:" Padding="0" Margin="0,3"/>
+                            <xctk:IntegerUpDown Value="10"/>
+                            <GroupBox Header="Optimization">
+                                <StackPanel>
+                                    <CheckBox Content="Ant colony"/>
+                                    <CheckBox Content="Evolution"/>
+                                    <CheckBox Content="Insertion heuristics"/>
+                                    <CheckBox Content="MIP (guaranties optimality)"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="Settings">
+                                <StackPanel>
+                                    <CheckBox Content="Mesaure time"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="Outputs">
+                                <StackPanel>
+                                    <CheckBox Content="Total profit"/>
+                                    <CheckBox Content="Convergence"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <Label Content="Output format:" Padding="0" Margin="0,3"/>
+                            <ComboBox>
+                                <ComboBoxItem IsSelected="True" Content="csv"/>
+                                <ComboBoxItem Content="xlsx"/>
+                            </ComboBox>
+                            <Button Content="Run tests" Margin="0,3"/>
+
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </ScrollViewer>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+            <TabControl x:Name="tbcLeft"  Grid.Column="2" SelectionChanged="tbcLeft_SelectionChanged">
                 <TabItem x:Name="tbiOrders" Header="Orders" Width="100">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -97,8 +154,8 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-            <TabControl Grid.Column="2" >
+            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
+            <TabControl Grid.Column="4" >
                 <TabItem Header="Routes" Width="100">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -157,10 +214,10 @@
                     </Grid>
                 </TabItem>
             </TabControl>
-            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
-            <TabControl Grid.Column="4">
+            <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch" />
+            <TabControl Grid.Column="6">
                 <TabItem Header="Properties" Width="100">
-                    <xctk:PropertyGrid  x:Name="pgSettings" VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
+                    <xctk:PropertyGrid ShowTitle="False"  x:Name="pgSettings"  VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
                 </TabItem>
                 <TabItem Header="Tasks" Width="100">
                     <ListBox x:Name="lbTasks" ItemsSource="{Binding Tasks}"/>
