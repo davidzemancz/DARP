@@ -28,16 +28,6 @@ namespace DARP.Models
             return totalProfit;
         }
 
-        public double GetTotalTimeTraveled()
-        {
-            double totalTime = 0;
-            foreach (Route route in Routes)
-            {
-                totalTime += route.GetTotalTimeTraveled();
-            }
-            return totalTime;
-        }
-
         public (double profit, List<Order> removedOrders) UpdateVehiclesLocation(Time time, MetricFunc metric, double vehicleCharge)
         {
             double profit = 0;

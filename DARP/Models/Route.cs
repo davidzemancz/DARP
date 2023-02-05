@@ -51,11 +51,6 @@ namespace DARP.Models
             return Points.Any(p => p is  OrderPickupRoutePoint oprp && oprp.Order == order);
         }
 
-        public double GetTotalTimeTraveled()
-        {
-            return Points[^1].Time.ToDouble();
-        }
-
         public bool CanInsertOrder(Order newOrder, int index, MetricFunc metric)
         {
             if (index % 2 == 0) return false; // Index 0 is vehicles location

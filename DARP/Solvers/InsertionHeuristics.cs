@@ -11,6 +11,34 @@ using System.Threading.Tasks;
 
 namespace DARP.Solvers
 {
+    public class InsertionHeuristicsOutput : ISolverOutput
+    {
+        public Plan Plan { get; }
+        public Status Status { get; }
+
+        public InsertionHeuristicsOutput()
+        {
+        }
+
+        public InsertionHeuristicsOutput(Status status)
+        {
+            Status = status;
+        }
+
+        public InsertionHeuristicsOutput(Plan plan, Status status)
+        {
+            Plan = plan;
+            Status = status;
+        }
+    }
+    public class InsertionHeuristicsInput : SolverInputBase
+    {
+        public InsertionHeuristicsMode Mode { get; set; }
+        public InsertionObjective Objective { get; set; }
+
+        public InsertionHeuristicsInput() { }
+        public InsertionHeuristicsInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
+    }
     public class InsertionHeuristics : ISolver
     {
         public InsertionHeuristics() 

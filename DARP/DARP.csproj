@@ -5,7 +5,8 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>disable</Nullable>
     <UseWPF>true</UseWPF> 
-    <StartupObject>DARP.App</StartupObject>
+    <StartupObject>DARP.App</StartupObject> 
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

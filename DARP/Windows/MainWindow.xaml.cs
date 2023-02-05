@@ -154,6 +154,8 @@ namespace DARP.Windows
         private LineSeries _handledOrdersSeries;
         private LineSeries _rejectedOrdersSeries;
         private LineSeries _totalProfitSeries;
+        private LineSeries _profitOptimalitySeries;
+        private LineSeries _travelTimeOptimalitySeries;
 
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
@@ -228,8 +230,6 @@ namespace DARP.Windows
         {
             WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
             LoggerBase.Instance.Debug($"Tick {WindowModel.CurrentTime}");
-
-
         }
 
         #endregion
@@ -342,13 +342,32 @@ namespace DARP.Windows
         {
             LoggerBase.Instance.Debug($"Update plan");
 
+            // Update plan
             (double profit, List<Order> removedOrders) = _planDataService.GetPlan().UpdateVehiclesLocation(WindowModel.CurrentTime, XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
             removedOrders.ForEach(o => o.Handle());
-
             WindowModel.Stats.TotalProfit += profit;
+
+            // Total profit
+            _totalProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.TotalProfit));
+            WindowModel.TotalProfitPlot.InvalidatePlot(true);
+
+            double optimalProfit = _orderService.GetOrderViews().Sum(ov => ov.Profit);
+            double profitOptimality = 100 * (WindowModel.Stats.TotalProfit / optimalProfit);
 
             _totalProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.TotalProfit));
             WindowModel.TotalProfitPlot.InvalidatePlot(true);
+
+            _profitOptimalitySeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), profitOptimality));
+
+            // Total travel time
+            double totalTravelTime = _planDataService.GetPlan().Routes.Sum(r => r.Points[^1].Time.ToDouble());
+            MetricFunc metric = XMath.GetMetric(WindowModel.Params.Metric);
+            double optimalTravelTime = _orderService.GetOrderViews().Sum(ov => metric(ov.GetModel().PickupLocation, ov.GetModel().DeliveryLocation).ToDouble());
+            double travelTimeOptimality = 100 * (optimalTravelTime / totalTravelTime);
+
+            _travelTimeOptimalitySeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), travelTimeOptimality));
+            WindowModel.OptimalityPlot.InvalidatePlot(true);
+
         }
 
         private void RenderPlan()
@@ -370,7 +389,6 @@ namespace DARP.Windows
             WindowModel.Stats.AcceptedOrders = orderViews.Where(o => o.State == OrderState.Handled || o.State == OrderState.Accepted).Count();
             WindowModel.Stats.RejectedOrders = orderViews.Where(o => o.State == OrderState.Rejected).Count();
 
-            WindowModel.Stats.TotalTimeTraveled = _planDataService.GetPlan().GetTotalTimeTraveled();
             WindowModel.Stats.CurrentProfit = _planDataService.GetPlan().GetTotalProfit(XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
 
             double handledOrdersPercent = 100 * (WindowModel.Stats.HandledOrders / (double)WindowModel.Stats.TotalOrders);
@@ -724,8 +742,27 @@ namespace DARP.Windows
             WindowModel.OrdersStatePlot.Series.Add(_rejectedOrdersSeries);
             WindowModel.OrdersStatePlot.InvalidatePlot(true);
 
+            WindowModel.OptimalityPlot = new PlotModel { Title = "Optimality" };
+            WindowModel.OptimalityPlot.Legends.Add(new Legend()
+            {
+                LegendPosition = LegendPosition.RightTop,
+            });
+            WindowModel.OptimalityPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = 0, Maximum = 100, Unit = "optimality %" });
+            WindowModel.OptimalityPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "minutes" });
+            _profitOptimalitySeries = new LineSeries() { Color = OxyColor.FromRgb(0, 255, 0), Title = "Profit" };
+            _travelTimeOptimalitySeries = new LineSeries() { Color = OxyColor.FromRgb(0, 0, 255), Title = "Travel time" };
+            WindowModel.OptimalityPlot.Series.Add(_profitOptimalitySeries);
+            WindowModel.OptimalityPlot.Series.Add(_travelTimeOptimalitySeries);
+            WindowModel.OptimalityPlot.InvalidatePlot(true);
+
             WindowModel.TotalProfitPlot = new PlotModel { Title = "Total profit" };
-            _totalProfitSeries = new() { };
+            WindowModel.TotalProfitPlot.Legends.Add(new Legend()
+            {
+                LegendPosition = LegendPosition.RightTop,
+            });
+            WindowModel.TotalProfitPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = 0, Unit = "profit" });
+            WindowModel.TotalProfitPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "minutes" });
+            _totalProfitSeries = new LineSeries() { Color = OxyColor.FromRgb(0, 255, 0), Title = "Profit" };
             WindowModel.TotalProfitPlot.Series.Add(_totalProfitSeries);
             WindowModel.TotalProfitPlot.InvalidatePlot(true);
         }
@@ -940,6 +977,7 @@ namespace DARP.Windows
         public MainWindowParams Params { get; set; } = new();
         public PlotModel OrdersStatePlot { get; set; }
         public PlotModel TotalProfitPlot { get; set; }
+        public PlotModel OptimalityPlot { get; set; }
 
         public enum SimulationStateEnum
         {
@@ -961,11 +999,9 @@ namespace DARP.Windows
         public int HandledOrders { get; set; }
         public int AcceptedOrders { get; set; }
         public int RejectedOrders { get; set; }
-        public double TotalTimeTraveled { get; set; }
         public double CurrentProfit { get; set; }
         public double TotalProfit { get; set; }
 
-        public string TotalTimeTraveledStr { get => $"Total time travelled: {TotalTimeTraveled} minutes"; }
         public string CurrentProfitStr { get => $"Current profit: {CurrentProfit}"; }
         public string TotalProfitStr { get => $"Total profit: {TotalProfit}"; }
         public string TotalOrdersStr { get => $"Total orders: {TotalOrders}"; }

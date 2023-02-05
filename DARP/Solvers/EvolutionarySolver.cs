@@ -9,6 +9,37 @@ using System.Threading.Tasks;
 
 namespace DARP.Solvers
 {
+    public class EvolutionarySolverOutput : ISolverOutput
+    {
+        public Plan Plan { get; }
+        public Status Status { get; }
+
+        public EvolutionarySolverOutput()
+        {
+        }
+
+        public EvolutionarySolverOutput(Status status)
+        {
+            Status = status;
+        }
+
+        public EvolutionarySolverOutput(Plan plan, Status status)
+        {
+            Plan = plan;
+            Status = status;
+        }
+
+    }
+
+    public class EvolutionarySolverInput : SolverInputBase
+    {
+        public int Generations { get; set; }
+        public int PopulationSize { get; set; }
+
+        public EvolutionarySolverInput() { }
+        public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
+    }
+
     public class EvolutionarySolver : ISolver
     {
         ISolverOutput ISolver.Run(ISolverInput input)
@@ -26,6 +57,7 @@ namespace DARP.Solvers
             List<Individual> population = new();
             for (int i = 0; i < input.PopulationSize; i++)
             {
+                // TODO randomize initial population
                 population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders) });
             }
 
@@ -48,7 +80,7 @@ namespace DARP.Solvers
                 }
                 mean /= input.PopulationSize;
               
-                // TODO  Corssover
+                // TODO corssover
 
                 // Mutate
                 for (int i = 0; i < input.PopulationSize; i++)
@@ -113,6 +145,8 @@ namespace DARP.Solvers
                     
                     // TODO switch mutation
                 }
+
+                // TODO selection settings
 
                 // Tournament enviromental selection
                 List<Individual> newPopulation = new(input.PopulationSize);

@@ -161,7 +161,6 @@
                             <Label Content="{Binding Stats.AcceptedOrdersStr}"/>
                             <Label Content="{Binding Stats.RejectedOrdersStr}"/>
                             <Separator/>
-                            <Label Content="{Binding Stats.TotalTimeTraveledStr}"/>
                             <Label Content="{Binding Stats.CurrentProfitStr}"/>
                             <Label Content="{Binding Stats.TotalProfitStr}"/>
                             <Separator/>
@@ -178,6 +177,9 @@
                                 </TabItem>
                                 <TabItem Header="Orders" Width="100" Tag="{Binding OrdersStatePlot}">
                                     <oxy:PlotView Model="{Binding OrdersStatePlot}"/>
+                                </TabItem>
+                                <TabItem Header="Optimality" Width="100" Tag="{Binding OptimalityPlot}">
+                                    <oxy:PlotView Model="{Binding OptimalityPlot}"/>
                                 </TabItem>
                             </TabControl>
                         </DockPanel>

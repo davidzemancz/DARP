@@ -10,6 +10,35 @@ using System.Windows.Controls;
 
 namespace DARP.Solvers
 {
+    public class MIPSolverOutput : ISolverOutput
+    {
+        public Plan Plan { get; }
+        public Status Status { get; }
+
+        public MIPSolverOutput()
+        {
+        }
+
+        public MIPSolverOutput(Status status)
+        {
+            Status = status;
+        }
+
+        public MIPSolverOutput(Plan plan, Status status)
+        {
+            Plan = plan;
+            Status = status;
+        }
+    }
+    public class MIPSolverInput : SolverInputBase
+    {
+        public bool Multithreading { get; set; }
+        public long TimeLimit { get; set; }
+        public OptimizationObjective Objective { get; set; } = OptimizationObjective.MaximizeProfit;
+
+        public MIPSolverInput() { }
+        public MIPSolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
+    }
     public class MIPSolver : ISolver
     {
         private Solver _solver;
