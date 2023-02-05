@@ -228,7 +228,7 @@ namespace DARP.Solvers
                         profit = order2.TotalProfit;
                     }
                     ordersProfit[i] = var * profit;
-                    travelCosts[i] = var * time.ToDouble() * input.VehicleChargePerMinute;
+                    travelCosts[i] = var * time.ToDouble() * input.VehicleChargePerTick;
 
                     i++;
                 }

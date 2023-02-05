@@ -110,7 +110,7 @@ namespace DARP.Solvers
                         {
                             Route routeClone = route.Clone();
                             routeClone.InsertOrder(order, index, input.Metric);
-                            double routeProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+                            double routeProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                             
                             if (routeProfit > bestProfit)
                             {
@@ -156,7 +156,7 @@ namespace DARP.Solvers
                             {
                                 Route routeClone = route.Clone();
                                 routeClone.InsertOrder(order, index, input.Metric);
-                                double routeProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+                                double routeProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
                                 if (routeProfit > globalBestProfit)
                                 {

@@ -69,7 +69,7 @@ namespace DARP.Solvers
                 for (int i = 0; i < input.PopulationSize; i++)
                 {
                     Individual ind = population[i];
-                    double fitness = ind.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+                    double fitness = ind.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                     mean += fitness;
                     if (fitness < min) min = fitness;
                     if (fitness > max) max = fitness;
@@ -155,8 +155,8 @@ namespace DARP.Solvers
                     int first = random.Next(population.Count);
                     int second = random.Next(population.Count);
 
-                    double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-                    double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+                    double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                    double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
                     if (firstProfit > secondProfit)
                         newPopulation.Add(population[first]);

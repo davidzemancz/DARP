@@ -188,7 +188,7 @@ namespace DARP.Windows
             Cords pickup = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize));
             Cords delivery = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize));
 
-            double totalProfit = WindowModel.Params.OrderProfitPerMinute * XMath.GetMetric(WindowModel.Params.Metric)(pickup, delivery).Minutes;
+            double totalProfit = WindowModel.Params.OrderProfitPerTick * XMath.GetMetric(WindowModel.Params.Metric)(pickup, delivery).Ticks;
 
             Time maxDeliveryTime = new Time(WindowModel.CurrentTime.ToDouble() + WindowModel.Params.MaxDeliveryTime.Min + _random.Next(WindowModel.Params.MaxDeliveryTime.Max));
             Order order = new()
@@ -228,7 +228,10 @@ namespace DARP.Windows
         #region Time
         private void Tick()
         {
-            WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Minutes + 1);
+            if (WindowModel.CurrentTime.ToDouble() % WindowModel.Params.TimeSeriesUpdateEachTicks == 0) 
+                UpdateTimeSeries();
+
+            WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Ticks + 1);
             LoggerBase.Instance.Debug($"Tick {WindowModel.CurrentTime}");
         }
 
@@ -251,7 +254,7 @@ namespace DARP.Windows
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
-                VehicleChargePerMinute = WindowModel.Params.VehicleChargePerMinute,
+                VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
             });
 
             LoggerBase.Instance.StopwatchStop();
@@ -276,7 +279,7 @@ namespace DARP.Windows
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
-                VehicleChargePerMinute = WindowModel.Params.VehicleChargePerMinute,
+                VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
             });
 
             LoggerBase.Instance.StopwatchStop();
@@ -285,13 +288,15 @@ namespace DARP.Windows
             return output;
         }
 
-        private EvolutionarySolverOutput RunEvolution()
+       
+
+        private async Task RunEvolution()
         {
             LoggerBase.Instance.Debug($"Run evolution");
             LoggerBase.Instance.StopwatchStart();
 
             EvolutionarySolver solver = new();
-            EvolutionarySolverOutput output = solver.Run(new EvolutionarySolverInput()
+            EvolutionarySolverInput input = new EvolutionarySolverInput()
             {
                 Generations = WindowModel.Params.EvoGenerations,
                 PopulationSize = WindowModel.Params.EvoPopSize,
@@ -300,16 +305,14 @@ namespace DARP.Windows
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
-                VehicleChargePerMinute = WindowModel.Params.VehicleChargePerMinute,
-            });
-
-            LoggerBase.Instance.StopwatchStop();
-
+                VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
+            };
+            EvolutionarySolverOutput output = await Task.Run(() => solver.Run(input));
             _planDataService.SetPlan(output.Plan);
-            return output;
+            LoggerBase.Instance.StopwatchStop();
         }
 
-        private void RunPlan()
+        private async Task RunPlan()
         {
             if (WindowModel.Params.UseInsertionHeuristics)
                 RunInsertionHeuristics();
@@ -322,7 +325,7 @@ namespace DARP.Windows
                     RunMIPSolver();
                     break;
                 case OptimizationMethod.Evolutionary:
-                    RunEvolution();
+                    await RunEvolution();
                     break;
                 case OptimizationMethod.AntColony:
                     throw new NotImplementedException();
@@ -331,7 +334,7 @@ namespace DARP.Windows
             // Reject old orders
             foreach (OrderView orderView in _orderService.GetOrderViews())
             {
-                if (orderView.State != OrderState.Handled && orderView.DeliveryToMins < WindowModel.CurrentTime.Minutes)
+                if (orderView.State != OrderState.Handled && orderView.DeliveryToTick < WindowModel.CurrentTime.Ticks)
                 {
                     orderView.GetModel().Reject();
                 }
@@ -343,31 +346,9 @@ namespace DARP.Windows
             LoggerBase.Instance.Debug($"Update plan");
 
             // Update plan
-            (double profit, List<Order> removedOrders) = _planDataService.GetPlan().UpdateVehiclesLocation(WindowModel.CurrentTime, XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
+            (double profit, List<Order> removedOrders) = _planDataService.GetPlan().UpdateVehiclesLocation(WindowModel.CurrentTime, XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerTick);
             removedOrders.ForEach(o => o.Handle());
             WindowModel.Stats.TotalProfit += profit;
-
-            // Total profit
-            _totalProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.TotalProfit));
-            WindowModel.TotalProfitPlot.InvalidatePlot(true);
-
-            double optimalProfit = _orderService.GetOrderViews().Sum(ov => ov.Profit);
-            double profitOptimality = 100 * (WindowModel.Stats.TotalProfit / optimalProfit);
-
-            _totalProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.TotalProfit));
-            WindowModel.TotalProfitPlot.InvalidatePlot(true);
-
-            _profitOptimalitySeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), profitOptimality));
-
-            // Total travel time
-            double totalTravelTime = _planDataService.GetPlan().Routes.Sum(r => r.Points[^1].Time.ToDouble());
-            MetricFunc metric = XMath.GetMetric(WindowModel.Params.Metric);
-            double optimalTravelTime = _orderService.GetOrderViews().Sum(ov => metric(ov.GetModel().PickupLocation, ov.GetModel().DeliveryLocation).ToDouble());
-            double travelTimeOptimality = 100 * (optimalTravelTime / totalTravelTime);
-
-            _travelTimeOptimalitySeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), travelTimeOptimality));
-            WindowModel.OptimalityPlot.InvalidatePlot(true);
-
         }
 
         private void RenderPlan()
@@ -389,14 +370,7 @@ namespace DARP.Windows
             WindowModel.Stats.AcceptedOrders = orderViews.Where(o => o.State == OrderState.Handled || o.State == OrderState.Accepted).Count();
             WindowModel.Stats.RejectedOrders = orderViews.Where(o => o.State == OrderState.Rejected).Count();
 
-            WindowModel.Stats.CurrentProfit = _planDataService.GetPlan().GetTotalProfit(XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerMinute);
-
-            double handledOrdersPercent = 100 * (WindowModel.Stats.HandledOrders / (double)WindowModel.Stats.TotalOrders);
-            double rejectedOrderPercent = 100 * (WindowModel.Stats.RejectedOrders / (double)WindowModel.Stats.TotalOrders);
-
-            _handledOrdersSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), handledOrdersPercent));
-            _rejectedOrdersSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), rejectedOrderPercent));
-            WindowModel.OrdersStatePlot.InvalidatePlot(true);
+            WindowModel.Stats.CurrentProfit = _planDataService.GetPlan().GetTotalProfit(XMath.GetMetric(WindowModel.Params.Metric), WindowModel.Params.VehicleChargePerTick);
         }
 
         #region Map
@@ -602,19 +576,19 @@ namespace DARP.Windows
                     // New orders
                     new Timer((state) =>
                     Application.Current.Dispatcher.BeginInvoke(() => AddRandomOrders(WindowModel.Params.ExpectedOrdersCount)),
-                    null, 0, WindowModel.Params.GenerateNewOrderMins * tickEachMillis),
+                    null, 0, WindowModel.Params.GenerateNewOrderTicks * tickEachMillis),
                     // Plan update
                     new Timer((state) =>
                     {
-                        Task task = new(async () => await Application.Current.Dispatcher.InvokeAsync(() => RunPlan()));
-                        task.Start();
-                        task.ContinueWith(_ => Application.Current.Dispatcher.BeginInvoke(() =>
+                        Application.Current.Dispatcher.BeginInvoke(async () =>
                         {
+                            await RunPlan();
                             UpdatePlan();
                             RenderPlan();
-                        }
-                        ));
-                    }, null, WindowModel.Params.UpdatePlanMins * tickEachMillis, WindowModel.Params.UpdatePlanMins * tickEachMillis),
+                        });
+
+                    },
+                    null, WindowModel.Params.UpdatePlanTicks * tickEachMillis, WindowModel.Params.UpdatePlanTicks * tickEachMillis),
                 };
         }
 
@@ -635,33 +609,40 @@ namespace DARP.Windows
 
         #endregion
 
-        #region
+        #region Time series
 
-        private XLWorkbook _workbook;
-        private const string WS_PROFIT = "Profit";
-        private const string WS_ORDERS = "Orders";
-        private void CreateExcelReport()
+        private void ExportTimeSeries()
         {
-            _workbook = new();
-            _workbook.AddWorksheet(WS_PROFIT);
-            _workbook.AddWorksheet(WS_ORDERS);
+
         }
 
-        private void Report()
+        private void UpdateTimeSeries()
         {
-            // TODO reporting
-        }
+            // Profit
+            _totalProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.TotalProfit));
 
-        private void SaveExcelReport()
-        {
-            SaveFileDialog sfd = new();
-            sfd.DefaultExt = "xlsx";
-            sfd.Filter = "Excel Files | *.xlsx";
-            sfd.FileName = $"darp_report_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx";
-            if (sfd.ShowDialog() == true)
-            {
-                _workbook.SaveAs(sfd.FileName);
-            }
+            // Optimality
+            double optimalProfit = _orderService.GetOrderViews().Sum(ov => ov.Profit);
+            double profitOptimality = 100 * (WindowModel.Stats.TotalProfit / optimalProfit);
+            _profitOptimalitySeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), profitOptimality));
+
+            double totalTravelTime = _planDataService.GetPlan().Routes.Sum(r => r.Points[^1].Time.ToDouble());
+            MetricFunc metric = XMath.GetMetric(WindowModel.Params.Metric);
+            double optimalTravelTime = _orderService.GetOrderViews().Sum(ov => metric(ov.GetModel().PickupLocation, ov.GetModel().DeliveryLocation).ToDouble());
+            double travelTimeOptimality = 100 * (optimalTravelTime / totalTravelTime);
+            _travelTimeOptimalitySeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), travelTimeOptimality));
+
+            // Orders
+            double handledOrdersPercent = 100 * (WindowModel.Stats.HandledOrders / (double)WindowModel.Stats.TotalOrders);
+            double rejectedOrderPercent = 100 * (WindowModel.Stats.RejectedOrders / (double)WindowModel.Stats.TotalOrders);
+
+            _handledOrdersSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), handledOrdersPercent));
+            _rejectedOrdersSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), rejectedOrderPercent));
+
+            // Invalidate plots
+            WindowModel.TotalProfitPlot.InvalidatePlot(true);
+            WindowModel.OptimalityPlot.InvalidatePlot(true);
+            WindowModel.OrdersStatePlot.InvalidatePlot(true);
         }
 
         #endregion
@@ -729,39 +710,42 @@ namespace DARP.Windows
 
         private void InitPlots()
         {
+            // Order
             WindowModel.OrdersStatePlot = new PlotModel { Title = "Orders"};
             WindowModel.OrdersStatePlot.Legends.Add(new Legend()
             {
                 LegendPosition = LegendPosition.RightTop,
             });
             WindowModel.OrdersStatePlot.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = 0, Maximum = 100, Unit = "%" });
-            WindowModel.OrdersStatePlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "minutes" });
+            WindowModel.OrdersStatePlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "ticks" });
             _handledOrdersSeries = new LineSeries() { Color = OxyColor.FromRgb(0, 255, 0), Title = "Handled orders" };
             _rejectedOrdersSeries = new LineSeries() { Color = OxyColor.FromRgb(255, 0, 0), Title = "Rejected orders" };
             WindowModel.OrdersStatePlot.Series.Add(_handledOrdersSeries);
             WindowModel.OrdersStatePlot.Series.Add(_rejectedOrdersSeries);
             WindowModel.OrdersStatePlot.InvalidatePlot(true);
 
+            // Optimality
             WindowModel.OptimalityPlot = new PlotModel { Title = "Optimality" };
             WindowModel.OptimalityPlot.Legends.Add(new Legend()
             {
                 LegendPosition = LegendPosition.RightTop,
             });
             WindowModel.OptimalityPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = 0, Maximum = 100, Unit = "optimality %" });
-            WindowModel.OptimalityPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "minutes" });
+            WindowModel.OptimalityPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "ticks" });
             _profitOptimalitySeries = new LineSeries() { Color = OxyColor.FromRgb(0, 255, 0), Title = "Profit" };
             _travelTimeOptimalitySeries = new LineSeries() { Color = OxyColor.FromRgb(0, 0, 255), Title = "Travel time" };
             WindowModel.OptimalityPlot.Series.Add(_profitOptimalitySeries);
             WindowModel.OptimalityPlot.Series.Add(_travelTimeOptimalitySeries);
             WindowModel.OptimalityPlot.InvalidatePlot(true);
 
+            // Profit
             WindowModel.TotalProfitPlot = new PlotModel { Title = "Total profit" };
             WindowModel.TotalProfitPlot.Legends.Add(new Legend()
             {
                 LegendPosition = LegendPosition.RightTop,
             });
             WindowModel.TotalProfitPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = 0, Unit = "profit" });
-            WindowModel.TotalProfitPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "minutes" });
+            WindowModel.TotalProfitPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "ticks" });
             _totalProfitSeries = new LineSeries() { Color = OxyColor.FromRgb(0, 255, 0), Title = "Profit" };
             WindowModel.TotalProfitPlot.Series.Add(_totalProfitSeries);
             WindowModel.TotalProfitPlot.InvalidatePlot(true);
@@ -775,14 +759,14 @@ namespace DARP.Windows
             sfd.FileName = $"darp_plot_{model.Title}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.png";
             if (sfd.ShowDialog() == true)
             {
-                var pngExporter = new PngExporter() { Width = 600, Height = 400 };
+                var pngExporter = new PngExporter() { Width = 1920, Height = 1080 };
                 pngExporter.ExportToFile(model, sfd.FileName);
             }
         }
 
         private void CopyPlotToClipboard(PlotModel model)
         {
-            var pngExporter = new PngExporter { Width = 600, Height = 400 };
+            var pngExporter = new PngExporter { Width = 1920, Height = 1080 };
             var bitmap = pngExporter.ExportToBitmap(model);
             Clipboard.SetImage(bitmap);
         }
@@ -846,25 +830,6 @@ namespace DARP.Windows
             }
         }
 
-        private void btnReport_Click(object sender, RoutedEventArgs e)
-        {
-            if (WindowModel.ReportingState == MainWindowModel.ReportingStateEnum.Ready)
-            {
-                btnReport.IsChecked = true;
-                WindowModel.ReportingState = MainWindowModel.ReportingStateEnum.Running;
-                btnReport.Content = "Stop reporting and save file";
-
-                CreateExcelReport();
-            }
-            else
-            {
-                btnReport.IsChecked = false;
-                WindowModel.ReportingState = MainWindowModel.ReportingStateEnum.Ready;
-                btnReport.Content = "Start reporting";
-
-                SaveExcelReport();
-            }
-        }
 
         private void btnTick_Click(object sender, RoutedEventArgs e)
         {
@@ -937,9 +902,12 @@ namespace DARP.Windows
             CopyPlotToClipboard((PlotModel)((TabItem)tcPlots.SelectedItem).Tag);
         }
 
+        private void btnExportTimeSeries_Click(object sender, RoutedEventArgs e)
+        {
+            ExportTimeSeries();
+        }
+
         #endregion
-
-
     }
 
     #region CLASSES
@@ -1022,21 +990,27 @@ namespace DARP.Windows
 
         [Category("Order generation")]
         [DisplayName("Profit")]
-        [Description("Profit per minute.")]
-        public double OrderProfitPerMinute { get; set; } = 3;
+        [Description("Profit per tick.")]
+        public double OrderProfitPerTick { get; set; } = 3;
 
         // ------------ Randomization ------------------
         [Category("Randomization")]
         public int Seed { get; set; } = (int)DateTime.Now.Ticks;
 
+        // ------------ Time series ------------------
+        [Category("Time series")]
+        [DisplayName("Update rate [ticks]")]
+        [Description("Update time series each [n] ticks.")]
+        public int TimeSeriesUpdateEachTicks { get; set; } = 1;
+
         // ------------ Simulation ------------------
         [Category("Simulation")]
-        [DisplayName("Update plan each [minutes]")]
-        public int UpdatePlanMins { get; set; } = 10;
+        [DisplayName("Update plan each [ticks]")]
+        public int UpdatePlanTicks { get; set; } = 10;
 
         [Category("Simulation")]
-        [DisplayName("New orders each [minutes]")]
-        public int GenerateNewOrderMins { get; set; } = 2;
+        [DisplayName("New orders each [ticks]")]
+        public int GenerateNewOrderTicks { get; set; } = 2;
 
         [Category("Simulation")]
         [DisplayName("Tick each [seconds]")]
@@ -1077,9 +1051,9 @@ namespace DARP.Windows
         public int Speed { get; set; } = 1;
 
         [Category("Vehicles")]
-        [DisplayName("Charge per minute")]
-        [Description("Charge per minute of drive.")]
-        public int VehicleChargePerMinute { get; set; } = 1;
+        [DisplayName("Charge per tick")]
+        [Description("Charge per tick of drive.")]
+        public int VehicleChargePerTick { get; set; } = 1;
 
 
         // ------------ MIP solver ------------------

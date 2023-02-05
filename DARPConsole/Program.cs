@@ -31,7 +31,7 @@ namespace DARPConsole
             {
                 Metric = XMath.ManhattanMetric,
                 Time = time,
-                VehicleChargePerMinute = 1,
+                VehicleChargePerTick = 1,
                 Plan = new(),
             };
 
@@ -44,7 +44,7 @@ namespace DARPConsole
                 Cords pickup = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
                 Cords delivery = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
 
-                double totalProfit = PROFIT_PM * XMath.ManhattanMetric(pickup, delivery).Minutes;
+                double totalProfit = PROFIT_PM * XMath.ManhattanMetric(pickup, delivery).Ticks;
 
                 Time maxDeliveryTime = new Time(time.ToDouble() + 60 + _random.Next(60));
                 orders.Add(new Order()
@@ -77,7 +77,7 @@ namespace DARPConsole
             sw.Start();
             EvolutionarySolver es = new();
             EvolutionarySolverOutput output = es.Run(new EvolutionarySolverInput(input));
-            double eProfit = output.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+            double eProfit = output.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
             Console.WriteLine($"Evolution {eProfit}, time {sw.Elapsed}");
 
             //sw.Restart();

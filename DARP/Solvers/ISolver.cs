@@ -15,7 +15,7 @@ namespace DARP.Solvers
         IEnumerable<Vehicle> Vehicles { get; set; }
         IEnumerable<Order> Orders { get; set; }
         MetricFunc Metric { get; set; }
-        double VehicleChargePerMinute { get; set; }
+        double VehicleChargePerTick { get; set; }
     }
 
     public class SolverInputBase : ISolverInput
@@ -25,7 +25,7 @@ namespace DARP.Solvers
         public IEnumerable<Vehicle> Vehicles { get; set; }
         public IEnumerable<Order> Orders { get; set; }
         public MetricFunc Metric { get; set; }
-        public double VehicleChargePerMinute { get; set; }
+        public double VehicleChargePerTick { get; set; }
 
         public SolverInputBase() { }
 
@@ -36,7 +36,7 @@ namespace DARP.Solvers
             Vehicles = solverInputBase.Vehicles;
             Orders = solverInputBase.Orders;
             Metric = solverInputBase.Metric;
-            VehicleChargePerMinute = solverInputBase.VehicleChargePerMinute;
+            VehicleChargePerTick = solverInputBase.VehicleChargePerTick;
         }
     }
 

@@ -56,8 +56,8 @@
                 <StackPanel Grid.Column="0">
                     <GroupBox Header="Time">
                         <StackPanel>
-                            <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0} minutes'}" Margin="0,3"/>
-                            <Button Content="Tick (minutes++)" Margin="0,3" Click="btnTick_Click"/>
+                            <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0} ticks'}" Margin="0,3"/>
+                            <Button Content="Tick (ticks++)" Margin="0,3" Click="btnTick_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Data">
@@ -86,10 +86,9 @@
                             <ToggleButton x:Name="btnSimulation" Content="Start" Margin="0,3" Click="btnSimulation_Click"/>
                         </StackPanel>
                     </GroupBox>
-                    <GroupBox Header="Reporting">
+                    <GroupBox Header="Time series">
                         <StackPanel>
-                            <TextBlock Text="{Binding Path=ReportingState, StringFormat='State: {0}'}" Margin="0,3"/>
-                            <ToggleButton x:Name="btnReport" Content="Start reporting" Margin="0,3" Click="btnReport_Click"/>
+                            <ToggleButton Content="Export time series" Margin="0,3" Click="btnExportTimeSeries_Click"/>
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Randomization">

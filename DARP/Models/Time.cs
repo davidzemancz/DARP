@@ -9,41 +9,36 @@ namespace DARP.Models
     public struct Time : IComparable<Time>
     {
         public static readonly Time Zero = new Time(0);
-        public double Minutes { get; set; }
+        public double Ticks { get; set; }
 
-        public Time(int minutes)
+        public Time(int ticks)
         {
-            Minutes = minutes;
+            Ticks = ticks;
         }
 
-        public Time(double minutes)
+        public Time(double ticks)
         {
-            Minutes = minutes;
-        }
-
-        public void AddMinutes(double minutes)
-        {
-            Minutes += minutes;
+            Ticks = ticks;
         }
 
         public double ToDouble()
         {
-            return Minutes;
+            return Ticks;
         }
 
         public static Time operator +(Time left, Time right)
         {
-            return new(left.Minutes + right.Minutes);
+            return new(left.Ticks + right.Ticks);
         }
 
         public static Time operator -(Time left, Time right)
         {
-            return new(left.Minutes - right.Minutes);
+            return new(left.Ticks - right.Ticks);
         }
 
         public static bool operator ==(Time left, Time right)
         {
-            return left.Minutes == right.Minutes;
+            return left.Ticks == right.Ticks;
         }
 
         public static bool operator !=(Time left, Time right)
@@ -53,26 +48,26 @@ namespace DARP.Models
 
         public static bool operator <(Time left, Time right)
         {
-            return left.Minutes < right.Minutes;
+            return left.Ticks < right.Ticks;
         }
 
         public static bool operator >(Time left, Time right)
         {
-            return left.Minutes > right.Minutes;
+            return left.Ticks > right.Ticks;
         }
         public static bool operator <=(Time left, Time right)
         {
-            return left.Minutes < right.Minutes || left.Minutes == right.Minutes;
+            return left.Ticks < right.Ticks || left.Ticks == right.Ticks;
         }
 
         public static bool operator >=(Time left, Time right)
         {
-            return left.Minutes > right.Minutes || left.Minutes == right.Minutes;
+            return left.Ticks > right.Ticks || left.Ticks == right.Ticks;
         }
 
         public int CompareTo(Time other)
         {
-            return (int)(Minutes - other.Minutes);
+            return (int)(Ticks - other.Ticks);
         }
 
         public override bool Equals(object obj)
@@ -82,12 +77,12 @@ namespace DARP.Models
 
         public override string ToString()
         {
-            return Minutes.ToString();
+            return Ticks.ToString();
         }
 
         public override int GetHashCode()
         {
-            return Minutes.GetHashCode();
+            return Ticks.GetHashCode();
         }
     }
 }
