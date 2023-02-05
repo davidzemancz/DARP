@@ -34,7 +34,6 @@ namespace DARP.Solvers
     public class InsertionHeuristicsInput : SolverInputBase
     {
         public InsertionHeuristicsMode Mode { get; set; }
-        public InsertionObjective Objective { get; set; }
 
         public InsertionHeuristicsInput() { }
         public InsertionHeuristicsInput(SolverInputBase solverInputBase) : base(solverInputBase) { }

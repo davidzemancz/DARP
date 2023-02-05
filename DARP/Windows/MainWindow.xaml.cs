@@ -156,6 +156,7 @@ namespace DARP.Windows
         private LineSeries _totalProfitSeries;
         private LineSeries _profitOptimalitySeries;
         private LineSeries _travelTimeOptimalitySeries;
+        private int _seriesLength;
 
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
@@ -248,7 +249,6 @@ namespace DARP.Windows
             InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
             {
                 Mode = WindowModel.Params.InsertionMode,
-                Objective = WindowModel.Params.InsertionObjective,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToInsert(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
@@ -611,13 +611,52 @@ namespace DARP.Windows
 
         #region Time series
 
-        private void ExportTimeSeries()
+        private void ExportTimeSeriesCsv()
         {
 
+            SaveFileDialog sfd = new();
+            sfd.DefaultExt = "csv";
+            sfd.Filter = "CSV Files | *.csv";
+            sfd.FileName = $"darp_timeSeries_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv";
+            if (sfd.ShowDialog() == true)
+            {
+                using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                {
+                    string sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
+                    sw.WriteLine($"Tick{sep}Profit{sep}HandledOrder{sep}RejectedOrders{sep}ProfitOpt{sep}TravelTimeOpt{sep}");
+                    for (int i = 0; i < _seriesLength; i++)
+                    {
+                        double tick = _totalProfitSeries.Points[i].X;
+
+                        double profit = _totalProfitSeries.Points[i].Y;
+                        double handledOrders = _handledOrdersSeries.Points[i].Y;
+                        double rejectedOrders = _rejectedOrdersSeries.Points[i].Y;
+                        double profitOpt = _profitOptimalitySeries.Points[i].Y;
+                        double travelTimeOpt = _travelTimeOptimalitySeries.Points[i].Y;
+
+                        StringBuilder sb = new();
+                        sb.Append(tick);
+                        sb.Append(sep);
+                        sb.Append(profit);
+                        sb.Append(sep);
+                        sb.Append(handledOrders);
+                        sb.Append(sep);
+                        sb.Append(rejectedOrders);
+                        sb.Append(sep);
+                        sb.Append(profitOpt);
+                        sb.Append(sep);
+                        sb.Append(travelTimeOpt);
+                        sb.Append(sep);
+                        sw.WriteLine(sb);
+                    }
+                }
+            }
         }
 
         private void UpdateTimeSeries()
         {
+            _seriesLength++;
+
             // Profit
             _totalProfitSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), WindowModel.Stats.TotalProfit));
 
@@ -878,8 +917,11 @@ namespace DARP.Windows
 
         private void btnRunEvo_Click(object sender, RoutedEventArgs e)
         {
-            RunEvolution();
-            RenderPlan();
+            RunEvolution().ContinueWith(t =>
+            {
+                Application.Current.Dispatcher.BeginInvoke(() => RenderPlan());
+            });
+           
         }
 
         private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
@@ -904,7 +946,7 @@ namespace DARP.Windows
 
         private void btnExportTimeSeries_Click(object sender, RoutedEventArgs e)
         {
-            ExportTimeSeries();
+            ExportTimeSeriesCsv();
         }
 
         #endregion
@@ -939,9 +981,7 @@ namespace DARP.Windows
         public Time CurrentTime { get; set; }
         public double TotalDistance { get; set; }
         public SimulationStateEnum SimulationState { get; set; }
-        public ReportingStateEnum ReportingState { get; set; }
         public MainWindowStats Stats { get; set; } = new();
-        public List<TaskItem> Tasks { get; set; } = new List<TaskItem>();
         public MainWindowParams Params { get; set; } = new();
         public PlotModel OrdersStatePlot { get; set; }
         public PlotModel TotalProfitPlot { get; set; }
@@ -1087,11 +1127,6 @@ namespace DARP.Windows
         [DisplayName("Mode")]
         [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
         public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.FirstFit;
-        [Category("Insertion heuristics")]
-        [DisplayName("Insertion objective")]
-        public InsertionObjective InsertionObjective { get; set; } = InsertionObjective.MinimizeDeliveryTime;
-
-
     }
 
     internal class PropertyRange<T>
