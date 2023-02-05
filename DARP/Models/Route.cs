@@ -36,7 +36,7 @@ namespace DARP.Models
 
             for (int i = 0; i < Points.Count - 1; i++)
             {
-                travelCosts += XMath.ManhattanMetric(Points[i].Location, Points[i + 1].Location).ToDouble() * vehicleCharge;
+                travelCosts += metric(Points[i].Location, Points[i + 1].Location).ToDouble() * vehicleCharge;
                 if (Points[i] is OrderPickupRoutePoint oprp)
                 {
                     ordersProfit += oprp.Order.TotalProfit;
