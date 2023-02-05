@@ -213,7 +213,7 @@
                     <xctk:PropertyGrid ShowTitle="False"  x:Name="pgSettings"  VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
                 </TabItem>
                 <TabItem Header="Tasks" Width="100">
-                    <ListBox x:Name="lbTasks" ItemsSource="{Binding Tasks}"/>
+                    <StackPanel/>
                 </TabItem>
             </TabControl>
         </Grid>
