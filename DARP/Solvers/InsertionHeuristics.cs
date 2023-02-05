@@ -69,7 +69,6 @@ namespace DARP.Solvers
             Plan plan = input.Plan.Clone();
 
             InsertionHeuristicsMode mode = input.Mode;
-            InsertionObjective objective = input.Objective;
             foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
             {
                 bool inserted = false;
@@ -95,7 +94,6 @@ namespace DARP.Solvers
             Plan plan = input.Plan.Clone();
 
             InsertionHeuristicsMode mode = input.Mode;
-            InsertionObjective objective = input.Objective;
             foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
             {
                 Route bestRoute = null;
@@ -136,7 +134,6 @@ namespace DARP.Solvers
             Plan plan = input.Plan.Clone();
 
             InsertionHeuristicsMode mode = input.Mode;
-            InsertionObjective objective = input.Objective;
             List<Order> remainingOrders = new(input.Orders);
             while (remainingOrders.Any())
             {
