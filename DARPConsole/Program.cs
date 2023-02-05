@@ -80,27 +80,27 @@ namespace DARPConsole
             double eProfit = output.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
             Console.WriteLine($"Evolution {eProfit}, time {sw.Elapsed}");
 
-            sw.Restart();
-            InsertionHeuristicsInput insHInput = new(input);
-            InsertionHeuristics insH = new();
-            InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
-            double iProfit = insHOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-            Console.WriteLine($"Insertion heuristics (best fit) {iProfit}, time {sw.Elapsed}");
+            //sw.Restart();
+            //InsertionHeuristicsInput insHInput = new(input);
+            //InsertionHeuristics insH = new();
+            //InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
+            //double iProfit = insHOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+            //Console.WriteLine($"Insertion heuristics (best fit) {iProfit}, time {sw.Elapsed}");
 
-            sw.Restart();
-            InsertionHeuristicsInput insHInput2 = new(input);
-            InsertionHeuristics insH2 = new();
-            InsertionHeuristicsOutput insHOutput2 = insH2.RunFirstFit(insHInput2);
-            double iProfit2 = insHOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-            Console.WriteLine($"Insertion heuristics (first fit) {iProfit2}, time {sw.Elapsed}");
+            //sw.Restart();
+            //InsertionHeuristicsInput insHInput2 = new(input);
+            //InsertionHeuristics insH2 = new();
+            //InsertionHeuristicsOutput insHOutput2 = insH2.RunFirstFit(insHInput2);
+            //double iProfit2 = insHOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+            //Console.WriteLine($"Insertion heuristics (first fit) {iProfit2}, time {sw.Elapsed}");
 
-            sw.Restart();
-            MIPSolverInput mipInput = new(input);
-            mipInput.TimeLimit = 10_000;
-            MIPSolver ms = new();
-            MIPSolverOutput mipOutput = ms.Run(mipInput);
-            double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-            Console.WriteLine($"MIP {mProfit}, time {sw.Elapsed}");
+            //sw.Restart();
+            //MIPSolverInput mipInput = new(input);
+            //mipInput.TimeLimit = 10_000;
+            //MIPSolver ms = new();
+            //MIPSolverOutput mipOutput = ms.Run(mipInput);
+            //double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
+            //Console.WriteLine($"MIP {mProfit}, time {sw.Elapsed}");
         }
     }
 }
