@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 
 namespace DARP.Solvers
 {
+    public delegate void FitnessLogFunc(int generation, double fitness);
+
     public class EvolutionarySolverOutput : ISolverOutput
     {
         public Plan Plan { get; }
         public Status Status { get; }
-
+        
         public EvolutionarySolverOutput()
         {
         }
@@ -35,6 +37,11 @@ namespace DARP.Solvers
     {
         public int Generations { get; set; } = 1_000;
         public int PopulationSize { get; set; } = 100;
+
+        public double RandomOrderRemoveMutProb { get; set; } = 0.2;
+        public double RandomOrderInsertMutProb { get; set; } = 0.5;
+        public double BestfitOrderInsertMutProb { get; set; } = 0.5;
+        public FitnessLogFunc AvgFitnessLog { get; set; }
 
         public EvolutionarySolverInput() { }
         public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
@@ -65,12 +72,12 @@ namespace DARP.Solvers
             for (int g  = 0; g < input.Generations; g++)
             {
                 // Compute fitnesses
-                double mean = 0, min = double.MaxValue, max = double.MinValue;
+                double fitnessAvg = 0, min = double.MaxValue, max = double.MinValue;
                 for (int i = 0; i < input.PopulationSize; i++)
                 {
                     Individual ind = population[i];
                     double fitness = ind.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                    mean += fitness;
+                    fitnessAvg += fitness;
                     if (fitness < min) min = fitness;
                     if (fitness > max) max = fitness;
 
@@ -78,21 +85,19 @@ namespace DARP.Solvers
 
                     if(ind.Fitness > bestInd.Fitness) bestInd = ind;
                 }
-                mean /= input.PopulationSize;
+                fitnessAvg /= input.PopulationSize;
+                input.AvgFitnessLog(g, fitnessAvg);
               
                 // TODO corssover
 
                 // Mutate
                 for (int i = 0; i < input.PopulationSize; i++)
                 {
-                    const double PROB_REMOVE_ORDER = 0.6;
-                    const double PROB_INSERT_ORDER = 0.5;
-                    const double PROB_INSHEUR = 0.5;
 
                     Individual indClone = population[i].Clone();
                     
                     // Remove order
-                    if (random.NextDouble() < PROB_REMOVE_ORDER)
+                    if (random.NextDouble() < input.RandomOrderRemoveMutProb)
                     {
                         int routeIndex = random.Next(indClone.Plan.Routes.Count);
                         Route route = indClone.Plan.Routes[routeIndex];
@@ -109,7 +114,7 @@ namespace DARP.Solvers
                     }
                     
                     // Insert order by random choice of index
-                    if (random.NextDouble() < PROB_INSERT_ORDER && indClone.RemaingOrders.Any())
+                    if (random.NextDouble() < input.RandomOrderInsertMutProb && indClone.RemaingOrders.Any())
                     {
                         int orderIndex = random.Next(indClone.RemaingOrders.Count);
                         Order order = indClone.RemaingOrders[orderIndex];
@@ -124,8 +129,8 @@ namespace DARP.Solvers
                         population.Add(indClone);
                     }
 
-                    // Insertion heuristics
-                    if (random.NextDouble() < PROB_INSHEUR && indClone.RemaingOrders.Any())
+                    // Bestfit insertion heuristics
+                    if (random.NextDouble() < input.BestfitOrderInsertMutProb && indClone.RemaingOrders.Any())
                     {
                         int orderIndex = random.Next(indClone.RemaingOrders.Count);
                         Order order = indClone.RemaingOrders[orderIndex];

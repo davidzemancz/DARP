@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace DARP.Utils
 {
     public delegate Time MetricFunc(Cords c1, Cords c2);
-
+    
     public class XMath
     {
         public static T Max<T>(T x, T y) where T : IComparable<T>

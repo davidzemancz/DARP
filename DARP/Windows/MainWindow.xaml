@@ -181,6 +181,9 @@
                                 <TabItem Header="Optimality" Width="100" Tag="{Binding OptimalityPlot}">
                                     <oxy:PlotView Model="{Binding OptimalityPlot}"/>
                                 </TabItem>
+                                <TabItem Header="Evolution" Width="100" Tag="{Binding EvolutionPlot}">
+                                    <oxy:PlotView Model="{Binding EvolutionPlot}"/>
+                                </TabItem>
                             </TabControl>
                         </DockPanel>
                     </Grid>
@@ -200,7 +203,14 @@
                             <CheckBox x:Name="chbDrawOrders" Content="Orders" Margin="10,0" IsChecked="True"  VerticalAlignment="Center"/>
                             <CheckBox x:Name="chbDrawRoutes" Content="Routes" Margin="10,0" IsChecked="True"  VerticalAlignment="Center"/>
                         </StackPanel>
-                        <Canvas Grid.Row="1" x:Name="cMap" Margin="20"/>
+                        <Canvas Grid.Row="1" x:Name="cMap" Margin="20">
+                            <Canvas.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Add order" Click="btnAddOrderToMap_Click"/>
+                                    <MenuItem Header="Add vehicle" Click="btnAddVehicleToMap_Click"/>
+                                </ContextMenu>
+                            </Canvas.ContextMenu>
+                        </Canvas>
                         <GroupBox Grid.Row="2" Header="Legend">
                             <Canvas x:Name="cLegend"/>
                         </GroupBox>

@@ -156,6 +156,7 @@ namespace DARP.Windows
         private LineSeries _totalProfitSeries;
         private LineSeries _profitOptimalitySeries;
         private LineSeries _travelTimeOptimalitySeries;
+        private LineSeries _evolutionAvgFitnessSeries;
         private int _seriesLength;
 
         private readonly IOrderDataService _orderService;
@@ -295,6 +296,8 @@ namespace DARP.Windows
             LoggerBase.Instance.Debug($"Run evolution");
             LoggerBase.Instance.StopwatchStart();
 
+            _evolutionAvgFitnessSeries.Points.Clear();
+
             EvolutionarySolver solver = new();
             EvolutionarySolverInput input = new EvolutionarySolverInput()
             {
@@ -306,6 +309,16 @@ namespace DARP.Windows
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
                 VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
+                RandomOrderInsertMutProb = WindowModel.Params.RandomOrderInsertMutProb,
+                RandomOrderRemoveMutProb = WindowModel.Params.RandomOrderRemoveMutProb,
+                BestfitOrderInsertMutProb = WindowModel.Params.BestfitOrderInsertMutProb,
+                AvgFitnessLog = (gen, fittness) =>
+                {
+                    _evolutionAvgFitnessSeries.Points.Add(new DataPoint(gen, fittness));
+
+                    if(gen % (WindowModel.Params.EvoGenerations / 10) == 0)
+                        Application.Current.Dispatcher.BeginInvoke(() => WindowModel.EvolutionPlot.InvalidatePlot(true));
+                },
             };
             EvolutionarySolverOutput output = await Task.Run(() => solver.Run(input));
             _planDataService.SetPlan(output.Plan);
@@ -678,10 +691,14 @@ namespace DARP.Windows
             _handledOrdersSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), handledOrdersPercent));
             _rejectedOrdersSeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), rejectedOrderPercent));
 
+            // Evolution
+
+
             // Invalidate plots
             WindowModel.TotalProfitPlot.InvalidatePlot(true);
             WindowModel.OptimalityPlot.InvalidatePlot(true);
             WindowModel.OrdersStatePlot.InvalidatePlot(true);
+            WindowModel.EvolutionPlot.InvalidatePlot(true);
         }
 
         #endregion
@@ -788,6 +805,18 @@ namespace DARP.Windows
             _totalProfitSeries = new LineSeries() { Color = OxyColor.FromRgb(0, 255, 0), Title = "Profit" };
             WindowModel.TotalProfitPlot.Series.Add(_totalProfitSeries);
             WindowModel.TotalProfitPlot.InvalidatePlot(true);
+
+            // Evolution
+            WindowModel.EvolutionPlot = new PlotModel { Title = "Evolution" };
+            WindowModel.EvolutionPlot.Legends.Add(new Legend()
+            {
+                LegendPosition = LegendPosition.RightTop,
+            });
+            WindowModel.EvolutionPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Left, Minimum = 0, Unit = "" });
+            WindowModel.EvolutionPlot.Axes.Add(new LinearAxis { Position = AxisPosition.Bottom, Minimum = 0, Unit = "generation" });
+            _evolutionAvgFitnessSeries = new LineSeries() { Color = OxyColor.FromRgb(0, 255, 0), Title = "fitness" };
+            WindowModel.EvolutionPlot.Series.Add(_evolutionAvgFitnessSeries);
+            WindowModel.EvolutionPlot.InvalidatePlot(true);
         }
 
         private void SavePlot(PlotModel model)
@@ -949,6 +978,16 @@ namespace DARP.Windows
             ExportTimeSeriesCsv();
         }
 
+        private void btnAddOrderToMap_Click(object sender, RoutedEventArgs e)
+        {
+            AddRandomOrder();
+        }
+
+        private void btnAddVehicleToMap_Click(object sender, RoutedEventArgs e)
+        {
+            AddRandomVehicle();
+        }
+
         #endregion
     }
 
@@ -986,6 +1025,7 @@ namespace DARP.Windows
         public PlotModel OrdersStatePlot { get; set; }
         public PlotModel TotalProfitPlot { get; set; }
         public PlotModel OptimalityPlot { get; set; }
+        public PlotModel EvolutionPlot { get; set; }
 
         public enum SimulationStateEnum
         {
@@ -1121,6 +1161,17 @@ namespace DARP.Windows
         [DisplayName("Population size")]
         public int EvoPopSize { get; set; } = 100;
 
+        [Category("Evolution")]
+        [DisplayName("[M] Remove order")]
+        public double RandomOrderRemoveMutProb { get; set; } = 0.2;
+
+        [Category("Evolution")]
+        [DisplayName("[M] Insert order")]
+        public double RandomOrderInsertMutProb { get; set; } = 0.5;
+
+        [Category("Evolution")]
+        [DisplayName("[M] BestFit order")]
+        public double BestfitOrderInsertMutProb { get; set; } = 0.5;
 
         // ------------ Insertion heuristics ------------------
         [Category("Insertion heuristics")]

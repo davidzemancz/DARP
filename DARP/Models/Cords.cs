@@ -9,8 +9,11 @@ namespace DARP.Models
 {
     public struct Cords
     {
-        public double X { get; set; }
-        public double Y { get; set; }
+        public static readonly Cords Empty = new Cords(double.NaN, double.NaN);
+        public static readonly Cords Zero = new Cords(double.NaN, double.NaN);
+
+        public double X { get; set; } = double.NaN;
+        public double Y { get; set; } = double.NaN;
 
         public Cords(double x, double y)
         {
