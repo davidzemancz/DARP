@@ -5,7 +5,6 @@ using DARP.Services;
 using DARP.Solvers;
 using DARP.Utils;
 using DARP.Views;
-using DocumentFormat.OpenXml.EMMA;
 using Microsoft.Win32;
 using OxyPlot;
 using OxyPlot.Axes;
@@ -38,6 +37,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using Color = System.Windows.Media.Color;
+using DataPoint = OxyPlot.DataPoint;
+using Order = DARP.Models.Order;
 using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using Size = System.Windows.Size;
@@ -296,12 +297,13 @@ namespace DARP.Windows
             LoggerBase.Instance.Debug($"Run evolution");
             LoggerBase.Instance.StopwatchStart();
 
+            int gens = WindowModel.Params.EvoGenerations;
             _evolutionAvgFitnessSeries.Points.Clear();
 
             EvolutionarySolver solver = new();
             EvolutionarySolverInput input = new EvolutionarySolverInput()
             {
-                Generations = WindowModel.Params.EvoGenerations,
+                Generations = gens,
                 PopulationSize = WindowModel.Params.EvoPopSize,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToSchedule(),
@@ -316,7 +318,7 @@ namespace DARP.Windows
                 {
                     _evolutionAvgFitnessSeries.Points.Add(new DataPoint(gen, fittness));
 
-                    if(gen % (WindowModel.Params.EvoGenerations / 10) == 0)
+                    if (gen % (gens / 10) == 0)
                         Application.Current.Dispatcher.BeginInvoke(() => WindowModel.EvolutionPlot.InvalidatePlot(true));
                 },
             };
@@ -441,7 +443,7 @@ namespace DARP.Windows
             {
                 foreach (Order order in GetOrdersToSchedule())
                 {
-                    DrawOrder(order);
+                    DrawOrder(order, GetRandomColor());
                 }
             }
         }
@@ -477,6 +479,16 @@ namespace DARP.Windows
 
                 VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetModel() == route.Vehicle);
                 DrawPath(p1X, p2X, p1Y, p2Y, vv.Color);
+
+                Color orderColor = Color.Multiply(vv.Color, 2);
+                if (point2 is OrderPickupRoutePoint oprp)
+                {
+                    DrawOrder(oprp.Order, orderColor);
+                }
+                else if (point2 is OrderDeliveryRoutePoint odrp)
+                {
+                    DrawOrder(odrp.Order, orderColor);
+                }
             }
         }
 
@@ -501,11 +513,9 @@ namespace DARP.Windows
             Canvas.SetLeft(vehicleShape, vehicleX - VEHICLE_SIZE / 2);
         }
 
-        private void DrawOrder(Order order)
+        private void DrawOrder(Order order, Color orderColor)
         {
             const int ORDER_POINT_SIZE = 15;
-
-            Color orderColor = GetRandomColor();
 
             // Pickup
             (double pickupX, double pickupY) = _cords[(order.PickupLocation.X, order.PickupLocation.Y)];

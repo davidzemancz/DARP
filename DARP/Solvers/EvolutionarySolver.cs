@@ -86,7 +86,9 @@ namespace DARP.Solvers
                     if(ind.Fitness > bestInd.Fitness) bestInd = ind;
                 }
                 fitnessAvg /= input.PopulationSize;
-                input.AvgFitnessLog(g, fitnessAvg);
+                
+                if (input.AvgFitnessLog != null) 
+                    input.AvgFitnessLog(g, fitnessAvg);
               
                 // TODO corssover
 
