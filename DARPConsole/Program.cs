@@ -38,7 +38,7 @@ namespace DARPConsole
             List<Order> orders = new();
             const int MAP_SIZE = 20;
             const int PROFIT_PM = 3;
-            const int ORDERS = 20;
+            const int ORDERS = 30;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords pickup = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
@@ -75,32 +75,44 @@ namespace DARPConsole
             Stopwatch sw = new();
             
             sw.Start();
+            EvolutionarySolverInput esInput = new(input);
+            esInput.Generations = 1000;
+            esInput.BestfitOrderInsertMutProb = 1;
+            esInput.RandomOrderInsertMutProb = 1;
+            esInput.RandomOrderRemoveMutProb = 0.5;
             EvolutionarySolver es = new();
-            EvolutionarySolverOutput output = es.Run(new EvolutionarySolverInput(input));
-            double eProfit = output.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            EvolutionarySolverOutput output = es.Run(new EvolutionarySolverInput(esInput));
+            double eProfit = output.Plan.GetTotalProfit(esInput.Metric, esInput.VehicleChargePerTick);
             Console.WriteLine($"Evolution {eProfit}, time {sw.Elapsed}");
 
-            //sw.Restart();
-            //InsertionHeuristicsInput insHInput = new(input);
-            //InsertionHeuristics insH = new();
-            //InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
-            //double iProfit = insHOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-            //Console.WriteLine($"Insertion heuristics (best fit) {iProfit}, time {sw.Elapsed}");
+            sw.Restart();
+            InsertionHeuristicsInput insHInput2 = new(input);
+            InsertionHeuristics insH2 = new();
+            InsertionHeuristicsOutput insHOutput2 = insH2.RunFirstFit(insHInput2);
+            double iProfit2 = insHOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"Insertion heuristics (first fit) {iProfit2}, time {sw.Elapsed}");
 
-            //sw.Restart();
-            //InsertionHeuristicsInput insHInput2 = new(input);
-            //InsertionHeuristics insH2 = new();
-            //InsertionHeuristicsOutput insHOutput2 = insH2.RunFirstFit(insHInput2);
-            //double iProfit2 = insHOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-            //Console.WriteLine($"Insertion heuristics (first fit) {iProfit2}, time {sw.Elapsed}");
+            sw.Restart();
+            InsertionHeuristicsInput insHInput = new(input);
+            InsertionHeuristics insH = new();
+            InsertionHeuristicsOutput insHOutput = insH.RunLocalBestFit(insHInput);
+            double iProfit = insHOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"Insertion heuristics (local best fit) {iProfit}, time {sw.Elapsed}");
 
-            //sw.Restart();
-            //MIPSolverInput mipInput = new(input);
-            //mipInput.TimeLimit = 10_000;
-            //MIPSolver ms = new();
-            //MIPSolverOutput mipOutput = ms.Run(mipInput);
-            //double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute);
-            //Console.WriteLine($"MIP {mProfit}, time {sw.Elapsed}");
+            sw.Restart();
+            InsertionHeuristicsInput insHInput3 = new(input);
+            InsertionHeuristics insH3 = new();
+            InsertionHeuristicsOutput insHOutput3 = insH3.RunGlobalBestFit(insHInput3);
+            double iProfit3 = insHOutput3.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"Insertion heuristics (global first fit) {iProfit3}, time {sw.Elapsed}");
+
+            sw.Restart();
+            MIPSolverInput mipInput = new(input);
+            mipInput.TimeLimit = 30_000;
+            MIPSolver ms = new();
+            MIPSolverOutput mipOutput = ms.Run(mipInput);
+            double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"MIP {mProfit}, time {sw.Elapsed}");
         }
     }
 }
