@@ -6,6 +6,7 @@
         xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:map="clr-namespace:MapControl;assembly=MapControl.WPF"
         mc:Ignorable="d"
         Title="DARP" Height="900" Width="1800" Loaded="Window_Loaded">
     <Window.DataContext>
@@ -188,7 +189,7 @@
                         </DockPanel>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Map"  Width="100">
+                <TabItem Header="Manhattan map"  Width="100">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100*" />
@@ -215,6 +216,10 @@
                             <Canvas x:Name="cLegend"/>
                         </GroupBox>
                     </Grid>
+                </TabItem>
+                <TabItem Header="Map" Width="100">
+                    <map:Map x:Name="map">
+                    </map:Map>
                 </TabItem>
             </TabControl>
             <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch" />

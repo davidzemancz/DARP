@@ -5,6 +5,8 @@ using DARP.Services;
 using DARP.Solvers;
 using DARP.Utils;
 using DARP.Views;
+using MapControl;
+using MapControl.Caching;
 using Microsoft.Win32;
 using OxyPlot;
 using OxyPlot.Axes;
@@ -56,6 +58,26 @@ namespace DARP.Windows
             _orderService = ServiceProvider.Instance.GetService<IOrderDataService>();
             _vehicleService = ServiceProvider.Instance.GetService<IVehicleDataService>();
             _planDataService = ServiceProvider.Instance.GetService<IPlanDataService>();
+
+            ImageLoader.HttpClient.DefaultRequestHeaders.Add("User-Agent", "XAML Map Control Test Application");
+            TileImageLoader.Cache = new ImageFileCache(TileImageLoader.DefaultCacheFolder);
+
+            map.Background = System.Windows.Media.Brushes.Red;
+            map.MapLayer = new MapTileLayer()
+            {
+                TileSource = new TileSource() { UriTemplate = "https://tile.openstreetmap.org/{z}/{x}/{y}.png" } ,
+                SourceName = "OpenStreetMap",
+                Description = "© [OpenStreetMap contributors](http://www.openstreetmap.org/copyright)"
+            };
+
+            if (TileImageLoader.Cache is ImageFileCache cache)
+            {
+                Loaded += async (s, e) =>
+                {
+                    await Task.Delay(2000);
+                    await cache.Clean();
+                };
+            }
         }
 
         #region PROPS
