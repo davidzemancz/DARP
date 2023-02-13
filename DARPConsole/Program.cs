@@ -37,8 +37,8 @@ namespace DARPConsole
 
             List<Order> orders = new();
             const int MAP_SIZE = 20;
-            const int PROFIT_PM = 3;
-            const int ORDERS = 30;
+            const int PROFIT_PM = 5;
+            const int ORDERS = 50;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords pickup = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
@@ -76,7 +76,7 @@ namespace DARPConsole
             
             sw.Start();
             EvolutionarySolverInput esInput = new(input);
-            esInput.Generations = 1000;
+            esInput.Generations = 2000;
             esInput.BestfitOrderInsertMutProb = 1;
             esInput.RandomOrderInsertMutProb = 1;
             esInput.RandomOrderRemoveMutProb = 0.5;
@@ -108,11 +108,21 @@ namespace DARPConsole
 
             sw.Restart();
             MIPSolverInput mipInput = new(input);
+            mipInput.Solver = "SCIP";
             mipInput.TimeLimit = 30_000;
             MIPSolver ms = new();
             MIPSolverOutput mipOutput = ms.Run(mipInput);
             double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            Console.WriteLine($"MIP {mProfit}, time {sw.Elapsed}");
+            Console.WriteLine($"MIP {mipInput.Solver} {mProfit}, time {sw.Elapsed}");
+
+            sw.Restart();
+            MIPSolverInput mipInput2 = new(input);
+            mipInput2.Solver = "CP-SAT";
+            mipInput2.TimeLimit = 30_000;
+            MIPSolver ms2 = new();
+            MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
+            double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
         }
     }
 }

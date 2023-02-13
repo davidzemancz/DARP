@@ -34,6 +34,7 @@ namespace DARP.Solvers
     {
         public bool Multithreading { get; set; }
         public long TimeLimit { get; set; }
+        public string Solver { get; set; } = "SCIP";
         public OptimizationObjective Objective { get; set; } = OptimizationObjective.MaximizeProfit;
 
         public MIPSolverInput() { }
@@ -58,7 +59,7 @@ namespace DARP.Solvers
             OptimizationObjective objective = input.Objective;
             
             // Solver
-            _solver = Solver.CreateSolver("SCIP");
+            _solver = Solver.CreateSolver(input.Solver);
 
             // Variables for traveling between input.Orders (and input.Vehicles locations)
             Dictionary<TravelVarKey, Variable> travelVariables = new();
