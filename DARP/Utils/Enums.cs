@@ -63,7 +63,8 @@ namespace DARP.Utils
         Disabled = 0,
         MIP = 1,
         Evolutionary = 2,
-        AntColony = 3
+        AntColony = 3,
+        GraphSearch = 4,
     }
 
     public enum LogLevel

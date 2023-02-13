@@ -6,6 +6,7 @@
         xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:map="clr-namespace:MapControl;assembly=MapControl.WPF"
         mc:Ignorable="d"
         Title="DARP" Height="900" Width="1800" Loaded="Window_Loaded">
     <Window.DataContext>
@@ -70,6 +71,7 @@
                         <StackPanel>
                             <Button Content="Ant colony" Margin="0,3"/>
                             <Button Content="Evolution" Margin="0,3" Click="btnRunEvo_Click"/>
+                            <Button Content="Graph search" Margin="0,3"/>
                             <Button Content="Insertion heuristics" Margin="0,3" Click="btnRunInsertion_Click"/>
                             <Button Content="MIP solver" Margin="0,3" Click="btnRunMIP_Click"/>
                         </StackPanel>
@@ -188,7 +190,7 @@
                         </DockPanel>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Map"  Width="100">
+                <TabItem Header="Manhattan map"  Width="100">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100*" />
@@ -215,6 +217,10 @@
                             <Canvas x:Name="cLegend"/>
                         </GroupBox>
                     </Grid>
+                </TabItem>
+                <TabItem Header="Map" Width="100">
+                    <map:Map x:Name="map">
+                    </map:Map>
                 </TabItem>
             </TabControl>
             <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch" />
