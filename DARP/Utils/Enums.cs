@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace DARP.Utils
 {
+    public enum EnviromentalSelection
+    {
+        Elitism = 0,
+        Tournament = 1,
+    }
+
     public enum Metric
     {
         Manhattan,

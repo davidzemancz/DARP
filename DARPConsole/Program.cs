@@ -80,6 +80,7 @@ namespace DARPConsole
             esInput.BestfitOrderInsertMutProb = 1;
             esInput.RandomOrderInsertMutProb = 1;
             esInput.RandomOrderRemoveMutProb = 0.5;
+            esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
             EvolutionarySolver es = new();
             EvolutionarySolverOutput output = es.Run(new EvolutionarySolverInput(esInput));
             double eProfit = output.Plan.GetTotalProfit(esInput.Metric, esInput.VehicleChargePerTick);
@@ -106,23 +107,23 @@ namespace DARPConsole
             double iProfit3 = insHOutput3.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
             Console.WriteLine($"Insertion heuristics (global first fit) {iProfit3}, time {sw.Elapsed}");
 
-            sw.Restart();
-            MIPSolverInput mipInput = new(input);
-            mipInput.Solver = "SCIP";
-            mipInput.TimeLimit = 30_000;
-            MIPSolver ms = new();
-            MIPSolverOutput mipOutput = ms.Run(mipInput);
-            double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            Console.WriteLine($"MIP {mipInput.Solver} {mProfit}, time {sw.Elapsed}");
+            //sw.Restart();
+            //MIPSolverInput mipInput = new(input);
+            //mipInput.Solver = "SCIP";
+            //mipInput.TimeLimit = 30_000;
+            //MIPSolver ms = new();
+            //MIPSolverOutput mipOutput = ms.Run(mipInput);
+            //double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            //Console.WriteLine($"MIP {mipInput.Solver} {mProfit}, time {sw.Elapsed}");
 
-            sw.Restart();
-            MIPSolverInput mipInput2 = new(input);
-            mipInput2.Solver = "CP-SAT";
-            mipInput2.TimeLimit = 30_000;
-            MIPSolver ms2 = new();
-            MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
-            double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
+            //sw.Restart();
+            //MIPSolverInput mipInput2 = new(input);
+            //mipInput2.Solver = "CP-SAT";
+            //mipInput2.TimeLimit = 30_000;
+            //MIPSolver ms2 = new();
+            //MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
+            //double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            //Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
         }
     }
 }

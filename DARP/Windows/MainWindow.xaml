@@ -7,8 +7,14 @@
         xmlns:local="clr-namespace:DARP.Windows"
         xmlns:vr="clr-namespace:DARP.Windows.ValidationRules" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:map="clr-namespace:MapControl;assembly=MapControl.WPF"
+        xmlns:ad="https://github.com/Dirkster99/AvalonDock"
         mc:Ignorable="d"
-        Title="DARP" Height="900" Width="1800" Loaded="Window_Loaded">
+        Title="DARP" 
+        Height="900" 
+        Width="1800" 
+        Loaded="Window_Loaded"
+        Closing="Window_Closing"
+        >
     <Window.DataContext>
         <local:MainWindowModel/>
     </Window.DataContext>
@@ -19,220 +25,211 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="100*"/>
         </Grid.RowDefinitions>
-        <!--<Menu Grid.Row="0" Grid.ColumnSpan="100">
-            <MenuItem Header="_File" Padding="20, 1">
-                <MenuItem Header="_Save" InputGestureText="Ctrl+S" Click="miSave_Click"/>
-                <MenuItem Header="_Open" InputGestureText="Ctrl+O" Click="miOpen_Click"/>
-            </MenuItem>
-            --><!--<MenuItem Header="_Run" Padding="20, 1">
-                <MenuItem Header="_Ant colony"/>
-                <MenuItem Header="_Evolution" Click="btnRunEvo_Click"/>
-                <MenuItem Header="_Insertion heuristics" Click="btnRunInsertion_Click"/>
-                <MenuItem Header="_MIP solver" Click="btnRunMIP_Click"/>
-            </MenuItem>
-            <MenuItem Header="_Plan" Padding="20, 1">
-                <MenuItem Header="_Update" Click="btnUpdatePlan_Click"/>
-            </MenuItem>
-            <MenuItem Header="_Simulation" Padding="20, 1">
-                <MenuItem Header="_Start" Click="btnRunSimulation_Click"/>
-            </MenuItem>--><!--
-        </Menu>-->
-        <!--<ToolBarTray Grid.Row="1" VerticalAlignment="Stretch" Grid.ColumnSpan="100">
-          
-        </ToolBarTray>-->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="13*" />
-                <ColumnDefinition Width="10" />
-                <ColumnDefinition Width="32*" />
-                <ColumnDefinition Width="10" />
-                <ColumnDefinition Width="35*" />
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="20*"/>
-            </Grid.ColumnDefinitions>
-            <ScrollViewer>
-                <StackPanel Grid.Column="0">
-                    <GroupBox Header="Time">
-                        <StackPanel>
-                            <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0} ticks'}" Margin="0,3"/>
-                            <Button Content="Tick (ticks++)" Margin="0,3" Click="btnTick_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Data">
-                        <StackPanel>
-                            <Button Content="Save data" Margin="0,3" Click="btnSaveData_Click"/>
-                            <Button Content="Load data" Margin="0,3" Click="btnLoadData_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Run optimization">
-                        <StackPanel>
-                            <Button Content="Ant colony" Margin="0,3"/>
-                            <Button Content="Evolution" Margin="0,3" Click="btnRunEvo_Click"/>
-                            <Button Content="Graph search" Margin="0,3"/>
-                            <Button Content="Insertion heuristics" Margin="0,3" Click="btnRunInsertion_Click"/>
-                            <Button Content="MIP solver" Margin="0,3" Click="btnRunMIP_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Plan">
-                        <StackPanel>
-                            <Button Content="Update" Margin="0,3" Click="btnUpdatePlan_Click"/>
-                            <TextBlock TextWrapping="WrapWithOverflow" FontSize="9" Text="Update vehicles locations and remove old orders"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Simulation">
-                        <StackPanel>
-                            <TextBlock Text="{Binding Path=SimulationState, StringFormat='State: {0}'}" Margin="0,3"/>
-                            <ToggleButton x:Name="btnSimulation" Content="Start" Margin="0,3" Click="btnSimulation_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Time series">
-                        <StackPanel>
-                            <Button Content="Export time series to *.csv" Margin="0,3" Click="btnExportTimeSeries_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Header="Randomization">
-                        <StackPanel>
-                            <Button Content="Reset random generator" Margin="0,3" Click="btnReserRandom_Click"/>
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
-            </ScrollViewer>
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-            <TabControl x:Name="tbcLeft"  Grid.Column="2" SelectionChanged="tbcLeft_SelectionChanged">
-                <TabItem x:Name="tbiOrders" Header="Orders" Width="100">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
-                            <ToolBar Height="30">
-                                <Button   Content="Add order" Click="newRandomOrder_Click"/>
-                            </ToolBar>
-                        </ToolBarTray>
-                        <DataGrid Grid.Row="1" x:Name="dgOrders"/>
-                    </Grid>
-                </TabItem>
-                <TabItem x:Name="tbiVehicles" Header="Vehicles" Width="100">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
-                            <ToolBar Height="30">
-                                <Button   Content="Add vehicle" Click="btwNewRandomVehicle_Click"/>
-                            </ToolBar>
+        <!--<DockPanel Grid.Row="0">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open" />
+                    <MenuItem Header="_Save" />
+                    <Separator />
+                    <MenuItem Header="_Exit" />
+                </MenuItem>
+                <MenuItem Header="_View">
+                </MenuItem>
+            </Menu>
+        </DockPanel>-->
+        <DockingManager Grid.Row="1" x:Name="dockManager">
+            <LayoutRoot>
+                <LayoutPanel Orientation="Horizontal">
+                    <LayoutAnchorablePane FloatingWidth="400">
+                        <LayoutAnchorable ContentId="Actions" CanHide="False" Title="Actions">
+                            <ScrollViewer>
+                                <StackPanel Grid.Column="0">
+                                    <GroupBox Header="Time">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0} ticks'}" Margin="0,3"/>
+                                            <Button Content="Tick (ticks++)" Margin="0,3" Click="btnTick_Click"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Data">
+                                        <StackPanel>
+                                            <Button Content="Save data" Margin="0,3" Click="btnSaveData_Click"/>
+                                            <Button Content="Load data" Margin="0,3" Click="btnLoadData_Click"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Run optimization">
+                                        <StackPanel>
+                                            <Button Content="Ant colony" Margin="0,3"/>
+                                            <Button Content="Evolution" Margin="0,3" Click="btnRunEvo_Click"/>
+                                            <Button Content="Graph search" Margin="0,3"/>
+                                            <Button Content="Insertion heuristics" Margin="0,3" Click="btnRunInsertion_Click"/>
+                                            <Button Content="MIP solver" Margin="0,3" Click="btnRunMIP_Click"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Plan">
+                                        <StackPanel>
+                                            <Button Content="Update" Margin="0,3" Click="btnUpdatePlan_Click"/>
+                                            <TextBlock TextWrapping="WrapWithOverflow" FontSize="9" Text="Update vehicles locations and remove old orders"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Simulation">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Path=SimulationState, StringFormat='State: {0}'}" Margin="0,3"/>
+                                            <ToggleButton x:Name="btnSimulation" Content="Start" Margin="0,3" Click="btnSimulation_Click"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Time series">
+                                        <StackPanel>
+                                            <Button Content="Export time series to *.csv" Margin="0,3" Click="btnExportTimeSeries_Click"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="Randomization">
+                                        <StackPanel>
+                                            <Button Content="Reset random generator" Margin="0,3" Click="btnReserRandom_Click"/>
+                                        </StackPanel>
+                                    </GroupBox>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </LayoutAnchorable>
+                        <LayoutAnchorable ContentId="Parameters" CanHide="False" Title="Parameters">
+                            <xctk:PropertyGrid ShowTitle="False"  x:Name="pgSettings"  VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
+                        </LayoutAnchorable>
+                    </LayoutAnchorablePane>
+                    <LayoutPanel Orientation="Vertical">
+                        <LayoutAnchorablePane>
+                            <LayoutAnchorable ContentId="Orders" CanHide="False" Title="Orders">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
+                                        <ToolBar Height="30">
+                                            <Button   Content="Add order" Click="newRandomOrder_Click"/>
+                                        </ToolBar>
+                                    </ToolBarTray>
+                                    <DataGrid Grid.Row="1" x:Name="dgOrders"/>
+                                </Grid>
+                            </LayoutAnchorable>
+                            <LayoutAnchorable ContentId="Vehicles" CanHide="False" Title="Vehicles">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <ToolBarTray  Grid.Row="0" VerticalAlignment="Stretch" >
+                                        <ToolBar Height="30">
+                                            <Button   Content="Add vehicle" Click="btwNewRandomVehicle_Click"/>
+                                        </ToolBar>
 
-                        </ToolBarTray>
-                        <DataGrid  Grid.Row="1"  x:Name="dgVehicles"/>
-                    </Grid>
-                </TabItem>
-                <TabItem x:Name="tbiLog" Header="Logs" Width="100">
-                    <Grid>
-                        <TextBox x:Name="txtLog" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True" Text="" IsReadOnly="True" TextChanged="txtLog_TextChanged"/>
-                    </Grid>
-                </TabItem>
-            </TabControl>
-            <GridSplitter Grid.Column="3" Width="5" HorizontalAlignment="Stretch" />
-            <TabControl Grid.Column="4" >
-                <TabItem Header="Routes" Width="100">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <ScrollViewer Grid.Row="0" >
-                            <StackPanel x:Name="planRoutesStack"/>
-                        </ScrollViewer>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Statistics"  Width="100">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="50*"/>
-                            <RowDefinition Height="10"/>
-                            <RowDefinition Height="50*"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0">
-                            <Label Content="{Binding Stats.TotalOrdersStr}"/>
-                            <Label Content="{Binding Stats.HandledOrdersStr}"/>
-                            <Label Content="{Binding Stats.AcceptedOrdersStr}"/>
-                            <Label Content="{Binding Stats.RejectedOrdersStr}"/>
-                            <Separator/>
-                            <Label Content="{Binding Stats.CurrentProfitStr}"/>
-                            <Label Content="{Binding Stats.TotalProfitStr}"/>
-                            <Separator/>
-                        </StackPanel>
-                        <GridSplitter Grid.Row="1"  Height="5" ResizeDirection="Rows"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-                        <DockPanel Grid.Row="2" >
-                            <StackPanel Margin="2" DockPanel.Dock="Bottom" Orientation="Horizontal">
-                                <Button Padding="2" Margin="2,0" Content="Save plot" Click="btnSavePlot_Click"/>
-                                <Button Padding="2" Margin="2,0" Content="Copy to clipboard" Click="btnCopyPlotToClipboard_Click"/>
-                                <Button  Padding="2" Margin="2,0" Content="Export time series to *.csv"  Click="btnExportTimeSeries_Click"/>
-                            </StackPanel>
-                            <TabControl x:Name="tcPlots" DockPanel.Dock="Top">
-                                <TabItem Header="Total profit" Width="100" Tag="{Binding TotalProfitPlot}">
+                                    </ToolBarTray>
+                                    <DataGrid  Grid.Row="1"  x:Name="dgVehicles"/>
+                                </Grid>
+                            </LayoutAnchorable>
+                        </LayoutAnchorablePane>
+                        <LayoutAnchorablePane>
+                            <LayoutAnchorable ContentId="Log" CanHide="False" Title="Log">
+                                <Grid>
+                                    <TextBox x:Name="txtLog" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True" Text="" IsReadOnly="True" TextChanged="txtLog_TextChanged"/>
+                                </Grid>
+                            </LayoutAnchorable>
+                            <LayoutAnchorable ContentId="Statistics"  CanHide="False" Title="Statistics">
+                                <StackPanel Grid.Row="0">
+                                    <Label Content="{Binding Stats.TotalOrdersStr}"/>
+                                    <Label Content="{Binding Stats.HandledOrdersStr}"/>
+                                    <Label Content="{Binding Stats.AcceptedOrdersStr}"/>
+                                    <Label Content="{Binding Stats.RejectedOrdersStr}"/>
+                                    <Separator/>
+                                    <Label Content="{Binding Stats.CurrentProfitStr}"/>
+                                    <Label Content="{Binding Stats.TotalProfitStr}"/>
+                                    <Separator/>
+                                </StackPanel>
+                            </LayoutAnchorable>
+                        </LayoutAnchorablePane>
+                    </LayoutPanel>
+                    <LayoutPanel Orientation="Vertical">
+                        <LayoutAnchorablePane>
+                            <LayoutAnchorable ContentId="Routes" CanHide="False" Title="Routes">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <ScrollViewer Grid.Row="0" >
+                                        <StackPanel x:Name="planRoutesStack"/>
+                                    </ScrollViewer>
+                                </Grid>
+                            </LayoutAnchorable>
+                            <LayoutAnchorable ContentId="ManhattanMap" CanHide="False" Title="Manhattan map">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="100*"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5" Height="20">
+                                        <Button x:Name="btnRefreshMap" Content="Refresh" Click="btnRefreshMap_Click" Padding="5, 0"  VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="chbDrawOrders" Content="Orders" Margin="10,0" IsChecked="True"  VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="chbDrawRoutes" Content="Routes" Margin="10,0" IsChecked="True"  VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <Canvas Grid.Row="1" x:Name="cMap" Margin="20">
+                                        <Canvas.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Add order" Click="btnAddOrderToMap_Click"/>
+                                                <MenuItem Header="Add vehicle" Click="btnAddVehicleToMap_Click"/>
+                                            </ContextMenu>
+                                        </Canvas.ContextMenu>
+                                    </Canvas>
+                                    <GroupBox Grid.Row="2" Header="Legend">
+                                        <Canvas x:Name="cLegend"/>
+                                    </GroupBox>
+                                </Grid>
+                            </LayoutAnchorable>
+                            <LayoutAnchorable ContentId="Map" CanHide="False" Title="Map">
+                                <map:Map x:Name="map">
+                                </map:Map>
+                            </LayoutAnchorable>
+                        </LayoutAnchorablePane>
+                        <LayoutAnchorablePane>
+                            <LayoutAnchorable ContentId="TotalProfitPlot" CanHide="False" Title="Total profit">
+                                <DockPanel>
+                                    <ToolBar DockPanel.Dock="Top">
+                                        <Button Content="Save to *.png" Tag="{Binding TotalProfitPlot}" Click="btnSavePlot_Click"/>
+                                    </ToolBar>
                                     <oxy:PlotView Model="{Binding TotalProfitPlot}"/>
-                                </TabItem>
-                                <TabItem Header="Orders" Width="100" Tag="{Binding OrdersStatePlot}">
+                                </DockPanel>
+                            </LayoutAnchorable>
+                            <LayoutAnchorable  ContentId="OrdersStatePlot" CanHide="False" Title="Orders">
+                                <DockPanel>
+                                    <ToolBar DockPanel.Dock="Top">
+                                        <Button Content="Save to *.png" Tag="{Binding OrdersStatePlot}" Click="btnSavePlot_Click"/>
+                                    </ToolBar>
                                     <oxy:PlotView Model="{Binding OrdersStatePlot}"/>
-                                </TabItem>
-                                <TabItem Header="Optimality" Width="100" Tag="{Binding OptimalityPlot}">
+                                </DockPanel>
+                            </LayoutAnchorable>
+                            <LayoutAnchorable  ContentId="OptimalityPlot" CanHide="False" Title="Optimality">
+                                <DockPanel>
+                                    <ToolBar DockPanel.Dock="Top">
+                                        <Button Content="Save to *.png" Tag="{Binding OptimalityPlot}" Click="btnSavePlot_Click"/>
+                                    </ToolBar>
                                     <oxy:PlotView Model="{Binding OptimalityPlot}"/>
-                                </TabItem>
-                                <TabItem Header="Evolution" Width="100" Tag="{Binding EvolutionPlot}">
+                                </DockPanel>
+                            </LayoutAnchorable>
+                            <LayoutAnchorable  ContentId="EvolutionPlot" CanHide="False" Title="Evolution">
+                                <DockPanel>
+                                    <ToolBar DockPanel.Dock="Top">
+                                        <Button Content="Save to *.png" Tag="{Binding EvolutionPlot}" Click="btnSavePlot_Click"/>
+                                    </ToolBar>
                                     <oxy:PlotView Model="{Binding EvolutionPlot}"/>
-                                </TabItem>
-                            </TabControl>
-                        </DockPanel>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Manhattan map"  Width="100">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition Height="100*"/>
-                            <RowDefinition Height="60"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5" Height="20">
-                            <Button x:Name="btnRefreshMap" Content="Refresh" Click="btnRefreshMap_Click" Padding="5, 0"  VerticalAlignment="Center"/>
-                            <CheckBox x:Name="chbDrawOrders" Content="Orders" Margin="10,0" IsChecked="True"  VerticalAlignment="Center"/>
-                            <CheckBox x:Name="chbDrawRoutes" Content="Routes" Margin="10,0" IsChecked="True"  VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <Canvas Grid.Row="1" x:Name="cMap" Margin="20">
-                            <Canvas.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Add order" Click="btnAddOrderToMap_Click"/>
-                                    <MenuItem Header="Add vehicle" Click="btnAddVehicleToMap_Click"/>
-                                </ContextMenu>
-                            </Canvas.ContextMenu>
-                        </Canvas>
-                        <GroupBox Grid.Row="2" Header="Legend">
-                            <Canvas x:Name="cLegend"/>
-                        </GroupBox>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Map" Width="100">
-                    <map:Map x:Name="map">
-                    </map:Map>
-                </TabItem>
-            </TabControl>
-            <GridSplitter Grid.Column="5" Width="5" HorizontalAlignment="Stretch" />
-            <TabControl Grid.Column="6">
-                <TabItem Header="Properties" Width="100">
-                    <xctk:PropertyGrid ShowTitle="False"  x:Name="pgSettings"  VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
-                </TabItem>
-                <TabItem Header="Tasks" Width="100">
-                    <StackPanel/>
-                </TabItem>
-            </TabControl>
-        </Grid>
+                                </DockPanel>
+                            </LayoutAnchorable>
+                        </LayoutAnchorablePane>
+                    </LayoutPanel>
+                </LayoutPanel>
+            </LayoutRoot>
+        </DockingManager>
     </Grid>
-
 </Window>

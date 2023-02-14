@@ -42,9 +42,12 @@ namespace DARP.Solvers
         public double RandomOrderInsertMutProb { get; set; } = 0.5;
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
         public FitnessLogFunc AvgFitnessLog { get; set; }
+        public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
 
         public EvolutionarySolverInput() { }
         public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
+
+       
     }
 
     public class EvolutionarySolver : ISolver
@@ -156,28 +159,32 @@ namespace DARP.Solvers
                 // TODO selection settings
 
                 // Tournament enviromental selection
-                List<Individual> newPopulation = new(input.PopulationSize);
-                for (int i = 0; i < input.PopulationSize; i++)
+                if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
                 {
-                    int first = random.Next(population.Count);
-                    int second = random.Next(population.Count);
+                    List<Individual> newPopulation = new(input.PopulationSize);
+                    for (int i = 0; i < input.PopulationSize; i++)
+                    {
+                        int first = random.Next(population.Count);
+                        int second = random.Next(population.Count);
 
-                    double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                    double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
-                    if (firstProfit > secondProfit)
-                        newPopulation.Add(population[first]);
-                    else
-                        newPopulation.Add(population[second]);
+                        if (firstProfit > secondProfit)
+                            newPopulation.Add(population[first]);
+                        else
+                            newPopulation.Add(population[second]);
+                    }
+                    population = newPopulation;
                 }
-                population = newPopulation;
-
-
-                // Elitims selection
-                //population = population
-                //   .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerMinute))
-                //   .Take(input.PopulationSize)
-                //   .ToList();
+                else if (input.EnviromentalSelection == EnviromentalSelection.Elitism)
+                {
+                    // Elitims selection
+                    population = population
+                       .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
+                       .Take(input.PopulationSize)
+                       .ToList();
+                }
 
             }
 

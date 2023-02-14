@@ -1,4 +1,6 @@
-﻿using ClosedXML.Excel;
+﻿using AvalonDock.Layout;
+using AvalonDock.Layout.Serialization;
+using ClosedXML.Excel;
 using DARP.Models;
 using DARP.Providers;
 using DARP.Services;
@@ -25,6 +27,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -336,6 +339,7 @@ namespace DARP.Windows
                 RandomOrderInsertMutProb = WindowModel.Params.RandomOrderInsertMutProb,
                 RandomOrderRemoveMutProb = WindowModel.Params.RandomOrderRemoveMutProb,
                 BestfitOrderInsertMutProb = WindowModel.Params.BestfitOrderInsertMutProb,
+                EnviromentalSelection = WindowModel.Params.EnviromentalSelection,   
                 AvgFitnessLog = (gen, fittness) =>
                 {
                     _evolutionAvgFitnessSeries.Points.Add(new DataPoint(gen, fittness));
@@ -877,8 +881,16 @@ namespace DARP.Windows
 
         #region EVENT METHODS
 
+        private const string LAYOUT_FILE = @".\darp_layout.config";
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (File.Exists(LAYOUT_FILE))
+            {
+                var layoutSerializer = new XmlLayoutSerializer(dockManager);
+                layoutSerializer.Deserialize(LAYOUT_FILE);
+            }
+
             dgOrders.ItemsSource = _orderService.GetOrderViews();
             dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
 
@@ -946,14 +958,6 @@ namespace DARP.Windows
             LoadData();
         }
 
-        private void tbcLeft_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (tbcLeft.SelectedItem == tbiLog)
-            {
-                txtLog.ScrollToEnd();
-            }
-        }
-
         private void txtLog_TextChanged(object sender, TextChangedEventArgs e)
         {
             txtLog.ScrollToEnd();
@@ -997,12 +1001,7 @@ namespace DARP.Windows
 
         private void btnSavePlot_Click(object sender, RoutedEventArgs e)
         {
-            SavePlot((PlotModel)((TabItem)tcPlots.SelectedItem).Tag);
-        }
-
-        private void btnCopyPlotToClipboard_Click(object sender, RoutedEventArgs e)
-        {
-            CopyPlotToClipboard((PlotModel)((TabItem)tcPlots.SelectedItem).Tag);
+            SavePlot((PlotModel)((Control)sender).Tag);
         }
 
         private void btnExportTimeSeries_Click(object sender, RoutedEventArgs e)
@@ -1020,10 +1019,19 @@ namespace DARP.Windows
             AddRandomVehicle();
         }
 
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            var layoutSerializer = new XmlLayoutSerializer(dockManager);
+            layoutSerializer.Serialize(LAYOUT_FILE);
+        }
+
         #endregion
+
+
     }
 
     #region CLASSES
+
 
     internal class MainWindowDataModel
     {
@@ -1054,18 +1062,16 @@ namespace DARP.Windows
         public SimulationStateEnum SimulationState { get; set; }
         public MainWindowStats Stats { get; set; } = new();
         public MainWindowParams Params { get; set; } = new();
+        [JsonIgnore]
         public PlotModel OrdersStatePlot { get; set; }
+        [JsonIgnore]
         public PlotModel TotalProfitPlot { get; set; }
+        [JsonIgnore]
         public PlotModel OptimalityPlot { get; set; }
+        [JsonIgnore]
         public PlotModel EvolutionPlot { get; set; }
 
         public enum SimulationStateEnum
-        {
-            Ready = 0,
-            Running = 1,
-        }
-
-        public enum ReportingStateEnum
         {
             Ready = 0,
             Running = 1,
@@ -1194,16 +1200,20 @@ namespace DARP.Windows
         public int EvoPopSize { get; set; } = 100;
 
         [Category("Evolution")]
-        [DisplayName("[M] Remove order")]
-        public double RandomOrderRemoveMutProb { get; set; } = 0.2;
+        [DisplayName("[MUT] Remove order prob.")]
+        public double RandomOrderRemoveMutProb { get; set; } = 0.4;
 
         [Category("Evolution")]
-        [DisplayName("[M] Insert order")]
-        public double RandomOrderInsertMutProb { get; set; } = 0.5;
+        [DisplayName("[MUT] Insert order prob.")]
+        public double RandomOrderInsertMutProb { get; set; } = 1;
 
         [Category("Evolution")]
-        [DisplayName("[M] BestFit order")]
-        public double BestfitOrderInsertMutProb { get; set; } = 0.5;
+        [DisplayName("[MUT] BestFit order prob.")]
+        public double BestfitOrderInsertMutProb { get; set; } = 1;
+
+        [Category("Evolution")]
+        [DisplayName("Enviromental selection")]
+        public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Tournament;
 
         // ------------ Insertion heuristics ------------------
         [Category("Insertion heuristics")]
