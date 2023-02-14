@@ -27,35 +27,32 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="100*"/>
         </Grid.RowDefinitions>
-        <!--<DockPanel Grid.Row="0">
+        <DockPanel Grid.Row="0">
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open" />
-                    <MenuItem Header="_Save" />
+                    <MenuItem Header="_Open" Click="btnLoadData_Click" />
+                    <MenuItem Header="_Save" Click="btnSaveData_Click" />
                     <Separator />
-                    <MenuItem Header="_Exit" />
+                    <MenuItem Header="_Exit" Click="btnExit_Click"/>
                 </MenuItem>
-                <MenuItem Header="_View">
+                <MenuItem x:Name="miView" Header="_View">
+                </MenuItem>
+                <MenuItem Header="_Help">
+                    <MenuItem Header="_Documentation [CZ]" Click="btnDocsCz_Click"/>
                 </MenuItem>
             </Menu>
-        </DockPanel>-->
+        </DockPanel>
         <DockingManager Grid.Row="1" x:Name="dockManager">
             <LayoutRoot>
                 <LayoutPanel Orientation="Horizontal">
                     <LayoutAnchorablePane FloatingWidth="400">
-                        <LayoutAnchorable ContentId="Actions" CanHide="False" Title="Actions">
+                        <LayoutAnchorable ContentId="Actions" CanHide="True" Title="Actions">
                             <ScrollViewer>
                                 <StackPanel Grid.Column="0">
                                     <GroupBox Header="Time">
                                         <StackPanel>
                                             <TextBlock Text="{Binding Path=CurrentTime, StringFormat='Current time: {0} ticks'}" Margin="0,3"/>
                                             <Button Content="Tick (ticks++)" Margin="0,3" Click="btnTick_Click"/>
-                                        </StackPanel>
-                                    </GroupBox>
-                                    <GroupBox Header="Data">
-                                        <StackPanel>
-                                            <Button Content="Save data" Margin="0,3" Click="btnSaveData_Click"/>
-                                            <Button Content="Load data" Margin="0,3" Click="btnLoadData_Click"/>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Run optimization">
@@ -92,13 +89,13 @@
                                 </StackPanel>
                             </ScrollViewer>
                         </LayoutAnchorable>
-                        <LayoutAnchorable ContentId="Parameters" CanHide="False" Title="Parameters">
+                        <LayoutAnchorable ContentId="Parameters" CanHide="True" Title="Parameters">
                             <xctk:PropertyGrid ShowTitle="False"  x:Name="pgSettings"  VerticalAlignment="Stretch" SelectedObject="{Binding Params}"/>
                         </LayoutAnchorable>
                     </LayoutAnchorablePane>
                     <LayoutPanel Orientation="Vertical">
                         <LayoutAnchorablePane>
-                            <LayoutAnchorable ContentId="Orders" CanHide="False" Title="Orders">
+                            <LayoutAnchorable ContentId="Orders" CanHide="True" Title="Orders">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="30"/>
@@ -112,7 +109,7 @@
                                     <DataGrid Grid.Row="1" x:Name="dgOrders"/>
                                 </Grid>
                             </LayoutAnchorable>
-                            <LayoutAnchorable ContentId="Vehicles" CanHide="False" Title="Vehicles">
+                            <LayoutAnchorable ContentId="Vehicles" CanHide="True" Title="Vehicles">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="30"/>
@@ -129,12 +126,12 @@
                             </LayoutAnchorable>
                         </LayoutAnchorablePane>
                         <LayoutAnchorablePane>
-                            <LayoutAnchorable ContentId="Log" CanHide="False" Title="Log">
+                            <LayoutAnchorable ContentId="Log" CanHide="True" Title="Log">
                                 <Grid>
                                     <TextBox x:Name="txtLog" ScrollViewer.VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" AcceptsReturn="True" Text="" IsReadOnly="True" TextChanged="txtLog_TextChanged"/>
                                 </Grid>
                             </LayoutAnchorable>
-                            <LayoutAnchorable ContentId="Statistics"  CanHide="False" Title="Statistics">
+                            <LayoutAnchorable ContentId="Statistics"  CanHide="True" Title="Statistics">
                                 <StackPanel Grid.Row="0">
                                     <Label Content="{Binding Stats.TotalOrdersStr}"/>
                                     <Label Content="{Binding Stats.HandledOrdersStr}"/>
@@ -150,7 +147,7 @@
                     </LayoutPanel>
                     <LayoutPanel Orientation="Vertical">
                         <LayoutAnchorablePane>
-                            <LayoutAnchorable ContentId="Routes" CanHide="False" Title="Routes">
+                            <LayoutAnchorable ContentId="Routes" CanHide="True" Title="Routes">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
@@ -160,7 +157,7 @@
                                     </ScrollViewer>
                                 </Grid>
                             </LayoutAnchorable>
-                            <LayoutAnchorable ContentId="ManhattanMap" CanHide="False" Title="Manhattan map">
+                            <LayoutAnchorable ContentId="ManhattanMap" CanHide="True" Title="Manhattan map">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100*" />
@@ -188,13 +185,13 @@
                                     </GroupBox>
                                 </Grid>
                             </LayoutAnchorable>
-                            <LayoutAnchorable ContentId="Map" CanHide="False" Title="Map">
+                            <LayoutAnchorable ContentId="Map" CanHide="True" Title="Map">
                                 <map:Map x:Name="map">
                                 </map:Map>
                             </LayoutAnchorable>
                         </LayoutAnchorablePane>
                         <LayoutAnchorablePane>
-                            <LayoutAnchorable ContentId="TotalProfitPlot" CanHide="False" Title="Total profit">
+                            <LayoutAnchorable ContentId="TotalProfitPlot" CanHide="True" Title="Total profit">
                                 <DockPanel>
                                     <ToolBar DockPanel.Dock="Top">
                                         <Button Content="Save to *.png" Tag="{Binding TotalProfitPlot}" Click="btnSavePlot_Click"/>
@@ -202,7 +199,7 @@
                                     <oxy:PlotView Model="{Binding TotalProfitPlot}"/>
                                 </DockPanel>
                             </LayoutAnchorable>
-                            <LayoutAnchorable  ContentId="OrdersStatePlot" CanHide="False" Title="Orders">
+                            <LayoutAnchorable  ContentId="OrdersStatePlot" CanHide="True" Title="Orders">
                                 <DockPanel>
                                     <ToolBar DockPanel.Dock="Top">
                                         <Button Content="Save to *.png" Tag="{Binding OrdersStatePlot}" Click="btnSavePlot_Click"/>
@@ -210,7 +207,7 @@
                                     <oxy:PlotView Model="{Binding OrdersStatePlot}"/>
                                 </DockPanel>
                             </LayoutAnchorable>
-                            <LayoutAnchorable  ContentId="OptimalityPlot" CanHide="False" Title="Optimality">
+                            <LayoutAnchorable  ContentId="OptimalityPlot" CanHide="True" Title="Optimality">
                                 <DockPanel>
                                     <ToolBar DockPanel.Dock="Top">
                                         <Button Content="Save to *.png" Tag="{Binding OptimalityPlot}" Click="btnSavePlot_Click"/>
@@ -218,7 +215,7 @@
                                     <oxy:PlotView Model="{Binding OptimalityPlot}"/>
                                 </DockPanel>
                             </LayoutAnchorable>
-                            <LayoutAnchorable  ContentId="EvolutionPlot" CanHide="False" Title="Evolution">
+                            <LayoutAnchorable  ContentId="EvolutionPlot" CanHide="True" Title="Evolution">
                                 <DockPanel>
                                     <ToolBar DockPanel.Dock="Top">
                                         <Button Content="Save to *.png" Tag="{Binding EvolutionPlot}" Click="btnSavePlot_Click"/>

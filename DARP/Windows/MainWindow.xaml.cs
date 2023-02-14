@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -82,6 +83,13 @@ namespace DARP.Windows
                 };
             }
         }
+
+        #region CONSTS
+
+        private const string LAYOUT_FILE = @".\darp_layout.config";
+        private const string MANUAL_CZ = @".\DARP manual CZ.pdf";
+
+        #endregion
 
         #region PROPS
 
@@ -881,7 +889,7 @@ namespace DARP.Windows
 
         #region EVENT METHODS
 
-        private const string LAYOUT_FILE = @".\darp_layout.config";
+      
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -903,6 +911,22 @@ namespace DARP.Windows
             DrawMapLegened();
 
             InitPlots();
+
+
+            foreach (var child in dockManager.Layout.Descendents())
+            {
+                if (child is LayoutAnchorable la)
+                {
+                    var mi = new MenuItem();
+                    mi.IsCheckable = true;
+                    mi.Header = la.Title;
+                    mi.Click += (s1, e1) =>
+                    {
+                        la.Show();
+                    };
+                    miView.Items.Add(mi);
+                }
+            }
         }
 
         private void newRandomOrder_Click(object sender, RoutedEventArgs e)
@@ -1025,9 +1049,24 @@ namespace DARP.Windows
             layoutSerializer.Serialize(LAYOUT_FILE);
         }
 
+        private void btnDocsCz_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(MANUAL_CZ))
+            {
+                Process p = new();
+                p.StartInfo = new(MANUAL_CZ) { UseShellExecute = true };
+                p.Start();
+            }
+        }
+
+        private void btnExit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
         #endregion
 
-
+       
     }
 
     #region CLASSES
