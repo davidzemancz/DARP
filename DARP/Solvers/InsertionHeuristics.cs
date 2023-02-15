@@ -97,7 +97,7 @@ namespace DARP.Solvers
             {
                 Route bestRoute = null;
                 int bestInsertionIndex = -1;
-                double bestProfit = double.MinValue;
+                double bestProfitDiff = double.MinValue;
 
                 foreach (Route route in plan.Routes)
                 {
@@ -106,14 +106,16 @@ namespace DARP.Solvers
                         if (route.CanInsertOrder(order, index, input.Metric))
                         {
                             Route routeClone = route.Clone();
+                            double routeProfit = route.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                             routeClone.InsertOrder(order, index, input.Metric);
-                            double routeProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                            
-                            if (routeProfit > bestProfit)
+                            double routeCloneProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                            double routeDiff = routeCloneProfit - routeProfit;
+
+                            if (routeDiff > bestProfitDiff)
                             {
                                 bestRoute = route;
                                 bestInsertionIndex = index;
-                                bestProfit = routeProfit;
+                                bestProfitDiff = routeCloneProfit;
                             }
                         }
                     }
@@ -139,11 +141,10 @@ namespace DARP.Solvers
                 Route globalBestRoute = null;
                 Order globalBestOrder = null;
                 int globalBestInsertionIndex = -1;
-                double globalBestProfit = double.MinValue;
+                double globalBestProfitDiff = double.MinValue;
 
                 foreach (Order order in remainingOrders)
                 {
-                    bool inserted = false;
                     foreach (Route route in plan.Routes)
                     {
                         for (int index = 1; index < route.Points.Count + 1; index += 2)
@@ -152,18 +153,19 @@ namespace DARP.Solvers
                             {
                                 Route routeClone = route.Clone();
                                 routeClone.InsertOrder(order, index, input.Metric);
-                                double routeProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                                double routeProfit = route.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                                double routeCloneProfit = routeClone.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                                double profitDiff = routeCloneProfit - routeProfit;
 
-                                if (routeProfit > globalBestProfit)
+                                if (profitDiff > globalBestProfitDiff)
                                 {
                                     globalBestOrder = order;
                                     globalBestRoute = route;
                                     globalBestInsertionIndex = index;
-                                    globalBestProfit = routeProfit;
+                                    globalBestProfitDiff = profitDiff;
                                 }
                             }
                         }
-                        if (inserted) break;
                     }
                 }
 
