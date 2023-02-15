@@ -77,11 +77,11 @@ namespace DARPConsole
             sw.Start();
             EvolutionarySolverInput esInput = new(input);
             esInput.Generations = 2000;
-            esInput.PopulationSize = 1000;
-            esInput.BestfitOrderInsertMutProb = 0.6;
-            esInput.RandomOrderInsertMutProb = 0.6;
-            esInput.RandomOrderRemoveMutProb = 0.4;
-            esInput.EnviromentalSelection = EnviromentalSelection.Elitism;
+            esInput.PopulationSize = 100;
+            esInput.BestfitOrderInsertMutProb = 0.3;
+            esInput.RandomOrderInsertMutProb = 0.3;
+            esInput.RandomOrderRemoveMutProb = 0.2;
+            esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
             EvolutionarySolver es = new();
             EvolutionarySolverOutput output = es.Run(new EvolutionarySolverInput(esInput));
             double eProfit = output.Plan.GetTotalProfit(esInput.Metric, esInput.VehicleChargePerTick);
@@ -117,14 +117,14 @@ namespace DARPConsole
             //double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
             //Console.WriteLine($"MIP {mipInput.Solver} {mProfit}, time {sw.Elapsed}");
 
-            sw.Restart();
-            MIPSolverInput mipInput2 = new(input);
-            mipInput2.Solver = "CP-SAT";
-            mipInput2.TimeLimit = 10_000;
-            MIPSolver ms2 = new();
-            MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
-            double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
+            //sw.Restart();
+            //MIPSolverInput mipInput2 = new(input);
+            //mipInput2.Solver = "CP-SAT";
+            //mipInput2.TimeLimit = 60_000;
+            //MIPSolver ms2 = new();
+            //MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
+            //double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            //Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
         }
     }
 }

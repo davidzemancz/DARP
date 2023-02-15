@@ -52,6 +52,9 @@ namespace DARP.Solvers
 
     public class EvolutionarySolver : ISolver
     {
+        private Random _random;
+        private EvolutionarySolverInput _input;
+
         ISolverOutput ISolver.Run(ISolverInput input)
         {
             return Run((EvolutionarySolverInput)input);
@@ -59,7 +62,8 @@ namespace DARP.Solvers
 
         public EvolutionarySolverOutput Run(EvolutionarySolverInput input) 
         {
-            Random random = new((int)DateTime.Now.Ticks);
+            _random = new((int)DateTime.Now.Ticks);
+            _input = input;
 
             // Initialize population
             Individual bestInd = new();
@@ -102,55 +106,21 @@ namespace DARP.Solvers
                     Individual indClone = population[i].Clone();
                     
                     // Remove order
-                    if (random.NextDouble() < input.RandomOrderRemoveMutProb)
+                    if (_random.NextDouble() < input.RandomOrderRemoveMutProb)
                     {
-                        int routeIndex = random.Next(indClone.Plan.Routes.Count);
-                        Route route = indClone.Plan.Routes[routeIndex];
-                        if (route.Orders.Any())
-                        {
-                            Order[] orders = route.Orders.ToArray();
-                            int orderIndex = random.Next(orders.Length);
-                            Order order = orders[orderIndex];
-                            route.RemoveOrder(order);
-                            indClone.RemaingOrders.Add(order);
-
-                            population.Add(indClone);
-                        }
+                        MutateRemoveOrder(population, i);
                     }
-                    
                     // Insert order by random choice of index
-                    if (random.NextDouble() < input.RandomOrderInsertMutProb && indClone.RemaingOrders.Any())
+                    
+                    else if (_random.NextDouble() < input.RandomOrderInsertMutProb && indClone.RemaingOrders.Any())
                     {
-                        int orderIndex = random.Next(indClone.RemaingOrders.Count);
-                        Order order = indClone.RemaingOrders[orderIndex];
-                        int routeIndex = random.Next(indClone.Plan.Routes.Count);
-                        Route route = indClone.Plan.Routes[routeIndex];
-                        int insertionIndex = random.Next(1, route.Points.Count + 1);
-                        if (route.CanInsertOrder(order, insertionIndex, input.Metric))
-                        {
-                            route.InsertOrder(order, insertionIndex, input.Metric);
-                            indClone.RemaingOrders.Remove(order);
-                        }
-                        population.Add(indClone);
+                        MutateInsertOrderRandomly(population, i);
                     }
 
                     // Bestfit insertion heuristics
-                    if (random.NextDouble() < input.BestfitOrderInsertMutProb && indClone.RemaingOrders.Any())
+                    else if (_random.NextDouble() < input.BestfitOrderInsertMutProb && indClone.RemaingOrders.Any())
                     {
-                        int orderIndex = random.Next(indClone.RemaingOrders.Count);
-                        Order order = indClone.RemaingOrders[orderIndex];
-
-                        InsertionHeuristicsInput insHInput = new(input);
-                        insHInput.Plan = indClone.Plan;
-                        insHInput.Orders = new[] { order };
-                        InsertionHeuristics insH = new();
-                        insH.RunLocalBestFit(insHInput);
-                        if (indClone.Plan.Contains(order))
-                        {
-                            indClone.RemaingOrders.Remove(order);
-                        }
-
-                        population.Add(indClone);
+                        MutateBestFitOrder(population, i);
                     }      
                     
                     // TODO switch mutation
@@ -164,8 +134,8 @@ namespace DARP.Solvers
                     List<Individual> newPopulation = new(input.PopulationSize);
                     for (int i = 0; i < input.PopulationSize; i++)
                     {
-                        int first = random.Next(population.Count);
-                        int second = random.Next(population.Count);
+                        int first = _random.Next(population.Count);
+                        int second = _random.Next(population.Count);
 
                         double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                         double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
@@ -191,7 +161,62 @@ namespace DARP.Solvers
             return new EvolutionarySolverOutput(bestInd.Plan, Status.Success);
         }
 
-        public class Individual
+        private void MutateRemoveOrder(List<Individual> population, int index)
+        {
+            Individual indClone = population[index].Clone();
+
+            int routeIndex = _random.Next(indClone.Plan.Routes.Count);
+            Route route = indClone.Plan.Routes[routeIndex];
+            if (route.Orders.Any())
+            {
+                Order[] orders = route.Orders.ToArray();
+                int orderIndex = _random.Next(orders.Length);
+                Order order = orders[orderIndex];
+                route.RemoveOrder(order);
+                indClone.RemaingOrders.Add(order);
+
+                population.Add(indClone);
+            }
+        }
+
+        private void MutateInsertOrderRandomly(List<Individual> population, int index)
+        {
+            Individual indClone = population[index].Clone();
+
+            int orderIndex = _random.Next(indClone.RemaingOrders.Count);
+            Order order = indClone.RemaingOrders[orderIndex];
+            int routeIndex = _random.Next(indClone.Plan.Routes.Count);
+            Route route = indClone.Plan.Routes[routeIndex];
+            int insertionIndex = _random.Next(1, route.Points.Count + 1);
+            if (route.CanInsertOrder(order, insertionIndex, _input.Metric))
+            {
+                route.InsertOrder(order, insertionIndex, _input.Metric);
+                indClone.RemaingOrders.Remove(order);
+            }
+            population.Add(indClone);
+        }
+
+        private void MutateBestFitOrder(List<Individual> population, int index)
+        {
+            Individual indClone = population[index].Clone();
+
+            int orderIndex = _random.Next(indClone.RemaingOrders.Count);
+            Order order = indClone.RemaingOrders[orderIndex];
+
+            InsertionHeuristicsInput insHInput = new(_input);
+            insHInput.Plan = indClone.Plan;
+            insHInput.Orders = new[] { order };
+            InsertionHeuristics insH = new();
+            insH.RunLocalBestFit(insHInput);
+            if (indClone.Plan.Contains(order))
+            {
+                indClone.RemaingOrders.Remove(order);
+            }
+
+            population.Add(indClone);
+        }
+
+        protected class Individual
         {
             public Plan Plan {  get; set; }
             public List<Order> RemaingOrders { get; set; } = new();

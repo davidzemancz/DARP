@@ -1225,6 +1225,11 @@ namespace DARP.Windows
         public bool MIPMultithreading { get; set; } = false;
 
         [Category("MIP solver")]
+        [DisplayName("Internal solver")]
+        [Description("Internal solver. Available is SCIP or CP-SAT.")]
+        public string Solver { get; set; } = "CP-SAT";
+
+        [Category("MIP solver")]
         [DisplayName("Objective")]
         public OptimizationObjective MIPObjective { get; set; } = OptimizationObjective.MaximizeProfit;
 
