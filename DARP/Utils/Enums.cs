@@ -12,6 +12,11 @@ namespace DARP.Utils
         Tournament = 1,
     }
 
+    public enum ParentalSelection
+    {
+        RouletteWheel = 0,
+    }
+
     public enum Metric
     {
         Manhattan,

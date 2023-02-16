@@ -43,6 +43,7 @@ namespace DARP.Solvers
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
         public FitnessLogFunc AvgFitnessLog { get; set; }
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
+        public ParentalSelection ParentalSelection { get; set; } = ParentalSelection.RouletteWheel;
 
         public EvolutionarySolverInput() { }
         public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
@@ -69,18 +70,18 @@ namespace DARP.Solvers
             Individual bestInd = new();
 
             List<Individual> population = new();
-            for (int i = 0; i < input.PopulationSize; i++)
-            {
-                // TODO randomize initial population
-                population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders) });
-            }
+            // Start with population of size 1
+            population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders) });
 
             // Evolution
             for (int g  = 0; g < input.Generations; g++)
             {
+                // Current population size, may changes between generations
+                int popSize = population.Count;
+
                 // Compute fitnesses
                 double fitnessAvg = 0, min = double.MaxValue, max = double.MinValue;
-                for (int i = 0; i < input.PopulationSize; i++)
+                for (int i = 0; i < popSize; i++)
                 {
                     Individual ind = population[i];
                     double fitness = ind.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
@@ -92,33 +93,34 @@ namespace DARP.Solvers
 
                     if(ind.Fitness > bestInd.Fitness) bestInd = ind;
                 }
-                fitnessAvg /= input.PopulationSize;
+                fitnessAvg /= population.Count;
                 
                 if (input.AvgFitnessLog != null) 
                     input.AvgFitnessLog(g, fitnessAvg);
-              
-                // TODO corssover
+
+                // Crossover
+                for (int i = 0; i < popSize; i++)
+                {
+                    
+                }
 
                 // Mutate
-                for (int i = 0; i < input.PopulationSize; i++)
+                for (int i = 0; i < popSize; i++)
                 {
-
-                    Individual indClone = population[i].Clone();
-                    
                     // Remove order
                     if (_random.NextDouble() < input.RandomOrderRemoveMutProb)
                     {
                         MutateRemoveOrder(population, i);
                     }
-                    // Insert order by random choice of index
                     
-                    else if (_random.NextDouble() < input.RandomOrderInsertMutProb && indClone.RemaingOrders.Any())
+                    // Insert order by random choice of index
+                    if (_random.NextDouble() < input.RandomOrderInsertMutProb)
                     {
                         MutateInsertOrderRandomly(population, i);
                     }
-
+                    
                     // Bestfit insertion heuristics
-                    else if (_random.NextDouble() < input.BestfitOrderInsertMutProb && indClone.RemaingOrders.Any())
+                    if (_random.NextDouble() < input.BestfitOrderInsertMutProb)
                     {
                         MutateBestFitOrder(population, i);
                     }      
@@ -131,8 +133,9 @@ namespace DARP.Solvers
                 // Tournament enviromental selection
                 if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
                 {
-                    List<Individual> newPopulation = new(input.PopulationSize);
-                    for (int i = 0; i < input.PopulationSize; i++)
+                    popSize = Math.Min(population.Count, input.PopulationSize);
+                    List<Individual> newPopulation = new(popSize);
+                    for (int i = 0; i < popSize; i++)
                     {
                         int first = _random.Next(population.Count);
                         int second = _random.Next(population.Count);
@@ -181,6 +184,7 @@ namespace DARP.Solvers
 
         private void MutateInsertOrderRandomly(List<Individual> population, int index)
         {
+            if (!population[index].RemaingOrders.Any()) return;
             Individual indClone = population[index].Clone();
 
             int orderIndex = _random.Next(indClone.RemaingOrders.Count);
@@ -198,6 +202,7 @@ namespace DARP.Solvers
 
         private void MutateBestFitOrder(List<Individual> population, int index)
         {
+            if (!population[index].RemaingOrders.Any()) return;
             Individual indClone = population[index].Clone();
 
             int orderIndex = _random.Next(indClone.RemaingOrders.Count);

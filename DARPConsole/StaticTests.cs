@@ -38,9 +38,9 @@ namespace DARPConsole
             };
 
             List<Order> orders = new();
-            const int MAP_SIZE = 10;
+            const int MAP_SIZE = 20;
             const int PROFIT_PM = 5;
-            const int ORDERS = 25;
+            const int ORDERS = 60;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords pickup = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
@@ -60,7 +60,7 @@ namespace DARPConsole
             };
             input.Orders = orders;
 
-            const int VEHICLES = 2;
+            const int VEHICLES = 5;
             List<Vehicle> vehicles = new();
             for (int v = 1; v <= VEHICLES; v++)
             {
@@ -76,18 +76,18 @@ namespace DARPConsole
 
             Stopwatch sw = new();
 
-            //sw.Start();
-            //EvolutionarySolverInput esInput = new(input);
-            //esInput.Generations = 2000;
-            //esInput.PopulationSize = 100;
-            //esInput.BestfitOrderInsertMutProb = 0.3;
-            //esInput.RandomOrderInsertMutProb = 0.3;
-            //esInput.RandomOrderRemoveMutProb = 0.2;
-            //esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
-            //EvolutionarySolver es = new();
-            //EvolutionarySolverOutput output = es.Run(new EvolutionarySolverInput(esInput));
-            //double eProfit = output.Plan.GetTotalProfit(esInput.Metric, esInput.VehicleChargePerTick);
-            //Console.WriteLine($"Evolution {eProfit}, time {sw.Elapsed}");
+            sw.Start();
+            EvolutionarySolverInput esInput = new(input);
+            esInput.Generations = 1000;
+            esInput.PopulationSize = 100;
+            esInput.BestfitOrderInsertMutProb = 1;
+            esInput.RandomOrderInsertMutProb = 1;
+            esInput.RandomOrderRemoveMutProb = 0.6;
+            esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
+            EvolutionarySolver es = new();
+            EvolutionarySolverOutput output = es.Run(esInput);
+            double eProfit = output.Plan.GetTotalProfit(esInput.Metric, esInput.VehicleChargePerTick);
+            Console.WriteLine($"Evolution {eProfit}, time {sw.Elapsed}");
 
             sw.Restart();
             InsertionHeuristicsInput insHInput2 = new(input);
@@ -119,14 +119,14 @@ namespace DARPConsole
             //double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
             //Console.WriteLine($"MIP {mipInput.Solver} {mProfit}, time {sw.Elapsed}");
 
-            sw.Restart();
-            MIPSolverInput mipInput2 = new(input);
-            mipInput2.Solver = "CP-SAT";
-            mipInput2.TimeLimit = 60_000;
-            MIPSolver ms2 = new();
-            MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
-            double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
+            //sw.Restart();
+            //MIPSolverInput mipInput2 = new(input);
+            //mipInput2.Solver = "CP-SAT";
+            //mipInput2.TimeLimit = 60_000;
+            //MIPSolver ms2 = new();
+            //MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
+            //double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            //Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
         }
     }
 }
