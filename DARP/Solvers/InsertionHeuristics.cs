@@ -1,5 +1,6 @@
 ﻿using DARP.Models;
 using DARP.Utils;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Google.OrTools.LinearSolver;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace DARP.Solvers
     {
         public Plan Plan { get; }
         public Status Status { get; }
+        public List<Order> RemainingOrders { get; }
 
         public InsertionHeuristicsOutput()
         {
@@ -25,10 +27,11 @@ namespace DARP.Solvers
             Status = status;
         }
 
-        public InsertionHeuristicsOutput(Plan plan, Status status)
+        public InsertionHeuristicsOutput(Plan plan, Status status, List<Order> remainingOrders)
         {
             Plan = plan;
             Status = status;
+            RemainingOrders = remainingOrders;  
         }
     }
     public class InsertionHeuristicsInput : SolverInputBase
@@ -67,7 +70,7 @@ namespace DARP.Solvers
         {
             Plan plan = input.Plan.Clone();
 
-            InsertionHeuristicsMode mode = input.Mode;
+            List<Order> remainingOrders = new();
             foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
             {
                 bool inserted = false;
@@ -84,15 +87,17 @@ namespace DARP.Solvers
                     }
                     if (inserted) break;
                 }
+                if (!inserted) remainingOrders.Add(order);
+             
             }
-            return new InsertionHeuristicsOutput(plan, Status.Success);
+            return new InsertionHeuristicsOutput(plan, Status.Success, remainingOrders);
         }
 
         public InsertionHeuristicsOutput RunLocalBestFit(InsertionHeuristicsInput input)
         {
             Plan plan = input.Plan.Clone();
 
-            InsertionHeuristicsMode mode = input.Mode;
+            List<Order> remainingOrders = new();
             foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
             {
                 Route bestRoute = null;
@@ -126,8 +131,12 @@ namespace DARP.Solvers
                 {
                     bestRoute.InsertOrder(order, bestInsertionIndex, input.Metric);
                 }
+                else
+                {
+                   remainingOrders.Add(order);
+                }
             }
-            return new InsertionHeuristicsOutput(plan, Status.Success);
+            return new InsertionHeuristicsOutput(plan, Status.Success, remainingOrders);
         }
 
         public InsertionHeuristicsOutput RunGlobalBestFit(InsertionHeuristicsInput input)
@@ -177,7 +186,7 @@ namespace DARP.Solvers
                 }
                 else break;
             }
-            return new InsertionHeuristicsOutput(plan, Status.Success);
+            return new InsertionHeuristicsOutput(plan, Status.Success, remainingOrders);
         }
     }
 }

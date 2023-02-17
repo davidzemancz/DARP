@@ -337,7 +337,7 @@ namespace DARP.Windows
             EvolutionarySolverInput input = new EvolutionarySolverInput()
             {
                 Generations = gens,
-                PopulationSize = WindowModel.Params.EvoPopSize,
+                MaxPopulationSize = WindowModel.Params.EvoPopSize,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToSchedule(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
@@ -348,9 +348,9 @@ namespace DARP.Windows
                 RandomOrderRemoveMutProb = WindowModel.Params.RandomOrderRemoveMutProb,
                 BestfitOrderInsertMutProb = WindowModel.Params.BestfitOrderInsertMutProb,
                 EnviromentalSelection = WindowModel.Params.EnviromentalSelection,   
-                AvgFitnessLog = (gen, fittness) =>
+                FitnessLog = (gen, fittness) =>
                 {
-                    _evolutionAvgFitnessSeries.Points.Add(new DataPoint(gen, fittness));
+                    _evolutionAvgFitnessSeries.Points.Add(new DataPoint(gen, fittness[0]));
 
                     if (gen % (gens / 10) == 0)
                         Application.Current.Dispatcher.BeginInvoke(() => WindowModel.EvolutionPlot.InvalidatePlot(true));

@@ -8,11 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Xceed.Wpf.Toolkit.Calculator;
 using Order = DARP.Models.Order;
 
 namespace DARP.Solvers
 {
-    public delegate void FitnessLogFunc(int generation, double fitness);
+    public delegate void FitnessLogFunc(int generation, double[] fitness);
 
     public class EvolutionarySolverOutput : ISolverOutput
     {
@@ -39,12 +40,12 @@ namespace DARP.Solvers
     public class EvolutionarySolverInput : SolverInputBase
     {
         public int Generations { get; set; } = 1_000;
-        public int PopulationSize { get; set; } = 100;
+        public int MaxPopulationSize { get; set; } = 100;
 
         public double RandomOrderRemoveMutProb { get; set; } = 0.2;
         public double RandomOrderInsertMutProb { get; set; } = 0.5;
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
-        public FitnessLogFunc AvgFitnessLog { get; set; }
+        public FitnessLogFunc FitnessLog { get; set; }
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
         public ParentalSelection ParentalSelection { get; set; } = ParentalSelection.RouletteWheel;
 
@@ -80,20 +81,16 @@ namespace DARP.Solvers
             insHInput.Orders = new List<Order>(input.Orders);
             InsertionHeuristics insH = new();
             InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
-            population.Add(new Individual() { Plan = insHOutput.Plan, RemaingOrders = insHInput.Orders.Where(o => !insHOutput.Plan.Contains(o)).ToList() });
-
+            //population.Add(new Individual() { Plan = insHOutput.Plan, RemaingOrders = insHInput.Orders.Where(o => !insHOutput.Plan.Contains(o)).ToList() });
 
             population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders)});
 
             // Evolution
             for (int g  = 0; g < input.Generations; g++)
             {
-                // Current population size, may changes between generations
-                int popSize = population.Count;
-
                 // Compute fitnesses
                 double fitnessAvg = 0, min = double.MaxValue, max = double.MinValue;
-                for (int i = 0; i < popSize; i++)
+                for (int i = 0; i < population.Count; i++)
                 {
                     Individual ind = population[i];
                     double fitness = ind.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
@@ -107,10 +104,11 @@ namespace DARP.Solvers
                 }
                 fitnessAvg /= population.Count;
                 
-                if (input.AvgFitnessLog != null) 
-                    input.AvgFitnessLog(g, fitnessAvg);
+                if (input.FitnessLog != null) 
+                    input.FitnessLog(g, new[] { fitnessAvg, min, max });
 
                 // Crossover
+                int popSize = population.Count;
                 for (int i = 0; i < popSize; i++)
                 {
                     if (_input.ParentalSelection == ParentalSelection.RouletteWheel)
@@ -120,13 +118,13 @@ namespace DARP.Solvers
                         while (parent1 is null)
                         {
                             int index = _random.Next(popSize);
-                            if (_random.NextDouble() < population[index].Fitness / bestInd.Fitness || bestInd.Fitness == 0)
+                            if (bestInd.Fitness == 0 || _random.NextDouble() < population[index].Fitness / bestInd.Fitness)
                                 parent1 = population[index];
                         }
                         while (parent2 is null)
                         {
                             int index = _random.Next(popSize);
-                            if (_random.NextDouble() < population[index].Fitness / bestInd.Fitness || bestInd.Fitness == 0)
+                            if (bestInd.Fitness == 0 || _random.NextDouble() < population[index].Fitness / bestInd.Fitness)
                                 parent2 = population[index];
                         }
 
@@ -153,6 +151,23 @@ namespace DARP.Solvers
                             if (!offspring2.Plan.Contains(order)) offspring2.RemaingOrders.Add(order);
                         }
 
+                        // Run best fit
+                        insHInput = new(_input);
+                        insHInput.Plan = offspring1.Plan;
+                        insHInput.Orders = offspring1.RemaingOrders;
+                        insH = new();
+                        insHOutput = insH.RunFirstFit(insHInput);
+                        offspring1.Plan = insHOutput.Plan;
+                        offspring1.RemaingOrders = insHOutput.RemainingOrders;
+
+                        insHInput = new(_input);
+                        insHInput.Plan = offspring2.Plan;
+                        insHInput.Orders = offspring2.RemaingOrders;
+                        insH = new();
+                        insHOutput = insH.RunFirstFit(insHInput);
+                        offspring2.Plan = insHOutput.Plan;
+                        offspring2.RemaingOrders = insHOutput.RemainingOrders;
+
                         population.Add(offspring1);
                         population.Add(offspring2);
                     }
@@ -162,18 +177,11 @@ namespace DARP.Solvers
                 popSize = population.Count;
                 for (int i = 0; i < popSize; i++)
                 {
-                    // Remove order
-                    if (_random.NextDouble() < input.RandomOrderRemoveMutProb)
-                    {
-                        MutateRemoveOrder(population, i);
-                    }
-                    
                     // Insert order by random choice of index
                     if (_random.NextDouble() < input.RandomOrderInsertMutProb)
                     {
                         MutateInsertOrderRandomly(population, i);
                     }
-                    
                     // Bestfit insertion heuristics
                     if (_random.NextDouble() < input.BestfitOrderInsertMutProb)
                     {
@@ -182,9 +190,20 @@ namespace DARP.Solvers
                 }
 
                 // Tournament enviromental selection
-                if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
+                popSize = population.Count;
+                //if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
+                if(popSize < input.MaxPopulationSize)
                 {
-                    popSize = Math.Min(population.Count, input.PopulationSize);
+                    // Elitims selection
+                    population = new(population);
+                       //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
+                       //.Take(input.MaxPopulationSize)
+                       //.ToList();
+                }
+                //else if (input.EnviromentalSelection == EnviromentalSelection.Elitism)
+                else
+                {
+                    popSize = input.MaxPopulationSize;
                     List<Individual> newPopulation = new(popSize);
                     for (int i = 0; i < popSize; i++)
                     {
@@ -194,6 +213,9 @@ namespace DARP.Solvers
                         double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                         double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
+                        //firstProfit *= (1 - (g / input.Generations)) * (population[first].RemaingOrders.Count);
+                        //secondProfit *= (1 - (g / input.Generations)) * (population[second].RemaingOrders.Count);
+
                         if (firstProfit > secondProfit)
                             newPopulation.Add(population[first]);
                         else
@@ -201,46 +223,33 @@ namespace DARP.Solvers
                     }
                     population = newPopulation;
                 }
-                else if (input.EnviromentalSelection == EnviromentalSelection.Elitism)
-                {
-                    // Elitims selection
-                    population = population
-                       .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
-                       .Take(input.PopulationSize)
-                       .ToList();
-                }
             }
 
             return new EvolutionarySolverOutput(bestInd.Plan, Status.Success);
         }
 
-        private void AddRouteIntoOffspring(Individual offspring, Route route)
+        private void AddRouteIntoOffspring(Individual offspring, Route parentRoute)
         {
-            Route parentRoute = route.Clone();
-            Order[] parentRouteOrders = parentRoute.Orders.ToArray();
-            foreach (Order order in parentRouteOrders)
+            Route route = parentRoute.Clone();
+            foreach (Order order in route.Orders.ToArray())
             {
                 if (offspring.Plan.Contains(order))
-                    parentRoute.RemoveOrder(order);
+                    route.RemoveOrder(order);
             }
-            offspring.Plan.Routes.Add(parentRoute);
+            offspring.Plan.Routes.Add(route);
         }
 
-        private void MutateRemoveOrder(List<Individual> population, int index, bool clone = true)
+        private void MutateRemoveOrder(Individual individual)
         {
-            Individual indClone = clone ? population[index].Clone() : population[index];
-
-            int routeIndex = _random.Next(indClone.Plan.Routes.Count);
-            Route route = indClone.Plan.Routes[routeIndex];
+            int routeIndex = _random.Next(individual.Plan.Routes.Count);
+            Route route = individual.Plan.Routes[routeIndex];
             if (route.Orders.Any())
             {
                 Order[] orders = route.Orders.ToArray();
                 int orderIndex = _random.Next(orders.Length);
                 Order order = orders[orderIndex];
                 route.RemoveOrder(order);
-                indClone.RemaingOrders.Add(order);
-
-                if (clone) population.Add(indClone);
+                individual.RemaingOrders.Add(order);
             }
         }
 
@@ -248,9 +257,8 @@ namespace DARP.Solvers
         {
             if (!population[index].RemaingOrders.Any()) return;
 
-            if (_random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(population, index, false);
-
             Individual indClone = clone ? population[index].Clone() : population[index];
+            if (_random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(indClone);
 
             int orderIndex = _random.Next(indClone.RemaingOrders.Count);
             Order order = indClone.RemaingOrders[orderIndex];
@@ -262,15 +270,15 @@ namespace DARP.Solvers
                 route.InsertOrder(order, insertionIndex, _input.Metric);
                 indClone.RemaingOrders.Remove(order);
             }
-            if(clone) population.Add(indClone);
+            if (clone) population.Add(indClone);
         }
 
         private void MutateBestFitOrder(List<Individual> population, int index, bool clone = true)
         {
             if (!population[index].RemaingOrders.Any()) return;
+            
             Individual indClone = clone ? population[index].Clone() : population[index];
-
-            if (_random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(population, index, false);
+            if (_random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(indClone);
 
             int orderIndex = _random.Next(indClone.RemaingOrders.Count);
             Order order = indClone.RemaingOrders[orderIndex];
@@ -279,7 +287,7 @@ namespace DARP.Solvers
             insHInput.Plan = indClone.Plan;
             insHInput.Orders = new[] { order };
             InsertionHeuristics insH = new();
-            insH.RunLocalBestFit(insHInput);
+            indClone.Plan  = insH.RunLocalBestFit(insHInput).Plan;
             if (indClone.Plan.Contains(order))
             {
                 indClone.RemaingOrders.Remove(order);

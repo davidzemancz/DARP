@@ -1,6 +1,7 @@
 ﻿using DARP.Models;
 using DARP.Solvers;
 using DARP.Utils;
+using DocumentFormat.OpenXml.Spreadsheet;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -78,12 +79,13 @@ namespace DARPConsole
 
             sw.Start();
             EvolutionarySolverInput esInput = new(input);
-            esInput.Generations = 500;
-            esInput.PopulationSize = 100;
-            esInput.BestfitOrderInsertMutProb = 0.5;
-            esInput.RandomOrderInsertMutProb = 0.5;
-            esInput.RandomOrderRemoveMutProb = 0.2;
+            esInput.Generations = 5000;
+            esInput.MaxPopulationSize = 100;
+            esInput.BestfitOrderInsertMutProb = 1;
+            esInput.RandomOrderInsertMutProb = 1;
+            esInput.RandomOrderRemoveMutProb = 0.4;
             esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
+            esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
             EvolutionarySolver es = new();
             EvolutionarySolverOutput output = es.Run(esInput);
             double eProfit = output.Plan.GetTotalProfit(esInput.Metric, esInput.VehicleChargePerTick);
