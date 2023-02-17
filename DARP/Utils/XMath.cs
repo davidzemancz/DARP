@@ -49,7 +49,7 @@ namespace DARP.Utils
         {
             double totalWeight = sequence.Sum(weightSelector);
             // The weight we are after...
-            double itemWeightIndex = (float)new Random().NextDouble() * totalWeight;
+            double itemWeightIndex = (double)new Random().NextDouble() * totalWeight;
             double currentWeightIndex = 0;
 
             foreach (var item in from weightedItem in sequence select new { Value = weightedItem, Weight = weightSelector(weightedItem) })

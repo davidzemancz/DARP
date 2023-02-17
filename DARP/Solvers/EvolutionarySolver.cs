@@ -143,8 +143,6 @@ namespace DARP.Solvers
                                 AddRouteIntoOffspring(offspring2, parent1.Plan.Routes[v]);
                             }
                         }
-                        offspring1.Fitness = offspring1.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                        offspring2.Fitness = offspring2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
                         // Add remaining orders
                         foreach (Order order in parent1.Plan.Orders.Concat(parent1.RemaingOrders))
@@ -154,21 +152,21 @@ namespace DARP.Solvers
                         }
 
                         // Run best fit
-                        //insHInput = new(_input);
-                        //insHInput.Plan = offspring1.Plan;
-                        //insHInput.Orders = offspring1.RemaingOrders;
-                        //insH = new();
-                        //insHOutput = insH.RunFirstFit(insHInput);
-                        //offspring1.Plan = insHOutput.Plan;
-                        //offspring1.RemaingOrders = insHOutput.RemainingOrders;
+                        InsertionHeuristicsInput insHInput = new(_input);
+                        insHInput.Plan = offspring1.Plan;
+                        insHInput.Orders = offspring1.RemaingOrders;
+                        InsertionHeuristics insH = new();
+                        InsertionHeuristicsOutput insHOutput = insH.RunFirstFit(insHInput);
+                        offspring1.Plan = insHOutput.Plan;
+                        offspring1.RemaingOrders = insHOutput.RemainingOrders;
 
-                        //insHInput = new(_input);
-                        //insHInput.Plan = offspring2.Plan;
-                        //insHInput.Orders = offspring2.RemaingOrders;
-                        //insH = new();
-                        //insHOutput = insH.RunFirstFit(insHInput);
-                        //offspring2.Plan = insHOutput.Plan;
-                        //offspring2.RemaingOrders = insHOutput.RemainingOrders;
+                        insHInput = new(_input);
+                        insHInput.Plan = offspring2.Plan;
+                        insHInput.Orders = offspring2.RemaingOrders;
+                        insH = new();
+                        insHOutput = insH.RunGlobalBestFit(insHInput);
+                        offspring2.Plan = insHOutput.Plan;
+                        offspring2.RemaingOrders = insHOutput.RemainingOrders;
 
                         newPopulation.Add(offspring1);
                         newPopulation.Add(offspring2);
@@ -189,6 +187,7 @@ namespace DARP.Solvers
                         MutateInsertOrderRandomly(newPopulation[i]);
                         //MutateInsertOrderRandomly(newPopulation, i, true);
                     }
+                    
                     // Bestfit insertion heuristics
                     if (_random.NextDouble() < input.BestfitOrderInsertMutProb)
                     {

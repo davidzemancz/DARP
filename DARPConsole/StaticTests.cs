@@ -79,14 +79,14 @@ namespace DARPConsole
 
             sw.Start();
             EvolutionarySolverInput esInput = new(input);
-            esInput.Generations = 2000;
+            esInput.Generations = 3000;
             esInput.PopulationSize = 200;
             esInput.BestfitOrderInsertMutProb = 0.7;
-            esInput.RandomOrderInsertMutProb = 0.7;
+            esInput.RandomOrderInsertMutProb = 0.5;
             esInput.RandomOrderRemoveMutProb = 0.4;
             esInput.CrossoverProb = 0.5;
             esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
-            //esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
+            esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
             EvolutionarySolver es = new();
             EvolutionarySolverOutput output = es.Run(esInput);
             double eProfit = output.Plan.GetTotalProfit(esInput.Metric, esInput.VehicleChargePerTick);
@@ -125,7 +125,7 @@ namespace DARPConsole
             //sw.Restart();
             //MIPSolverInput mipInput2 = new(input);
             //mipInput2.Solver = "CP-SAT";
-            //mipInput2.TimeLimit = 60_000;
+            //mipInput2.TimeLimit = 10_000;
             //MIPSolver ms2 = new();
             //MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
             //double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
