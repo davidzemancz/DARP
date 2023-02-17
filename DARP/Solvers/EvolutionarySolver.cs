@@ -45,6 +45,7 @@ namespace DARP.Solvers
         public double RandomOrderRemoveMutProb { get; set; } = 0.2;
         public double RandomOrderInsertMutProb { get; set; } = 0.5;
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
+        public double CrossoverProb {  get; set; } = 0.6;
         public FitnessLogFunc FitnessLog { get; set; }
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
         public ParentalSelection ParentalSelection { get; set; } = ParentalSelection.RouletteWheel;
@@ -81,7 +82,7 @@ namespace DARP.Solvers
             insHInput.Orders = new List<Order>(input.Orders);
             InsertionHeuristics insH = new();
             InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
-            //population.Add(new Individual() { Plan = insHOutput.Plan, RemaingOrders = insHInput.Orders.Where(o => !insHOutput.Plan.Contains(o)).ToList() });
+            population.Add(new Individual() { Plan = insHOutput.Plan, RemaingOrders = insHInput.Orders.Where(o => !insHOutput.Plan.Contains(o)).ToList() });
 
             population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders)});
 
@@ -107,6 +108,8 @@ namespace DARP.Solvers
                 if (input.FitnessLog != null) 
                     input.FitnessLog(g, new[] { fitnessAvg, min, max });
 
+                List<Individual> newPopulation = new();
+
                 // Crossover
                 int popSize = population.Count;
                 for (int i = 0; i < popSize; i++)
@@ -129,100 +132,117 @@ namespace DARP.Solvers
                         }
 
                         // Create offsprings
-                        Individual offspring1 = new() { Plan = new() }, offspring2 = new() { Plan = new() };
-                        for (int v = 0; v < parent1.Plan.Routes.Count; v++)
+                        if (_random.NextDouble() < input.CrossoverProb)
                         {
-                            if (v % 2 == 0)
+                            Individual offspring1 = new() { Plan = new() }, offspring2 = new() { Plan = new() };
+                            for (int v = 0; v < parent1.Plan.Routes.Count; v++)
                             {
-                                AddRouteIntoOffspring(offspring1, parent1.Plan.Routes[v]);
-                                AddRouteIntoOffspring(offspring2, parent2.Plan.Routes[v]);
+                                if (_random.NextDouble() < 0.5)
+                                {
+                                    AddRouteIntoOffspring(offspring1, parent1.Plan.Routes[v]);
+                                    AddRouteIntoOffspring(offspring2, parent2.Plan.Routes[v]);
+                                }
+                                else
+                                {
+                                    AddRouteIntoOffspring(offspring1, parent2.Plan.Routes[v]);
+                                    AddRouteIntoOffspring(offspring2, parent1.Plan.Routes[v]);
+                                }
                             }
-                            else
-                            {
-                                AddRouteIntoOffspring(offspring1, parent2.Plan.Routes[v]);
-                                AddRouteIntoOffspring(offspring2, parent1.Plan.Routes[v]);
-                            }
-                        }
+                            offspring1.Fitness = offspring1.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                            offspring2.Fitness = offspring2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
-                        // Add remaining orders
-                        foreach(Order order in parent1.Plan.Orders.Concat(parent1.RemaingOrders))
+                            // Add remaining orders
+                            foreach (Order order in parent1.Plan.Orders.Concat(parent1.RemaingOrders))
+                            {
+                                if (!offspring1.Plan.Contains(order)) offspring1.RemaingOrders.Add(order);
+                                if (!offspring2.Plan.Contains(order)) offspring2.RemaingOrders.Add(order);
+                            }
+
+                            // Run best fit
+                            //insHInput = new(_input);
+                            //insHInput.Plan = offspring1.Plan;
+                            //insHInput.Orders = offspring1.RemaingOrders;
+                            //insH = new();
+                            //insHOutput = insH.RunFirstFit(insHInput);
+                            //offspring1.Plan = insHOutput.Plan;
+                            //offspring1.RemaingOrders = insHOutput.RemainingOrders;
+
+                            //insHInput = new(_input);
+                            //insHInput.Plan = offspring2.Plan;
+                            //insHInput.Orders = offspring2.RemaingOrders;
+                            //insH = new();
+                            //insHOutput = insH.RunFirstFit(insHInput);
+                            //offspring2.Plan = insHOutput.Plan;
+                            //offspring2.RemaingOrders = insHOutput.RemainingOrders;
+
+                            newPopulation.Add(offspring1);
+                            newPopulation.Add(offspring2);
+                        }
+                        else
                         {
-                            if (!offspring1.Plan.Contains(order)) offspring1.RemaingOrders.Add(order);
-                            if (!offspring2.Plan.Contains(order)) offspring2.RemaingOrders.Add(order);
+                            newPopulation.Add(parent1);
+                            newPopulation.Add(parent2);
                         }
-
-                        // Run best fit
-                        insHInput = new(_input);
-                        insHInput.Plan = offspring1.Plan;
-                        insHInput.Orders = offspring1.RemaingOrders;
-                        insH = new();
-                        insHOutput = insH.RunFirstFit(insHInput);
-                        offspring1.Plan = insHOutput.Plan;
-                        offspring1.RemaingOrders = insHOutput.RemainingOrders;
-
-                        insHInput = new(_input);
-                        insHInput.Plan = offspring2.Plan;
-                        insHInput.Orders = offspring2.RemaingOrders;
-                        insH = new();
-                        insHOutput = insH.RunFirstFit(insHInput);
-                        offspring2.Plan = insHOutput.Plan;
-                        offspring2.RemaingOrders = insHOutput.RemainingOrders;
-
-                        population.Add(offspring1);
-                        population.Add(offspring2);
                     }
                 }
 
                 // Mutate
-                popSize = population.Count;
+                popSize = newPopulation.Count;
                 for (int i = 0; i < popSize; i++)
                 {
                     // Insert order by random choice of index
                     if (_random.NextDouble() < input.RandomOrderInsertMutProb)
                     {
-                        MutateInsertOrderRandomly(population, i);
+                        MutateInsertOrderRandomly(newPopulation, i, false);
+                        //MutateInsertOrderRandomly(newPopulation, i, true);
                     }
                     // Bestfit insertion heuristics
                     if (_random.NextDouble() < input.BestfitOrderInsertMutProb)
                     {
-                        MutateBestFitOrder(population, i);
+                        MutateBestFitOrder(newPopulation, i, false);
+                        //MutateBestFitOrder(newPopulation, i, true);
                     }      
                 }
 
+                population = newPopulation
+                    .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
+                    .Take(input.MaxPopulationSize)
+                    .ToList();
+
                 // Tournament enviromental selection
-                popSize = population.Count;
-                //if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
-                if(popSize < input.MaxPopulationSize)
-                {
-                    // Elitims selection
-                    population = new(population);
-                       //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
-                       //.Take(input.MaxPopulationSize)
-                       //.ToList();
-                }
+                //popSize = population.Count;
+                ////if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
+                //if (popSize < input.MaxPopulationSize)
+                //{
+                //    // Elitims selection
+                //    population = new(population);
+                //    //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
+                //    //.Take(input.MaxPopulationSize)
+                //    //.ToList();
+                //}
                 //else if (input.EnviromentalSelection == EnviromentalSelection.Elitism)
-                else
-                {
-                    popSize = input.MaxPopulationSize;
-                    List<Individual> newPopulation = new(popSize);
-                    for (int i = 0; i < popSize; i++)
-                    {
-                        int first = _random.Next(population.Count);
-                        int second = _random.Next(population.Count);
+                //else
+                //{
+                //    popSize = input.MaxPopulationSize;
+                //    List<Individual> newPopulation2 = new(popSize);
+                //    for (int i = 0; i < popSize; i++)
+                //    {
+                //        int first = _random.Next(newPopulation.Count);
+                //        int second = _random.Next(population.Count);
 
-                        double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                        double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                //        double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                //        double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
-                        //firstProfit *= (1 - (g / input.Generations)) * (population[first].RemaingOrders.Count);
-                        //secondProfit *= (1 - (g / input.Generations)) * (population[second].RemaingOrders.Count);
+                //        //firstProfit *= (1 - (g / input.Generations)) * (population[first].RemaingOrders.Count);
+                //        //secondProfit *= (1 - (g / input.Generations)) * (population[second].RemaingOrders.Count);
 
-                        if (firstProfit > secondProfit)
-                            newPopulation.Add(population[first]);
-                        else
-                            newPopulation.Add(population[second]);
-                    }
-                    population = newPopulation;
-                }
+                //        if (firstProfit > secondProfit)
+                //            newPopulation.Add(population[first]);
+                //        else
+                //            newPopulation.Add(population[second]);
+                //    }
+                //    population = newPopulation;
+                //}
             }
 
             return new EvolutionarySolverOutput(bestInd.Plan, Status.Success);

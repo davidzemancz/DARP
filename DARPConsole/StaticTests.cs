@@ -81,9 +81,10 @@ namespace DARPConsole
             EvolutionarySolverInput esInput = new(input);
             esInput.Generations = 5000;
             esInput.MaxPopulationSize = 100;
-            esInput.BestfitOrderInsertMutProb = 1;
-            esInput.RandomOrderInsertMutProb = 1;
+            esInput.BestfitOrderInsertMutProb = 0.5;
+            esInput.RandomOrderInsertMutProb = 0.5;
             esInput.RandomOrderRemoveMutProb = 0.4;
+            esInput.CrossoverProb = 0.5;
             esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
             esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
             EvolutionarySolver es = new();
