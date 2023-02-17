@@ -337,7 +337,7 @@ namespace DARP.Windows
             EvolutionarySolverInput input = new EvolutionarySolverInput()
             {
                 Generations = gens,
-                MaxPopulationSize = WindowModel.Params.EvoPopSize,
+                PopulationSize = WindowModel.Params.EvoPopSize,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToSchedule(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
