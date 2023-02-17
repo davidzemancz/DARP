@@ -12,7 +12,18 @@ namespace DARP.Models
     public class Plan
     {
         public List<Route> Routes { get; set; } = new();
-        
+
+        public IEnumerable<Order> Orders
+        {
+            get
+            {
+                foreach (var route in Routes)
+                    foreach(var order in route.Orders)
+                        yield return order;
+                yield break;
+            }
+        }
+
         public Plan()
         {
 

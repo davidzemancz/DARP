@@ -40,7 +40,7 @@ namespace DARPConsole
             List<Order> orders = new();
             const int MAP_SIZE = 20;
             const int PROFIT_PM = 5;
-            const int ORDERS = 60;
+            const int ORDERS = 40;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords pickup = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
@@ -78,11 +78,11 @@ namespace DARPConsole
 
             sw.Start();
             EvolutionarySolverInput esInput = new(input);
-            esInput.Generations = 1000;
+            esInput.Generations = 500;
             esInput.PopulationSize = 100;
-            esInput.BestfitOrderInsertMutProb = 1;
-            esInput.RandomOrderInsertMutProb = 1;
-            esInput.RandomOrderRemoveMutProb = 0.6;
+            esInput.BestfitOrderInsertMutProb = 0.5;
+            esInput.RandomOrderInsertMutProb = 0.5;
+            esInput.RandomOrderRemoveMutProb = 0.2;
             esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
             EvolutionarySolver es = new();
             EvolutionarySolverOutput output = es.Run(esInput);

@@ -1,11 +1,14 @@
 ﻿using DARP.Models;
 using DARP.Utils;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Order = DARP.Models.Order;
 
 namespace DARP.Solvers
 {
@@ -70,8 +73,17 @@ namespace DARP.Solvers
             Individual bestInd = new();
 
             List<Individual> population = new();
+
             // Start with population of size 1
-            population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders) });
+            InsertionHeuristicsInput insHInput = new(_input);
+            insHInput.Plan = input.Plan.Clone();
+            insHInput.Orders = new List<Order>(input.Orders);
+            InsertionHeuristics insH = new();
+            InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
+            population.Add(new Individual() { Plan = insHOutput.Plan, RemaingOrders = insHInput.Orders.Where(o => !insHOutput.Plan.Contains(o)).ToList() });
+
+
+            population.Add(new Individual() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders)});
 
             // Evolution
             for (int g  = 0; g < input.Generations; g++)
@@ -101,10 +113,53 @@ namespace DARP.Solvers
                 // Crossover
                 for (int i = 0; i < popSize; i++)
                 {
-                    
+                    if (_input.ParentalSelection == ParentalSelection.RouletteWheel)
+                    {
+                        // Select parents
+                        Individual parent1 = null, parent2 = null;
+                        while (parent1 is null)
+                        {
+                            int index = _random.Next(popSize);
+                            if (_random.NextDouble() < population[index].Fitness / bestInd.Fitness || bestInd.Fitness == 0)
+                                parent1 = population[index];
+                        }
+                        while (parent2 is null)
+                        {
+                            int index = _random.Next(popSize);
+                            if (_random.NextDouble() < population[index].Fitness / bestInd.Fitness || bestInd.Fitness == 0)
+                                parent2 = population[index];
+                        }
+
+                        // Create offsprings
+                        Individual offspring1 = new() { Plan = new() }, offspring2 = new() { Plan = new() };
+                        for (int v = 0; v < parent1.Plan.Routes.Count; v++)
+                        {
+                            if (v % 2 == 0)
+                            {
+                                AddRouteIntoOffspring(offspring1, parent1.Plan.Routes[v]);
+                                AddRouteIntoOffspring(offspring2, parent2.Plan.Routes[v]);
+                            }
+                            else
+                            {
+                                AddRouteIntoOffspring(offspring1, parent2.Plan.Routes[v]);
+                                AddRouteIntoOffspring(offspring2, parent1.Plan.Routes[v]);
+                            }
+                        }
+
+                        // Add remaining orders
+                        foreach(Order order in parent1.Plan.Orders.Concat(parent1.RemaingOrders))
+                        {
+                            if (!offspring1.Plan.Contains(order)) offspring1.RemaingOrders.Add(order);
+                            if (!offspring2.Plan.Contains(order)) offspring2.RemaingOrders.Add(order);
+                        }
+
+                        population.Add(offspring1);
+                        population.Add(offspring2);
+                    }
                 }
 
                 // Mutate
+                popSize = population.Count;
                 for (int i = 0; i < popSize; i++)
                 {
                     // Remove order
@@ -124,11 +179,7 @@ namespace DARP.Solvers
                     {
                         MutateBestFitOrder(population, i);
                     }      
-                    
-                    // TODO switch mutation
                 }
-
-                // TODO selection settings
 
                 // Tournament enviromental selection
                 if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
@@ -158,15 +209,26 @@ namespace DARP.Solvers
                        .Take(input.PopulationSize)
                        .ToList();
                 }
-
             }
 
             return new EvolutionarySolverOutput(bestInd.Plan, Status.Success);
         }
 
-        private void MutateRemoveOrder(List<Individual> population, int index)
+        private void AddRouteIntoOffspring(Individual offspring, Route route)
         {
-            Individual indClone = population[index].Clone();
+            Route parentRoute = route.Clone();
+            Order[] parentRouteOrders = parentRoute.Orders.ToArray();
+            foreach (Order order in parentRouteOrders)
+            {
+                if (offspring.Plan.Contains(order))
+                    parentRoute.RemoveOrder(order);
+            }
+            offspring.Plan.Routes.Add(parentRoute);
+        }
+
+        private void MutateRemoveOrder(List<Individual> population, int index, bool clone = true)
+        {
+            Individual indClone = clone ? population[index].Clone() : population[index];
 
             int routeIndex = _random.Next(indClone.Plan.Routes.Count);
             Route route = indClone.Plan.Routes[routeIndex];
@@ -178,14 +240,17 @@ namespace DARP.Solvers
                 route.RemoveOrder(order);
                 indClone.RemaingOrders.Add(order);
 
-                population.Add(indClone);
+                if (clone) population.Add(indClone);
             }
         }
 
-        private void MutateInsertOrderRandomly(List<Individual> population, int index)
+        private void MutateInsertOrderRandomly(List<Individual> population, int index, bool clone = true)
         {
             if (!population[index].RemaingOrders.Any()) return;
-            Individual indClone = population[index].Clone();
+
+            if (_random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(population, index, false);
+
+            Individual indClone = clone ? population[index].Clone() : population[index];
 
             int orderIndex = _random.Next(indClone.RemaingOrders.Count);
             Order order = indClone.RemaingOrders[orderIndex];
@@ -197,13 +262,15 @@ namespace DARP.Solvers
                 route.InsertOrder(order, insertionIndex, _input.Metric);
                 indClone.RemaingOrders.Remove(order);
             }
-            population.Add(indClone);
+            if(clone) population.Add(indClone);
         }
 
-        private void MutateBestFitOrder(List<Individual> population, int index)
+        private void MutateBestFitOrder(List<Individual> population, int index, bool clone = true)
         {
             if (!population[index].RemaingOrders.Any()) return;
-            Individual indClone = population[index].Clone();
+            Individual indClone = clone ? population[index].Clone() : population[index];
+
+            if (_random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(population, index, false);
 
             int orderIndex = _random.Next(indClone.RemaingOrders.Count);
             Order order = indClone.RemaingOrders[orderIndex];
@@ -217,8 +284,7 @@ namespace DARP.Solvers
             {
                 indClone.RemaingOrders.Remove(order);
             }
-
-            population.Add(indClone);
+            if(clone) population.Add(indClone);
         }
 
         protected class Individual
