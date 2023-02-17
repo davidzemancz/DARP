@@ -45,7 +45,7 @@ namespace DARP.Solvers
         public double RandomOrderRemoveMutProb { get; set; } = 0.2;
         public double RandomOrderInsertMutProb { get; set; } = 0.5;
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
-        public double CrossoverProb {  get; set; } = 0.6;
+        public double PlanCrossoverProb {  get; set; } = 0.6;
         public FitnessLogFunc FitnessLog { get; set; }
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
         public ParentalSelection ParentalSelection { get; set; } = ParentalSelection.RouletteWheel;
@@ -127,7 +127,7 @@ namespace DARP.Solvers
                     Individual parent2 = XMath.RandomElementByWeight(population, (i) => i.Fitness);
 
                     // Create offsprings
-                    if (_random.NextDouble() < input.CrossoverProb)
+                    if (_random.NextDouble() < input.PlanCrossoverProb)
                     {
                         Individual offspring1 = new() { Plan = new() }, offspring2 = new() { Plan = new() };
                         for (int v = 0; v < parent1.Plan.Routes.Count; v++)
