@@ -41,7 +41,7 @@ namespace DARPConsole
             List<Order> orders = new();
             const int MAP_SIZE = 20;
             const int PROFIT_PM = 5;
-            const int ORDERS = 40;
+            const int ORDERS = 60;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords pickup = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
@@ -49,13 +49,14 @@ namespace DARPConsole
 
                 double totalProfit = PROFIT_PM * XMath.ManhattanMetric(pickup, delivery).Ticks;
 
-                Time maxDeliveryTime = new Time(time.ToDouble() + 60 + _random.Next(60));
+                Time maxDeliveryTimeFrom = new Time(time.ToDouble() + 60 + _random.Next(60));
+                Time maxDeliveryTimeTo = maxDeliveryTimeFrom + new Time(20);
                 orders.Add(new Order()
                 {
                     Id = o,
                     PickupLocation = pickup,
                     DeliveryLocation = delivery,
-                    MaxDeliveryTime = maxDeliveryTime,
+                    DeliveryTime = new TimeWindow(maxDeliveryTimeFrom, maxDeliveryTimeTo),
                     TotalProfit = totalProfit
                 });
             };
@@ -79,12 +80,12 @@ namespace DARPConsole
 
             sw.Start();
             EvolutionarySolverInput esInput = new(input);
-            esInput.Generations = 3000;
+            esInput.Generations = 2000;
             esInput.PopulationSize = 200;
             esInput.BestfitOrderInsertMutProb = 0.7;
-            esInput.RandomOrderInsertMutProb = 0.5;
+            esInput.RandomOrderInsertMutProb = 0.7;
             esInput.RandomOrderRemoveMutProb = 0.4;
-            esInput.PlanCrossoverProb = 0.5;
+            esInput.PlanCrossoverProb = 0.4;
             esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
             esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
             EvolutionarySolver es = new();
@@ -122,14 +123,14 @@ namespace DARPConsole
             //double mProfit = mipOutput.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
             //Console.WriteLine($"MIP {mipInput.Solver} {mProfit}, time {sw.Elapsed}");
 
-            //sw.Restart();
-            //MIPSolverInput mipInput2 = new(input);
-            //mipInput2.Solver = "CP-SAT";
-            //mipInput2.TimeLimit = 10_000;
-            //MIPSolver ms2 = new();
-            //MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
-            //double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            //Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
+            sw.Restart();
+            MIPSolverInput mipInput2 = new(input);
+            mipInput2.Solver = "CP-SAT";
+            mipInput2.TimeLimit = 20_000;
+            MIPSolver ms2 = new();
+            MIPSolverOutput mipOutput2 = ms2.Run(mipInput2);
+            double mProfit2 = mipOutput2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"MIP {mipInput2.Solver} {mProfit2}, time {sw.Elapsed}");
         }
     }
 }

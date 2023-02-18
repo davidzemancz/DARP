@@ -55,8 +55,20 @@ namespace DARP.Models
 
     public class OrderDeliveryRoutePoint : RoutePoint
     {
+        private Time _time;
+
         public Order Order { get; set; }
         public override Cords Location { get => Order.DeliveryLocation; set => Order.DeliveryLocation = value; }
+        public override Time Time
+        {
+            get => _time;
+            set
+            {
+                if (_time != Time.Zero && _time < Order.DeliveryTime.From || _time > Order.DeliveryTime.To) 
+                    throw new ArgumentException($"Invalid delivery time {_time}. Time window {Order.DeliveryTime}.");
+                _time = value;
+            }
+        }
 
         public OrderDeliveryRoutePoint(Order order)
         {

@@ -58,15 +58,22 @@ namespace DARP.Models
             Time pickupTime;
             Time deliveryTime;
            
+            // Previous delivery point or vehicles location
             RoutePoint routePoint1 = Points[index - 1];
 
             pickupTime = routePoint1.Time + metric(routePoint1.Location, newOrder.PickupLocation);
             deliveryTime = pickupTime + metric(newOrder.PickupLocation, newOrder.DeliveryLocation);
 
             // Not needed to check lower bound, vehicle can wait at pickup location
-            bool newOrderCanBeInserted = deliveryTime <= newOrder.MaxDeliveryTime;
+            bool newOrderCanBeInserted = deliveryTime <= newOrder.DeliveryTime.To;
+            
+            // But vehicle has to leave first at DeliveryTime.From
+            Time leavingTime = XMath.Max(deliveryTime, newOrder.DeliveryTime.From);
+            Time followingPickupTime = index < Points.Count ? 
+                leavingTime + metric(newOrder.DeliveryLocation, Points[index].Location)
+                : leavingTime;
 
-           return newOrderCanBeInserted && FollowingOrdersCanBeDelivered(deliveryTime, index, metric);
+           return newOrderCanBeInserted && FollowingOrdersCanBeDelivered(followingPickupTime, index, metric);
         }
 
         public void InsertOrder(Order newOrder, int index, MetricFunc metric)
@@ -74,6 +81,7 @@ namespace DARP.Models
             // Compute pickup & delivery time
             Time pickupTime = Points[index - 1].Time + metric(Points[index - 1].Location, newOrder.PickupLocation);
             Time deliveryTime = pickupTime + metric(newOrder.PickupLocation, newOrder.DeliveryLocation);
+            deliveryTime = XMath.Max(deliveryTime, newOrder.DeliveryTime.From); 
 
             // Insert new order
             OrderPickupRoutePoint pickupPoint = new OrderPickupRoutePoint(newOrder);
@@ -86,7 +94,7 @@ namespace DARP.Models
             Points.Insert(index + 1, deliveryPoint);
 
             // Recalculate times for following orders
-            UpdateFollowingOrder(deliveryTime, index + 2, metric);
+            UpdateFollowingOrders(deliveryTime, index + 2, metric);
         }
 
         public void RemoveOrder(Order order)
@@ -126,7 +134,7 @@ namespace DARP.Models
         }
 
 
-        private void UpdateFollowingOrder(Time deliveryTime, int startIndex, MetricFunc metric)
+        private void UpdateFollowingOrders(Time deliveryTime, int startIndex, MetricFunc metric)
         {
             // Move following orders after insertion
             Time time = deliveryTime;
@@ -138,18 +146,17 @@ namespace DARP.Models
                 ((OrderPickupRoutePoint)Points[j]).Time = time;
 
                 time += metric(Points[j].Location, Points[j + 1].Location); // Travel time between current pickup and delivery
+                time = XMath.Max(time, order.DeliveryTime.From);
                 ((OrderDeliveryRoutePoint)Points[j + 1]).Time = time;
             }
         }
 
-        private bool FollowingOrdersCanBeDelivered(Time deliveryTime, int insertionIndex, MetricFunc metric)
+        private bool FollowingOrdersCanBeDelivered(Time followingPickupTime, int insertionIndex, MetricFunc metric)
         {
-            Time time = deliveryTime;
+            Time time = followingPickupTime;
             bool allOrdersCanBeDelivered = true;
             for (int j = insertionIndex; j < Points.Count - 1; j += 2)
             {
-                time += metric(Points[j - 1].Location, Points[j].Location); // Travel time between last delivery and current pickup
-
                 OrderPickupRoutePoint nRoutePointPickup = (OrderPickupRoutePoint)Points[j];
                 OrderDeliveryRoutePoint nRoutePointDelivery = (OrderDeliveryRoutePoint)Points[j + 1];
                 Order order = nRoutePointPickup.Order;
@@ -157,12 +164,18 @@ namespace DARP.Models
                 time += metric(nRoutePointPickup.Location, nRoutePointDelivery.Location); // Travel time between current pickup and delivery
 
                 // Not needed to check lower bound, vehicle can wait at pickup location
-                bool orderCanBeStillDelivered = time <= order.MaxDeliveryTime;
+                bool orderCanBeStillDelivered = time <= order.DeliveryTime.To;
+                time = XMath.Max(time, order.DeliveryTime.From);
+
                 if (!orderCanBeStillDelivered)
                 {
                     allOrdersCanBeDelivered = false;
                     break;
                 }
+
+                if (j < Points.Count - 2)
+                    time += metric(Points[j + 1].Location, Points[j + 2].Location); // Travel time between current delivery and following pickup
+
             }
             return allOrdersCanBeDelivered;
         }

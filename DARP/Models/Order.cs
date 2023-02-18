@@ -13,7 +13,7 @@ namespace DARP.Models
         public OrderState State { get; protected set; } = OrderState.Created;
         public Cords PickupLocation { get; set; } = new(0, 0);
         public Cords DeliveryLocation { get; set; } = new(0, 0);
-        public Time MaxDeliveryTime { get; set; } = new Time(0);
+        public TimeWindow DeliveryTime { get; set; } = new TimeWindow();
         public double TotalProfit { get; set; }
 
         public void Accept()

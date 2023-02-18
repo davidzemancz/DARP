@@ -71,7 +71,7 @@ namespace DARP.Solvers
             Plan plan = input.Plan.Clone();
 
             List<Order> remainingOrders = new();
-            foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
+            foreach (Order order in input.Orders.OrderBy(o => o.DeliveryTime.To))
             {
                 bool inserted = false;
                 foreach (Route route in plan.Routes)
@@ -98,7 +98,7 @@ namespace DARP.Solvers
             Plan plan = input.Plan.Clone();
 
             List<Order> remainingOrders = new();
-            foreach (Order order in input.Orders.OrderBy(o => o.MaxDeliveryTime))
+            foreach (Order order in input.Orders.OrderBy(o => o.DeliveryTime.To))
             {
                 Route bestRoute = null;
                 int bestInsertionIndex = -1;
