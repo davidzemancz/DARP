@@ -46,6 +46,7 @@ namespace DARP.Solvers
         public double RandomOrderInsertMutProb { get; set; } = 0.5;
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
         public double PlanCrossoverProb {  get; set; } = 0.6;
+        public double RouteCrossoverProb { get; set; } = 0.6;
         public FitnessLogFunc FitnessLog { get; set; }
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
         public ParentalSelection ParentalSelection { get; set; } = ParentalSelection.RouletteWheel;
@@ -73,8 +74,6 @@ namespace DARP.Solvers
 
             // Initialize population
             Individual bestInd = new();
-
-
 
             // Start with population of size 1
             //InsertionHeuristicsInput insHInput = new(_input);
@@ -129,7 +128,8 @@ namespace DARP.Solvers
                     // Create offsprings
                     if (_random.NextDouble() < input.PlanCrossoverProb)
                     {
-                        Individual offspring1 = new() { Plan = new() }, offspring2 = new() { Plan = new() };
+                        Individual offspring1 = new() { Plan = new() };
+                        Individual offspring2 = new() { Plan = new() };
                         for (int v = 0; v < parent1.Plan.Routes.Count; v++)
                         {
                             if (_random.NextDouble() < 0.5)
@@ -156,7 +156,7 @@ namespace DARP.Solvers
                         insHInput.Plan = offspring1.Plan;
                         insHInput.Orders = offspring1.RemaingOrders;
                         InsertionHeuristics insH = new();
-                        InsertionHeuristicsOutput insHOutput = insH.RunFirstFit(insHInput);
+                        InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
                         offspring1.Plan = insHOutput.Plan;
                         offspring1.RemaingOrders = insHOutput.RemainingOrders;
 
@@ -170,6 +170,27 @@ namespace DARP.Solvers
 
                         newPopulation.Add(offspring1);
                         newPopulation.Add(offspring2);
+                    }
+                    else if (_random.NextDouble() < input.RouteCrossoverProb)
+                    {
+                        Individual offspring1 = parent1.Clone();
+                        Individual offspring2 = parent2.Clone();
+
+                        int routeIndex1 = _random.Next(offspring1.Plan.Routes.Count);
+                        int routeIndex2 = _random.Next(offspring2.Plan.Routes.Count);
+
+                        Route route1 = offspring1.Plan.Routes[routeIndex1];
+                        Route route2 = offspring2.Plan.Routes[routeIndex2];
+
+                        int splitIndex1 = _random.Next(route1.Points.Count);
+                        int splitIndex2 = _random.Next(route1.Points.Count);
+
+                        // Remove orders from routes
+                        while (route1.Points[splitIndex1] is not OrderDeliveryRoutePoint) splitIndex1++;
+                        route1.Points.RemoveRange(splitIndex1, route1.Points.Count - splitIndex1);
+
+                        while (route2.Points[splitIndex2] is not OrderDeliveryRoutePoint) splitIndex2++;
+                        route2.Points.RemoveRange(splitIndex1, route2.Points.Count - splitIndex2);
                     }
                     else
                     {
@@ -201,16 +222,23 @@ namespace DARP.Solvers
                 {
                     int first = _random.Next(input.PopulationSize);
                     int second = _random.Next(input.PopulationSize);
+                    int third = _random.Next(input.PopulationSize);
+                    int fourth = _random.Next(input.PopulationSize);
 
                     double firstProfit = newPopulation[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                     double secondProfit = newPopulation[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                    double thirdProfit = newPopulation[third].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                    double fourthProfit = newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
-                    if (firstProfit > secondProfit)
+                    if (firstProfit > secondProfit && firstProfit > thirdProfit && firstProfit > fourthProfit)
                         newPopulation2.Add(newPopulation[first]);
-                    else
+                    else if (secondProfit > thirdProfit && secondProfit > fourthProfit)
                         newPopulation2.Add(newPopulation[second]);
+                    else if (thirdProfit > fourthProfit)
+                        newPopulation2.Add(newPopulation[third]);
+                    else
+                        newPopulation2.Add(newPopulation[fourth]);
                 }
-
                 population = newPopulation2;
 
                     //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))

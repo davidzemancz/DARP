@@ -14,6 +14,7 @@ namespace DARP.Solvers
     {
         public Plan Plan { get; }
         public Status Status { get; }
+        public double ObjetiveValue { get; }
 
         public MIPSolverOutput()
         {
@@ -24,10 +25,11 @@ namespace DARP.Solvers
             Status = status;
         }
 
-        public MIPSolverOutput(Plan plan, Status status)
+        public MIPSolverOutput(Plan plan, Status status, double objetiveValue)
         {
             Plan = plan;
             Status = status;
+            ObjetiveValue = objetiveValue;
         }
     }
     public class MIPSolverInput : SolverInputBase
@@ -35,6 +37,7 @@ namespace DARP.Solvers
         public bool Multithreading { get; set; }
         public long TimeLimit { get; set; }
         public string Solver { get; set; } = "SCIP";
+        public bool Integer { get; set; } = true;
         public OptimizationObjective Objective { get; set; } = OptimizationObjective.MaximizeProfit;
 
         public MIPSolverInput() { }
@@ -72,13 +75,17 @@ namespace DARP.Solvers
                     if (orderFrom == orderTo) continue;
 
                     TravelVarKey travelKey = new(orderFrom.Id, orderTo.Id);
-                    Variable travelVar = _solver.MakeBoolVar(travelKey.ToString());
+                    Variable travelVar = input.Integer 
+                        ? _solver.MakeBoolVar(travelKey.ToString())
+                        : _solver.MakeNumVar(0, 1, travelKey.ToString());
                     travelVariables.Add(travelKey, travelVar);
                 }
                 foreach (Vehicle vehicle in input.Vehicles)
                 {
                     TravelVarKey travelKey = new(GetModifiedVehicleId(vehicle.Id), orderTo.Id);
-                    Variable travelVar = _solver.MakeBoolVar(travelKey.ToString());
+                    Variable travelVar = input.Integer
+                       ? _solver.MakeBoolVar(travelKey.ToString())
+                       : _solver.MakeNumVar(0, 1, travelKey.ToString());
                     travelVariables.Add(travelKey, travelVar);
                 }
             }
@@ -159,7 +166,7 @@ namespace DARP.Solvers
                 }
                 Variable timeVarFrom = timeVariables.First(kvp => kvp.Key.Id == travel1Key.FromId).Value;
                 Variable timeVarTo = timeVariables.First(kvp => kvp.Key.Id == travel1Key.ToId).Value;
-                const int M = 100000;
+                const int M = 1000000;
                 _solver.Add(timeVarFrom + travelTime.ToDouble() - M * (1 - travel1) <= timeVarTo);
             }
 
@@ -179,7 +186,6 @@ namespace DARP.Solvers
             }
 
             // Objective
-            
             if (objective == OptimizationObjective.MinimizeTime)
             {
                 LinearExpr[] travelTime = new LinearExpr[travelVariables.Count];
@@ -243,10 +249,11 @@ namespace DARP.Solvers
             if (input.TimeLimit > 0) _solver.SetTimeLimit(input.TimeLimit);
             if (input.Multithreading) _solver.SetNumThreads(Math.Max((int)(Environment.ProcessorCount * 0.5), 1));
             Solver.ResultStatus result = _solver.Solve(solverParameters);
-            LoggerBase.Instance.Debug($"MIP result {result}, objective {_solver.Objective().Value()}");
+            string message = $"MIP result {result}, objective {_solver.Objective().Value()}";
+            LoggerBase.Instance.Debug(message);
 
             // Construct routes
-            if (result == Solver.ResultStatus.OPTIMAL || result == Solver.ResultStatus.FEASIBLE)
+            if (input.Integer && (result == Solver.ResultStatus.OPTIMAL || result == Solver.ResultStatus.FEASIBLE))
             {
                 // Get variables values
                 Dictionary<int, (TravelVarKey, TimeVarKey)> map = new(); // From->To
@@ -263,7 +270,6 @@ namespace DARP.Solvers
                 }
 
                 // Construct routes
-                // TODO Copy plan
                 Plan plan = input.Plan.Clone();
                 plan.Routes.Clear();
                 foreach (Vehicle vehicle in input.Vehicles)
@@ -290,11 +296,11 @@ namespace DARP.Solvers
                     plan.Routes.Add(route);
                 }
 
-                return new MIPSolverOutput(plan, Status.Success);
+                return new MIPSolverOutput(plan, Status.Success, _solver.Objective().Value());
             }
             else
             {
-                return new MIPSolverOutput(Status.Failed);
+                return new MIPSolverOutput(input.Plan, Status.Failed, _solver.Objective().Value());
             }
         }
 
