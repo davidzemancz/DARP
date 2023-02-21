@@ -9,16 +9,21 @@ namespace DARP.Models
     public struct Time : IComparable<Time>
     {
         public static readonly Time Zero = new Time(0);
-        public double Ticks { get; set; }
+        public long Ticks { get; set; }
 
         public Time(int ticks)
         {
             Ticks = ticks;
         }
 
-        public Time(double ticks)
+        public Time(long ticks)
         {
             Ticks = ticks;
+        }
+
+        public Time(double ticks)
+        {
+            Ticks = (long)ticks;
         }
 
         public double ToDouble()
@@ -83,6 +88,14 @@ namespace DARP.Models
         public override int GetHashCode()
         {
             return Ticks.GetHashCode();
+        }
+    }
+
+    public static class TimeExtensions
+    {
+        public static Time NextTime(this Random random, Time lb, Time ub)
+        {
+            return new Time(random.Next((int)lb.Ticks, (int)ub.Ticks));
         }
     }
 }

@@ -178,21 +178,16 @@ namespace DARP.Solvers
                         Individual offspring1 = parent1.Clone();
                         Individual offspring2 = parent2.Clone();
 
+                        // Crossover routes of a same vehicle
                         int routeIndex1 = _random.Next(offspring1.Plan.Routes.Count);
-                        int routeIndex2 = _random.Next(offspring2.Plan.Routes.Count);
 
                         Route route1 = offspring1.Plan.Routes[routeIndex1];
-                        Route route2 = offspring2.Plan.Routes[routeIndex2];
+                        Route route2 = offspring2.Plan.Routes[routeIndex1];
 
-                        int splitIndex1 = _random.Next(route1.Points.Count);
-                        int splitIndex2 = _random.Next(route1.Points.Count);
+                        Time splitTime = _random.NextTime(route1.Points[0].Time, XMath.Min(route1.Points.Last().Time, route2.Points.Last().Time));
 
-                        // Remove orders from routes
-                        while (route1.Points[splitIndex1] is not OrderDeliveryRoutePoint) splitIndex1++;
-                        route1.Points.RemoveRange(splitIndex1, route1.Points.Count - splitIndex1);
+                        
 
-                        while (route2.Points[splitIndex2] is not OrderDeliveryRoutePoint) splitIndex2++;
-                        route2.Points.RemoveRange(splitIndex1, route2.Points.Count - splitIndex2);
                     }
                     else
                     {
