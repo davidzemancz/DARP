@@ -18,7 +18,7 @@ namespace DARPConsole
 
         public static void Run()
         {
-            const int RUNS = 1;
+            const int RUNS = 10;
             for (int i = 0; i < RUNS; i++)
             {
                 Console.WriteLine($"----- Run {i} -----");
@@ -80,15 +80,15 @@ namespace DARPConsole
 
             sw.Start();
             EvolutionarySolverInput esInput = new(input);
-            esInput.Generations = 2000;
-            esInput.PopulationSize = 100;
+            esInput.Generations = 1000;
+            esInput.PopulationSize = 200;
             esInput.BestfitOrderInsertMutProb = 0.7;
-            esInput.RandomOrderInsertMutProb = 0.7;
-            esInput.RandomOrderRemoveMutProb = 0.4;
+            esInput.RandomOrderInsertMutProb = 0.4;
+            esInput.RandomOrderRemoveMutProb = 0.45;
             esInput.RouteCrossoverProb = 0;
             esInput.PlanCrossoverProb = 0.4;
             esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
-            esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
+            //esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
             EvolutionarySolver es = new();
             EvolutionarySolverOutput output = es.Run(esInput);
             double eProfit = output.Plan.GetTotalProfit(esInput.Metric, esInput.VehicleChargePerTick);
