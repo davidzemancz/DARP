@@ -18,7 +18,7 @@ namespace DARPConsole
 
         public static void Run()
         {
-            const int RUNS = 10;
+            const int RUNS = 1;
             for (int i = 0; i < RUNS; i++)
             {
                 Console.WriteLine($"----- Run {i} -----");
@@ -86,7 +86,7 @@ namespace DARPConsole
             esInput.RandomOrderInsertMutProb = 0.7;
             esInput.RandomOrderRemoveMutProb = 0.4;
             esInput.RouteCrossoverProb = 0;
-            esInput.PlanCrossoverProb = 0.7;
+            esInput.PlanCrossoverProb = 0.4;
             esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
             esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
             EvolutionarySolver es = new();

@@ -69,7 +69,7 @@ namespace DARP.Solvers
 
         public EvolutionarySolverOutput Run(EvolutionarySolverInput input) 
         {
-            _random = new((int)DateTime.Now.Ticks);
+            _random = new();
             _input = input;
 
             // Initialize population
@@ -217,7 +217,7 @@ namespace DARP.Solvers
                     }      
                 }
 
-                List<Individual> newPopulation2 = new(input.PopulationSize);
+                population.Clear();
                 for (int i = 0; i < input.PopulationSize; i++)
                 {
                     int first = _random.Next(input.PopulationSize);
@@ -231,15 +231,14 @@ namespace DARP.Solvers
                     double fourthProfit = newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
                     if (firstProfit > secondProfit && firstProfit > thirdProfit && firstProfit > fourthProfit)
-                        newPopulation2.Add(newPopulation[first]);
+                        population.Add(newPopulation[first]);
                     else if (secondProfit > thirdProfit && secondProfit > fourthProfit)
-                        newPopulation2.Add(newPopulation[second]);
+                        population.Add(newPopulation[second]);
                     else if (thirdProfit > fourthProfit)
-                        newPopulation2.Add(newPopulation[third]);
+                        population.Add(newPopulation[third]);
                     else
-                        newPopulation2.Add(newPopulation[fourth]);
+                        population.Add(newPopulation[fourth]);
                 }
-                population = newPopulation2;
 
                     //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
                     //.Take(input.PopulationSize)
