@@ -88,9 +88,9 @@ namespace DARP.Solvers
             List<Individual> population = new(input.PopulationSize);
             for (int i = 0; i < input.PopulationSize; i++)
             {
-                Individual individual = new() { Plan = input.Plan.Clone(), RemaingOrders = new(input.Orders) };
+                Individual individual = new() { Plan = input.Plan.Clone(), RemaningOrders = new(input.Orders) };
 
-                for (int j = 0; j < individual.RemaingOrders.Count; j++)
+                for (int j = 0; j < individual.RemaningOrders.Count; j++)
                 {
                     MutateInsertOrderRandomly(individual, false);
                 }
@@ -147,28 +147,28 @@ namespace DARP.Solvers
                         }
 
                         // Add remaining orders
-                        foreach (Order order in parent1.Plan.Orders.Concat(parent1.RemaingOrders))
+                        foreach (Order order in parent1.Plan.Orders.Concat(parent1.RemaningOrders))
                         {
-                            if (!offspring1.Plan.Contains(order)) offspring1.RemaingOrders.Add(order);
-                            if (!offspring2.Plan.Contains(order)) offspring2.RemaingOrders.Add(order);
+                            if (!offspring1.Plan.Contains(order)) offspring1.RemaningOrders.Add(order);
+                            if (!offspring2.Plan.Contains(order)) offspring2.RemaningOrders.Add(order);
                         }
 
                         // Run best fit
                         InsertionHeuristicsInput insHInput = new(_input);
                         insHInput.Plan = offspring1.Plan;
-                        insHInput.Orders = offspring1.RemaingOrders;
+                        insHInput.Orders = offspring1.RemaningOrders;
                         InsertionHeuristics insH = new();
                         InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
                         offspring1.Plan = insHOutput.Plan;
-                        offspring1.RemaingOrders = insHOutput.RemainingOrders;
+                        offspring1.RemaningOrders = insHOutput.RemainingOrders;
 
                         insHInput = new(_input);
                         insHInput.Plan = offspring2.Plan;
-                        insHInput.Orders = offspring2.RemaingOrders;
+                        insHInput.Orders = offspring2.RemaningOrders;
                         insH = new();
                         insHOutput = insH.RunGlobalBestFit(insHInput);
                         offspring2.Plan = insHOutput.Plan;
-                        offspring2.RemaingOrders = insHOutput.RemainingOrders;
+                        offspring2.RemaningOrders = insHOutput.RemainingOrders;
 
                         newPopulation.Add(offspring1);
                         newPopulation.Add(offspring2);
@@ -306,36 +306,36 @@ namespace DARP.Solvers
                 int orderIndex = _random.Next(orders.Length);
                 Order order = orders[orderIndex];
                 route.RemoveOrder(order);
-                individual.RemaingOrders.Add(order);
+                individual.RemaningOrders.Add(order);
             }
         }
 
         private void MutateInsertOrderRandomly(Individual individual, bool remove = true)
         {
-            if (!individual.RemaingOrders.Any()) return;
+            if (!individual.RemaningOrders.Any()) return;
 
             if (remove && _random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(individual);
 
-            int orderIndex = _random.Next(individual.RemaingOrders.Count);
-            Order order = individual.RemaingOrders[orderIndex];
+            int orderIndex = _random.Next(individual.RemaningOrders.Count);
+            Order order = individual.RemaningOrders[orderIndex];
             int routeIndex = _random.Next(individual.Plan.Routes.Count);
             Route route = individual.Plan.Routes[routeIndex];
             int insertionIndex = _random.Next(1, route.Points.Count + 1);
             if (route.CanInsertOrder(order, insertionIndex, _input.Metric))
             {
                 route.InsertOrder(order, insertionIndex, _input.Metric);
-                individual.RemaingOrders.Remove(order);
+                individual.RemaningOrders.Remove(order);
             }
         }
 
         private void MutateBestFitOrder(Individual individual)
         {
-            if (!individual.RemaingOrders.Any()) return;
+            if (!individual.RemaningOrders.Any()) return;
             
             if (_random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(individual);
 
-            int orderIndex = _random.Next(individual.RemaingOrders.Count);
-            Order order = individual.RemaingOrders[orderIndex];
+            int orderIndex = _random.Next(individual.RemaningOrders.Count);
+            Order order = individual.RemaningOrders[orderIndex];
 
             InsertionHeuristicsInput insHInput = new(_input);
             insHInput.Plan = individual.Plan;
@@ -344,14 +344,14 @@ namespace DARP.Solvers
             individual.Plan  = insH.RunLocalBestFit(insHInput).Plan;
             if (individual.Plan.Contains(order))
             {
-                individual.RemaingOrders.Remove(order);
+                individual.RemaningOrders.Remove(order);
             }
         }
 
         protected class Individual
         {
             public Plan Plan {  get; set; }
-            public List<Order> RemaingOrders { get; set; } = new();
+            public List<Order> RemaningOrders { get; set; } = new();
             public double Fitness { get; set; }
 
             public Individual Clone()
@@ -359,7 +359,7 @@ namespace DARP.Solvers
                 return new Individual()
                 {
                     Plan = Plan.Clone(),
-                    RemaingOrders = new List<Order>(RemaingOrders)
+                    RemaningOrders = new List<Order>(RemaningOrders)
                 };
             }
         }
