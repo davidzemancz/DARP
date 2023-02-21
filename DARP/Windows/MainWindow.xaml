@@ -74,6 +74,10 @@
                                         <StackPanel>
                                             <TextBlock Text="{Binding Path=SimulationState, StringFormat='State: {0}'}" Margin="0,3"/>
                                             <ToggleButton x:Name="btnSimulation" Content="Start" Margin="0,3" Click="btnSimulation_Click"/>
+                                            <Separator/>
+                                            <TextBlock Text="{Binding Path=BackgroundSimulationState, StringFormat='State: {0}'}" Margin="0,3"/>
+                                            <ToggleButton x:Name="btnRunBgSim" Content="Run in background" Margin="0,3" Click="btnRunBgSim_Click"/>
+                                            <TextBlock TextWrapping="WrapWithOverflow" FontSize="9" Text="Runs (parallel) simulation in background."/>
                                         </StackPanel>
                                     </GroupBox>
                                     <GroupBox Header="Time series">

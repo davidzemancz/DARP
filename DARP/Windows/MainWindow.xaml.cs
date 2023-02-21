@@ -623,6 +623,11 @@ namespace DARP.Windows
 
         #region Simulation
 
+        private void RunBackgroundSimulation()
+        {
+            
+        }
+
         private void StartSimulation()
         {
             int tickEachMillis = WindowModel.Params.TickEach * 1000;
@@ -1061,6 +1066,29 @@ namespace DARP.Windows
             }
         }
 
+        private void btnRunBgSim_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowModel.BackgroundSimulationState == MainWindowModel.SimulationStateEnum.Ready)
+            {
+                if (_vehicleService.GetVehicleViews().Count == 0)
+                {
+                    btnRunBgSim.IsChecked = false;
+                    MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                btnRunBgSim.IsChecked = true;
+                WindowModel.BackgroundSimulationState = MainWindowModel.SimulationStateEnum.Running;
+
+                RunBackgroundSimulation();
+            }
+            else
+            {
+                btnRunBgSim.IsChecked = false;
+                WindowModel.BackgroundSimulationState = MainWindowModel.SimulationStateEnum.Ready;
+            }
+        }
+
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
@@ -1101,6 +1129,7 @@ namespace DARP.Windows
         public Time CurrentTime { get; set; }
         public double TotalDistance { get; set; }
         public SimulationStateEnum SimulationState { get; set; }
+        public SimulationStateEnum BackgroundSimulationState { get; set; }
         public MainWindowStats Stats { get; set; } = new();
         public MainWindowParams Params { get; set; } = new();
         [JsonIgnore]
@@ -1197,6 +1226,18 @@ namespace DARP.Windows
         [Category("Simulation")]
         [DisplayName("Use insertion heuristics")]
         public bool UseInsertionHeuristics { get; set; } = false;
+
+        [Category("Simulation")]
+        [DisplayName("[Background] Total ticks")]
+        public int BackgroundTotalTicks { get; set; } = 8 * 60;
+
+        [Category("Simulation")]
+        [DisplayName("[Background] Total runs")]
+        public int BackgroundTotalRuns { get; set; } = 10;
+
+        [Category("Simulation")]
+        [DisplayName("[Background] Parallel")]
+        public bool BackgroundParallel { get; set; } = true;
 
         // ------------ Map ------------------
         [Category("Map")]

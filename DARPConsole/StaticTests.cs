@@ -85,7 +85,7 @@ namespace DARPConsole
             esInput.BestfitOrderInsertMutProb = 0.7;
             esInput.RandomOrderInsertMutProb = 0.7;
             esInput.RandomOrderRemoveMutProb = 0.4;
-            esInput.RouteCrossoverProb = 0.6;
+            esInput.RouteCrossoverProb = 0;
             esInput.PlanCrossoverProb = 0.7;
             esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
             esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";",f)}]"); };
