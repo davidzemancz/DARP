@@ -83,6 +83,8 @@ namespace DARP.Solvers
             //InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
             //population.Add(new Individual() { Plan = insHOutput.Plan, RemaingOrders = insHInput.Orders.Where(o => !insHOutput.Plan.Contains(o)).ToList() });
 
+            // TODO individual jako routa
+
             List<Individual> population = new(input.PopulationSize);
             for (int i = 0; i < input.PopulationSize; i++)
             {
