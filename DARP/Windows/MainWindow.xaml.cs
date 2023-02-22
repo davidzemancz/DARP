@@ -676,7 +676,7 @@ namespace DARP.Windows
             }
 
             Time end = new(model.Params.BackgroundTotalTicks);
-            double totalEvoProfit = 0;
+            double totalProfit = 0;
             int orderId = 0;
 
             for (; model.CurrentTime <= end; model.CurrentTime = model.CurrentTime.AddTicks(1))
@@ -699,7 +699,7 @@ namespace DARP.Windows
                 // Update plans
                 (double profit, List<Order> removedOrders) = plan.UpdateVehiclesLocation(model.CurrentTime, metric, vehicleCharge);
                 removedOrders.ForEach(o => o.Handle());
-                totalEvoProfit += profit;
+                totalProfit += profit;
 
                 // Reject old orders
                 foreach (Order order in orders)
@@ -756,12 +756,11 @@ namespace DARP.Windows
                         LoggerBase.Instance.StopwatchStop();
                         plan = output.Plan;
                     }
-                    
 
                     LoggerBase.Instance.Debug($"Time {model.CurrentTime}, " +
-                       $"Total profit {totalEvoProfit + plan.GetTotalProfit(metric, vehicleCharge)}, " +
-                       $"Total order {orders.Count()}, " +
-                       $"Handled order {orders.Count(o => o.State == OrderState.Handled)}, " +
+                       $"Total profit {totalProfit + plan.GetTotalProfit(metric, vehicleCharge)}, " +
+                       $"Total orders {orders.Count()}, " +
+                       $"Handled orders {orders.Count(o => o.State == OrderState.Handled)}, " +
                        $"Rejected orders {orders.Count(o => o.State == OrderState.Rejected)}, " +
                        $"");
                 }
@@ -776,7 +775,7 @@ namespace DARP.Windows
             }
             MIPSolverInput mipInput = new() 
             {
-                TimeLimit = 30_000,
+                //TimeLimit = 30_000,
                 Multithreading = false,
                 Objective = model.Params.MIPObjective,
                 Metric = metric,
