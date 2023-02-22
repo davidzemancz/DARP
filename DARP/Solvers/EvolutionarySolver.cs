@@ -90,7 +90,7 @@ namespace DARP.Solvers
             {
                 Individual individual = new() { Plan = input.Plan.Clone(), RemaningOrders = new(input.Orders) };
 
-                for (int j = 0; j < individual.RemaningOrders.Count; j++)
+                for (int j = 0; j < individual.RemaningOrders.Count * 3; j++)
                 {
                     MutateInsertOrderRandomly(individual, false);
                 }
@@ -112,7 +112,8 @@ namespace DARP.Solvers
 
                     ind.Fitness = fitness;
 
-                    if(ind.Fitness > bestInd.Fitness) bestInd = ind;
+                    if (ind.Fitness > bestInd.Fitness) 
+                        bestInd = ind.Clone();
                 }
                 fitnessAvg /= population.Count;
                 
@@ -153,22 +154,8 @@ namespace DARP.Solvers
                             if (!offspring2.Plan.Contains(order)) offspring2.RemaningOrders.Add(order);
                         }
 
-                        // Run best fit
-                        InsertionHeuristicsInput insHInput = new(_input);
-                        insHInput.Plan = offspring1.Plan;
-                        insHInput.Orders = offspring1.RemaningOrders;
-                        InsertionHeuristics insH = new();
-                        InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
-                        offspring1.Plan = insHOutput.Plan;
-                        offspring1.RemaningOrders = insHOutput.RemainingOrders;
-
-                        insHInput = new(_input);
-                        insHInput.Plan = offspring2.Plan;
-                        insHInput.Orders = offspring2.RemaningOrders;
-                        insH = new();
-                        insHOutput = insH.RunGlobalBestFit(insHInput);
-                        offspring2.Plan = insHOutput.Plan;
-                        offspring2.RemaningOrders = insHOutput.RemainingOrders;
+                        RunInsertionWithOffspring(offspring1);
+                        RunInsertionWithOffspring(offspring2);
 
                         newPopulation.Add(offspring1);
                         newPopulation.Add(offspring2);
@@ -184,9 +171,37 @@ namespace DARP.Solvers
                         Route route1 = offspring1.Plan.Routes[routeIndex1];
                         Route route2 = offspring2.Plan.Routes[routeIndex1];
 
-                        Time splitTime = _random.NextTime(route1.Points[0].Time, XMath.Min(route1.Points.Last().Time, route2.Points.Last().Time));
+                        Time splitTime = _random.NextTime(XMath.Max(route1.Points[0].Time, route2.Points[0].Time), XMath.Min(route1.Points.Last().Time, route2.Points.Last().Time));
 
-                        
+                        // Remove orders
+                        for (int j = 1; j < route1.Points.Count; j += 2) // Loop over pickups
+                        {
+                            if (route1.Points[j].Time > splitTime)
+                            {
+                                offspring1.RemaningOrders.Add(((OrderPickupRoutePoint)route1.Points[j]).Order);
+                                route1.Points.RemoveAt(j); // Pickup
+                                route1.Points.RemoveAt(j); // Delivery
+                                j -= 2;
+                            }
+                        }
+
+                        List<Order> route2Orders = new();
+                        for (int j = 1; j < route2.Points.Count; j += 2) // Loop over pickups
+                        {
+                            if (route2.Points[j].Time > splitTime)
+                            {
+                                offspring2.RemaningOrders.Add(((OrderPickupRoutePoint)route2.Points[j]).Order);
+                                route2.Points.RemoveAt(j); // Pickup
+                                route2.Points.RemoveAt(j); // Delivery
+                                j -= 2;
+                            }
+                        }
+
+                        RunInsertionWithOffspring(offspring1);
+                        RunInsertionWithOffspring(offspring2);
+
+                        newPopulation.Add(offspring1);
+                        newPopulation.Add(offspring2);
 
                     }
                     else
@@ -214,70 +229,53 @@ namespace DARP.Solvers
                     }      
                 }
 
-                population.Clear();
-                for (int i = 0; i < input.PopulationSize; i++)
+                if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
                 {
-                    int first = _random.Next(input.PopulationSize);
-                    int second = _random.Next(input.PopulationSize);
-                    int third = _random.Next(input.PopulationSize);
-                    int fourth = _random.Next(input.PopulationSize);
+                    population.Clear();
+                    for (int i = 0; i < input.PopulationSize; i++)
+                    {
+                        int first = _random.Next(input.PopulationSize);
+                        int second = _random.Next(input.PopulationSize);
+                        int third = _random.Next(input.PopulationSize);
+                        int fourth = _random.Next(input.PopulationSize);
 
-                    double firstProfit = newPopulation[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                    double secondProfit = newPopulation[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                    double thirdProfit = newPopulation[third].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                    double fourthProfit = newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double firstProfit = newPopulation[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double secondProfit = newPopulation[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double thirdProfit = newPopulation[third].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double fourthProfit = newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
-                    if (firstProfit > secondProfit && firstProfit > thirdProfit && firstProfit > fourthProfit)
-                        population.Add(newPopulation[first]);
-                    else if (secondProfit > thirdProfit && secondProfit > fourthProfit)
-                        population.Add(newPopulation[second]);
-                    else if (thirdProfit > fourthProfit)
-                        population.Add(newPopulation[third]);
-                    else
-                        population.Add(newPopulation[fourth]);
+                        if (firstProfit > secondProfit && firstProfit > thirdProfit && firstProfit > fourthProfit)
+                            population.Add(newPopulation[first]);
+                        else if (secondProfit > thirdProfit && secondProfit > fourthProfit)
+                            population.Add(newPopulation[second]);
+                        else if (thirdProfit > fourthProfit)
+                            population.Add(newPopulation[third]);
+                        else
+                            population.Add(newPopulation[fourth]);
+                    }
+                }
+                else if (input.EnviromentalSelection == EnviromentalSelection.Elitism)
+                {
+                    population = newPopulation
+                        .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
+                        .Take(input.PopulationSize)
+                        .ToList();
                 }
 
-                    //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
-                    //.Take(input.PopulationSize)
-                    //.ToList();
-
-                // Tournament enviromental selection
-                //popSize = population.Count;
-                ////if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
-                //if (popSize < input.MaxPopulationSize)
-                //{
-                //    // Elitims selection
-                //    population = new(population);
-                //    //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
-                //    //.Take(input.MaxPopulationSize)
-                //    //.ToList();
-                //}
-                //else if (input.EnviromentalSelection == EnviromentalSelection.Elitism)
-                //else
-                //{
-                //    popSize = input.MaxPopulationSize;
-                //    List<Individual> newPopulation2 = new(popSize);
-                //    for (int i = 0; i < popSize; i++)
-                //    {
-                //        int first = _random.Next(newPopulation.Count);
-                //        int second = _random.Next(population.Count);
-
-                //        double firstProfit = population[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                //        double secondProfit = population[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-
-                //        //firstProfit *= (1 - (g / input.Generations)) * (population[first].RemaingOrders.Count);
-                //        //secondProfit *= (1 - (g / input.Generations)) * (population[second].RemaingOrders.Count);
-
-                //        if (firstProfit > secondProfit)
-                //            newPopulation.Add(population[first]);
-                //        else
-                //            newPopulation.Add(population[second]);
-                //    }
-                //    population = newPopulation;
-                //}
             }
 
             return new EvolutionarySolverOutput(bestInd.Plan, Status.Success);
+        }
+
+        private void RunInsertionWithOffspring(Individual offspring)
+        {
+            InsertionHeuristicsInput insHInput = new(_input);
+            insHInput.Plan = offspring.Plan;
+            insHInput.Orders = offspring.RemaningOrders;
+            InsertionHeuristics insH = new();
+            InsertionHeuristicsOutput insHOutput = insH.RunFirstFit(insHInput);
+            offspring.Plan = insHOutput.Plan;
+            offspring.RemaningOrders = insHOutput.RemainingOrders;
         }
 
         private void AddRouteIntoOffspring(Individual offspring, Route parentRoute)
@@ -353,6 +351,7 @@ namespace DARP.Solvers
             {
                 return new Individual()
                 {
+                    Fitness = Fitness,
                     Plan = Plan.Clone(),
                     RemaningOrders = new List<Order>(RemaningOrders)
                 };

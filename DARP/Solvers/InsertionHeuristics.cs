@@ -143,7 +143,6 @@ namespace DARP.Solvers
         {
             Plan plan = input.Plan.Clone();
 
-            InsertionHeuristicsMode mode = input.Mode;
             List<Order> remainingOrders = new(input.Orders);
             while (remainingOrders.Any())
             {
