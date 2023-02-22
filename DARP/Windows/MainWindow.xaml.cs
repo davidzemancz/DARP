@@ -203,13 +203,19 @@ namespace DARP.Windows
 
         #region Vehicles
 
-        private void AddRandomVehicle()
+        private Vehicle GetRandomVehicle(MainWindowModel model)
         {
             var vehicle = new Vehicle()
             {
-                Location = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, WindowModel.Params.MapSize)),
+                Location = new Cords(_random.Next(0, model.Params.MapSize), _random.Next(0, model.Params.MapSize)),
             };
+            return vehicle;
+        }
 
+        private void AddRandomVehicle()
+        {
+           
+            Vehicle vehicle = GetRandomVehicle(WindowModel);
             _vehicleService.GetVehicleViews().Add(new VehicleView(vehicle) { Color = GetRandomColor(), ShowOnMap = true }); ;
             _planDataService.GetPlan().Routes.Add(new Route(vehicle, WindowModel.CurrentTime));
 
@@ -219,15 +225,16 @@ namespace DARP.Windows
         #endregion
 
         #region Orders
-        private void AddRandomOrder()
+
+        private Order GetRandomOrder(MainWindowModel model)
         {
-            Cords pickup = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize));
-            Cords delivery = new Cords(_random.Next(0, WindowModel.Params.MapSize), _random.Next(0, (int)WindowModel.Params.MapSize));
+            Cords pickup = new Cords(_random.Next(0, model.Params.MapSize), _random.Next(0, (int)model.Params.MapSize));
+            Cords delivery = new Cords(_random.Next(0, model.Params.MapSize), _random.Next(0, (int)model.Params.MapSize));
 
-            double totalProfit = WindowModel.Params.OrderProfitPerTick * XMath.GetMetric(WindowModel.Params.Metric)(pickup, delivery).Ticks;
+            double totalProfit = model.Params.OrderProfitPerTick * XMath.GetMetric(model.Params.Metric)(pickup, delivery).Ticks;
 
-            Time maxDeliveryTimeFrom = new Time(WindowModel.CurrentTime.ToDouble() + WindowModel.Params.MaxDeliveryTimeFrom.Min + _random.Next(WindowModel.Params.MaxDeliveryTimeFrom.Max));
-            Time maxDeliveryTimeTo = maxDeliveryTimeFrom + new Time(WindowModel.Params.OrderTimeWindowTicks);
+            Time maxDeliveryTimeFrom = new Time(model.CurrentTime.ToDouble() + model.Params.MaxDeliveryTimeFrom.Min + _random.Next(model.Params.MaxDeliveryTimeFrom.Max));
+            Time maxDeliveryTimeTo = maxDeliveryTimeFrom + new Time(model.Params.OrderTimeWindowTicks);
 
             Order order = new()
             {
@@ -236,8 +243,14 @@ namespace DARP.Windows
                 DeliveryTime = new TimeWindow(maxDeliveryTimeFrom, maxDeliveryTimeTo),
                 TotalProfit = totalProfit
             };
-            _orderService.AddOrder(order);
 
+            return order;
+        }
+
+        private void AddRandomOrder()
+        {
+            Order order = GetRandomOrder(WindowModel);
+            _orderService.AddOrder(order);
             LoggerBase.Instance.Debug($"Added order {order.Id}");
         }
 
@@ -246,7 +259,7 @@ namespace DARP.Windows
             int variance = WindowModel.Params.OrdersCountVariance;
             for (int i = 0; i < expectedCount * variance; i++)
             {
-                if (Random.Shared.NextDouble() > (1.0 / variance)) continue;
+                if (_random.NextDouble() > (1.0 / variance)) continue;
                 AddRandomOrder();
             }
         }
@@ -325,8 +338,6 @@ namespace DARP.Windows
             return output;
         }
 
-       
-
         private async Task RunEvolution()
         {
             LoggerBase.Instance.Debug($"Run evolution");
@@ -349,6 +360,8 @@ namespace DARP.Windows
                 RandomOrderInsertMutProb = WindowModel.Params.RandomOrderInsertMutProb,
                 RandomOrderRemoveMutProb = WindowModel.Params.RandomOrderRemoveMutProb,
                 BestfitOrderInsertMutProb = WindowModel.Params.BestfitOrderInsertMutProb,
+                RouteCrossoverProb = WindowModel.Params.RouteCrossoverProb,
+                PlanCrossoverProb = WindowModel.Params.PlanCrossoverProb,
                 EnviromentalSelection = WindowModel.Params.EnviromentalSelection,   
                 FitnessLog = (gen, fittness) =>
                 {
@@ -623,8 +636,166 @@ namespace DARP.Windows
 
         #region Simulation
 
-        private void RunBackgroundSimulation()
+        private async void RunBackgroundSimulations()
         {
+            if (WindowModel.Params.BackgroundParallel)
+            {
+                List<Task> tasks = new();
+                for (int run = 0; run < WindowModel.Params.BackgroundTotalRuns; run++)
+                {
+                    MainWindowModel model = WindowModel.Clone();
+                    var task = Task.Run(() => RunSingeBackgroundSimulation(model));
+                    tasks.Add(task);
+                }
+                await Task.WhenAll(tasks);
+
+                btnRunBgSim.IsChecked = false;
+                WindowModel.BackgroundSimulationState = MainWindowModel.SimulationStateEnum.Ready;
+            }
+        }
+
+        private void RunSingeBackgroundSimulation(MainWindowModel model)
+        {
+            LoggerBase.Instance.DisplayThread = true;
+            LoggerBase.Instance.Debug("Started background simulation");
+            LoggerBase.Instance.StopwatchStart();
+
+            model.CurrentTime = Time.Zero;
+            Random random = new();
+            Plan plan = new();
+            MetricFunc metric = XMath.GetMetric(model.Params.Metric);
+            double vehicleCharge = model.Params.VehicleChargePerTick;
+            List<Order> orders = new();
+            List<Vehicle> vehicles = new();
+            vehicles.AddMany(() => GetRandomVehicle(model), model.Params.BackgroundVehiclesCount);
+            int vehicleId = 0;
+            foreach (Vehicle vehicle in vehicles)
+            {
+                vehicle.Id = ++vehicleId;
+                plan.Routes.Add(new Route(vehicle, model.CurrentTime));
+            }
+
+            Time end = new(model.Params.BackgroundTotalTicks);
+            double totalEvoProfit = 0;
+            int orderId = 0;
+
+            for (; model.CurrentTime <= end; model.CurrentTime = model.CurrentTime.AddTicks(1))
+            {
+                // New orders
+                if (model.CurrentTime.Ticks % model.Params.GenerateNewOrderTicks == 0)
+                {
+                    List<Order> newOrders = new();
+                    int variance = model.Params.OrdersCountVariance;
+                    for (int i = 0; i < model.Params.ExpectedOrdersCount * variance; i++)
+                    {
+                        if (random.NextDouble() > (1.0 / variance)) continue;
+                        Order order = GetRandomOrder(model);
+                        order.Id = ++orderId;
+                        newOrders.Add(order);
+                    }
+                    orders.AddRange(newOrders);
+                }
+
+                // Update plans
+                (double profit, List<Order> removedOrders) = plan.UpdateVehiclesLocation(model.CurrentTime, metric, vehicleCharge);
+                removedOrders.ForEach(o => o.Handle());
+                totalEvoProfit += profit;
+
+                // Reject old orders
+                foreach (Order order in orders)
+                    if (order.State != OrderState.Handled && order.DeliveryTime.To < model.CurrentTime)
+                        order.Reject();
+
+                // Run optimization each n ticks
+                if (model.CurrentTime.Ticks % model.Params.UpdatePlanTicks == 0)
+                {
+                    // Insertion heuristics
+                    if (model.Params.UseInsertionHeuristics)
+                    {
+                        InsertionHeuristics insertion = new();
+                        LoggerBase.Instance.Debug("Running insertion heuristics");
+                        LoggerBase.Instance.StopwatchStart();
+                        InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
+                        {
+                            Mode = model.Params.InsertionMode,
+                            Metric = metric,
+                            Orders = orders.Where(o => o.State == OrderState.Created),
+                            Vehicles = vehicles,
+                            Time = model.CurrentTime,
+                            Plan = plan,
+                            VehicleChargePerTick = vehicleCharge,
+                        });
+                        LoggerBase.Instance.StopwatchStop();
+                        plan = output.Plan;
+                    }
+
+                    // Evolution
+                    if (model.Params.OptimizationMethod == OptimizationMethod.Evolutionary) 
+                    { 
+                        EvolutionarySolver solver = new();
+                        EvolutionarySolverInput input = new EvolutionarySolverInput()
+                        {
+                            Generations = model.Params.EvoGenerations,
+                            PopulationSize = model.Params.EvoPopSize,
+                            Metric = metric,
+                            Orders = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted),
+                            Vehicles = vehicles,
+                            Time = model.CurrentTime,
+                            Plan = plan,
+                            VehicleChargePerTick = model.Params.VehicleChargePerTick,
+                            RandomOrderInsertMutProb = model.Params.RandomOrderInsertMutProb,
+                            RandomOrderRemoveMutProb = model.Params.RandomOrderRemoveMutProb,
+                            BestfitOrderInsertMutProb = model.Params.BestfitOrderInsertMutProb,
+                            EnviromentalSelection = model.Params.EnviromentalSelection,
+                            RouteCrossoverProb = model.Params.RouteCrossoverProb,
+                            PlanCrossoverProb = model.Params.PlanCrossoverProb,
+                        };
+                        LoggerBase.Instance.Debug("Running evolutionary solver");
+                        LoggerBase.Instance.StopwatchStart();
+                        EvolutionarySolverOutput output = solver.Run(input);
+                        LoggerBase.Instance.StopwatchStop();
+                        plan = output.Plan;
+                    }
+                    
+
+                    LoggerBase.Instance.Debug($"Time {model.CurrentTime}, " +
+                       $"Total profit {totalEvoProfit + plan.GetTotalProfit(metric, vehicleCharge)}, " +
+                       $"Total order {orders.Count()}, " +
+                       $"Handled order {orders.Count(o => o.State == OrderState.Handled)}, " +
+                       $"Rejected orders {orders.Count(o => o.State == OrderState.Rejected)}, " +
+                       $"");
+                }
+            }
+
+            // Optimum estimation
+            model.CurrentTime = Time.Zero;
+            Plan estPlan = new();
+            foreach ( var vehicle in vehicles)
+            {
+                estPlan.Routes.Add(new Route(vehicle, model.CurrentTime));
+            }
+            MIPSolverInput mipInput = new() 
+            {
+                TimeLimit = 30_000,
+                Multithreading = false,
+                Objective = model.Params.MIPObjective,
+                Metric = metric,
+                Orders = orders,
+                Vehicles = vehicles,
+                Time = model.CurrentTime,
+                Plan = estPlan,
+                VehicleChargePerTick = vehicleCharge,
+                Integer = false, // Linear relaxation
+            };
+            MIPSolver ms = new();
+            LoggerBase.Instance.Debug($"Running MIP solver, Time limit {mipInput.TimeLimit / 1000} seconds");
+            LoggerBase.Instance.StopwatchStart();
+            MIPSolverOutput mipOutput = ms.Run(mipInput);
+            LoggerBase.Instance.StopwatchStop();
+            LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
+
+            LoggerBase.Instance.StopwatchStop();
+            LoggerBase.Instance.Debug("Completed background simulation");
             
         }
 
@@ -1070,17 +1241,10 @@ namespace DARP.Windows
         {
             if (WindowModel.BackgroundSimulationState == MainWindowModel.SimulationStateEnum.Ready)
             {
-                if (_vehicleService.GetVehicleViews().Count == 0)
-                {
-                    btnRunBgSim.IsChecked = false;
-                    MessageBox.Show("Add at least one vehicle", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
                 btnRunBgSim.IsChecked = true;
                 WindowModel.BackgroundSimulationState = MainWindowModel.SimulationStateEnum.Running;
 
-                RunBackgroundSimulation();
+                RunBackgroundSimulations();
             }
             else
             {
@@ -1095,8 +1259,6 @@ namespace DARP.Windows
         }
 
         #endregion
-
-       
     }
 
     #region CLASSES
@@ -1132,6 +1294,7 @@ namespace DARP.Windows
         public SimulationStateEnum BackgroundSimulationState { get; set; }
         public MainWindowStats Stats { get; set; } = new();
         public MainWindowParams Params { get; set; } = new();
+        
         [JsonIgnore]
         public PlotModel OrdersStatePlot { get; set; }
         [JsonIgnore]
@@ -1145,6 +1308,19 @@ namespace DARP.Windows
         {
             Ready = 0,
             Running = 1,
+        }
+
+        public MainWindowModel Clone()
+        {
+            MainWindowModel clone = MemberwiseClone() as MainWindowModel;
+            clone.Params = Params.Clone();
+            clone.Stats = Stats.Clone();
+            clone.OrdersStatePlot = new();
+            clone.TotalProfitPlot = new();
+            clone.OptimalityPlot = new();
+            clone.EvolutionPlot = new();
+
+            return clone;
         }
     }
 
@@ -1164,6 +1340,11 @@ namespace DARP.Windows
         public string AcceptedOrdersStr { get => $"Accepted orders: {AcceptedOrders} ({100 * AcceptedOrders / TotalOrders}%)"; }
         public string HandledOrdersStr { get => $"Handled orders: {HandledOrders} ({100 * HandledOrders / TotalOrders}%)"; }
         public string RejectedOrdersStr { get => $"Rejected orders: {RejectedOrders} ({100 * RejectedOrders / TotalOrders}%)"; }
+
+        public MainWindowStats Clone()
+        {
+            return MemberwiseClone() as MainWindowStats;
+        }
 
     }
 
@@ -1229,21 +1410,25 @@ namespace DARP.Windows
 
         [Category("Simulation")]
         [DisplayName("[Background] Total ticks")]
-        public int BackgroundTotalTicks { get; set; } = 8 * 60;
+        public int BackgroundTotalTicks { get; set; } = 120;
 
         [Category("Simulation")]
         [DisplayName("[Background] Total runs")]
-        public int BackgroundTotalRuns { get; set; } = 10;
+        public int BackgroundTotalRuns { get; set; } = 1;
 
         [Category("Simulation")]
         [DisplayName("[Background] Parallel")]
         public bool BackgroundParallel { get; set; } = true;
 
+        [Category("Simulation")]
+        [DisplayName("[Background] Vehicles count")]
+        public int BackgroundVehiclesCount { get; set; } = 10;
+
         // ------------ Map ------------------
         [Category("Map")]
         [DisplayName("Size")]
         [Description("Maps height and width")]
-        public int MapSize { get; set; } = 10;
+        public int MapSize { get; set; } = 20;
 
         [Category("Map")]
         [DisplayName("Metric")]
@@ -1274,8 +1459,8 @@ namespace DARP.Windows
 
         [Category("MIP solver")]
         [DisplayName("Internal solver")]
-        [Description("Internal solver. Available is SCIP or CP-SAT.")]
-        public string Solver { get; set; } = "CP-SAT";
+        [Description("Internal solver. The only available is the SCIP.")]
+        public string Solver { get; set; } = "SCIP";
 
         [Category("MIP solver")]
         [DisplayName("Objective")]
@@ -1285,7 +1470,7 @@ namespace DARP.Windows
         // ------------ Evolution ------------------
         [Category("Evolution")]
         [DisplayName("Generations")]
-        public int EvoGenerations { get; set; } = 1_000;
+        public int EvoGenerations { get; set; } = 200;
 
         [Category("Evolution")]
         [DisplayName("Population size")]
@@ -1297,11 +1482,19 @@ namespace DARP.Windows
 
         [Category("Evolution")]
         [DisplayName("[MUT] Insert order prob.")]
-        public double RandomOrderInsertMutProb { get; set; } = 1;
+        public double RandomOrderInsertMutProb { get; set; } = 0.7;
 
         [Category("Evolution")]
         [DisplayName("[MUT] BestFit order prob.")]
-        public double BestfitOrderInsertMutProb { get; set; } = 1;
+        public double BestfitOrderInsertMutProb { get; set; } = 0.7;
+
+        [Category("Evolution")]
+        [DisplayName("[CX] Plan crossover")]
+        public double PlanCrossoverProb { get; set; } = 0.3;
+
+        [Category("Evolution")]
+        [DisplayName("[CX] Route crossover")]
+        public double RouteCrossoverProb { get; set; } = 0.3;
 
         [Category("Evolution")]
         [DisplayName("Enviromental selection")]
@@ -1312,9 +1505,14 @@ namespace DARP.Windows
         [DisplayName("Mode")]
         [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
         public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.FirstFit;
+
+        public MainWindowParams Clone()
+        {
+            return MemberwiseClone() as MainWindowParams;
+        }
     }
 
-    internal class PropertyRange<T>
+    internal struct PropertyRange<T>
     {
         [DisplayName("Min")]
         [PropertyOrder(0)]

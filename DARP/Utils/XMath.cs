@@ -47,9 +47,11 @@ namespace DARP.Utils
 
         public static T RandomElementByWeight<T>(IEnumerable<T> sequence, Func<T, double> weightSelector)
         {
+            Random random = new();
+
             double totalWeight = sequence.Sum(weightSelector);
             // The weight we are after...
-            double itemWeightIndex = (double)new Random().NextDouble() * totalWeight;
+            double itemWeightIndex = (double)random.NextDouble() * totalWeight;
             double currentWeightIndex = 0;
 
             foreach (var item in from weightedItem in sequence select new { Value = weightedItem, Weight = weightSelector(weightedItem) })
@@ -62,7 +64,7 @@ namespace DARP.Utils
 
             }
 
-            return default(T);
+            throw new NotImplementedException();
 
         }
     }

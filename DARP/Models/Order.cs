@@ -16,6 +16,10 @@ namespace DARP.Models
         public TimeWindow DeliveryTime { get; set; } = new TimeWindow();
         public double TotalProfit { get; set; }
 
+        public void Decline()
+        {
+            State = OrderState.Created;
+        }
         public void Accept()
         {
             State = OrderState.Accepted;

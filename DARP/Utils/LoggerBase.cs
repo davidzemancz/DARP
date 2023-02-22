@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DARP.Utils
@@ -22,7 +23,10 @@ namespace DARP.Utils
     {
         private long _lineCounter = 0;
         private Stack<Stopwatch> _stopwatches = new();
-        
+
+        public bool DisplayLevel { get; set; }
+        public bool DisplayThread { get; set; }
+
         public static LoggerBase Instance { get; protected set; } = new LoggerBase();
 
         public virtual IList<TextWriter> TextWriters { get; protected set; } = new List<TextWriter>();
@@ -59,9 +63,12 @@ namespace DARP.Utils
 
         public virtual void Log(LogLevel level, string message)
         {
-            foreach (TextWriter writer in TextWriters)
+            lock (TextWriters)
             {
-                writer.WriteLine($"{++_lineCounter}> {message}");
+                foreach (TextWriter writer in TextWriters)
+                {
+                    writer.WriteLine($"{++_lineCounter}> {(DisplayLevel ? $"[{level}] " : "")} {(DisplayThread ? $"[Thread {Thread.CurrentThread.ManagedThreadId}] " : "")} {message}");
+                }
             }
         }
 

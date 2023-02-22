@@ -89,6 +89,11 @@ namespace DARP.Models
         {
             return Ticks.GetHashCode();
         }
+
+        public Time AddTicks(int ticks)
+        {
+            return new Time(Ticks + ticks);
+        }
     }
 
     public static class TimeExtensions

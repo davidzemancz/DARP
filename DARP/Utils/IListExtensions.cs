@@ -22,5 +22,13 @@ namespace DARP.Utils
                 list[n] = value;
             }
         }
+
+        public static void AddMany<T>(this IList<T> list, Func<T> next, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(next());
+            }
+        }
     }
 }

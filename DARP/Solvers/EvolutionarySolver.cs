@@ -39,17 +39,16 @@ namespace DARP.Solvers
 
     public class EvolutionarySolverInput : SolverInputBase
     {
-        public int Generations { get; set; } = 1_000;
+        public int Generations { get; set; } = 100;
         public int PopulationSize { get; set; } = 100;
 
-        public double RandomOrderRemoveMutProb { get; set; } = 0.2;
+        public double RandomOrderRemoveMutProb { get; set; } = 0.4;
         public double RandomOrderInsertMutProb { get; set; } = 0.5;
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
-        public double PlanCrossoverProb {  get; set; } = 0.6;
-        public double RouteCrossoverProb { get; set; } = 0.6;
+        public double PlanCrossoverProb {  get; set; } = 0.3;
+        public double RouteCrossoverProb { get; set; } = 0.3;
         public FitnessLogFunc FitnessLog { get; set; }
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
-        public ParentalSelection ParentalSelection { get; set; } = ParentalSelection.RouletteWheel;
 
         public EvolutionarySolverInput() { }
         public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
@@ -73,7 +72,7 @@ namespace DARP.Solvers
             _input = input;
 
             // Initialize population
-            Individual bestInd = new();
+            Individual bestInd = new() { Fitness = double.MinValue };
 
             // Start with population of size 1
             //InsertionHeuristicsInput insHInput = new(_input);
