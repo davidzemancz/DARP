@@ -716,6 +716,7 @@ namespace DARP.Windows
 
                 Time end = new(model.Params.TemplateTotalTicks);
                 double totalProfit = 0;
+                double totalCurrentProfit = 0;
                 int orderId = 0;
 
                 for (; model.CurrentTime <= end; model.CurrentTime = model.CurrentTime.AddTicks(1))
@@ -796,8 +797,9 @@ namespace DARP.Windows
                             plan = output.Plan;
                         }
 
+                        totalCurrentProfit = totalProfit + plan.GetTotalProfit(metric, vehicleCharge);
                         LoggerBase.Instance.Debug($"Time {model.CurrentTime}, " +
-                           $"Total profit {totalProfit + plan.GetTotalProfit(metric, vehicleCharge)}, " +
+                           $"Total profit {totalCurrentProfit}, " +
                            $"Total orders {orders.Count()}, " +
                            $"Handled orders {orders.Count(o => o.State == OrderState.Handled)}, " +
                            $"Rejected orders {orders.Count(o => o.State == OrderState.Rejected)}, " +
@@ -831,6 +833,7 @@ namespace DARP.Windows
                 MIPSolverOutput mipOutput = ms.Run(mipInput);
                 LoggerBase.Instance.StopwatchStop();
                 LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
+                LoggerBase.Instance.Debug($"Optimality ratio {totalCurrentProfit / mipOutput.ObjetiveValue}");
 
                 LoggerBase.Instance.StopwatchStop();
                 LoggerBase.Instance.Debug($"Finished run {run}");
