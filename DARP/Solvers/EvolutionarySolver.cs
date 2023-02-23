@@ -39,9 +39,9 @@ namespace DARP.Solvers
 
     public class EvolutionarySolverInput : SolverInputBase
     {
+        public Random RandomInstance { get; set; } = null;
         public int Generations { get; set; } = 100;
         public int PopulationSize { get; set; } = 100;
-
         public double RandomOrderRemoveMutProb { get; set; } = 0.4;
         public double RandomOrderInsertMutProb { get; set; } = 0.5;
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
@@ -68,7 +68,7 @@ namespace DARP.Solvers
 
         public EvolutionarySolverOutput Run(EvolutionarySolverInput input) 
         {
-            _random = new();
+            _random = input.RandomInstance == null ? new() : input.RandomInstance;
             _input = input;
 
             // Initialize population

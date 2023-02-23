@@ -231,11 +231,13 @@ namespace DARP.Windows
 
         #region Vehicles
 
-        private Vehicle GetRandomVehicle(MainWindowModel model)
+        private Vehicle GetRandomVehicle(MainWindowModel model, Random random = null)
         {
+            if (random == null) random = _random;
+
             var vehicle = new Vehicle()
             {
-                Location = new Cords(_random.Next(0, model.Params.MapSize), _random.Next(0, model.Params.MapSize)),
+                Location = new Cords(random.Next(0, model.Params.MapSize), random.Next(0, model.Params.MapSize)),
             };
             return vehicle;
         }
@@ -254,14 +256,16 @@ namespace DARP.Windows
 
         #region Orders
 
-        private Order GetRandomOrder(MainWindowModel model)
+        private Order GetRandomOrder(MainWindowModel model, Random random = null)
         {
-            Cords pickup = new Cords(_random.Next(0, model.Params.MapSize), _random.Next(0, (int)model.Params.MapSize));
-            Cords delivery = new Cords(_random.Next(0, model.Params.MapSize), _random.Next(0, (int)model.Params.MapSize));
+            if (random == null) random = _random;
+
+            Cords pickup = new Cords(random.Next(0, model.Params.MapSize), random.Next(0, (int)model.Params.MapSize));
+            Cords delivery = new Cords(random.Next(0, model.Params.MapSize), random.Next(0, (int)model.Params.MapSize));
 
             double totalProfit = model.Params.OrderProfitPerTick * XMath.GetMetric(model.Params.Metric)(pickup, delivery).Ticks;
 
-            Time maxDeliveryTimeFrom = new Time(model.CurrentTime.ToDouble() + model.Params.MaxDeliveryTimeFrom.Min + _random.Next(model.Params.MaxDeliveryTimeFrom.Max));
+            Time maxDeliveryTimeFrom = new Time(model.CurrentTime.ToDouble() + model.Params.MaxDeliveryTimeFrom.Min + random.Next(model.Params.MaxDeliveryTimeFrom.Max));
             Time maxDeliveryTimeTo = maxDeliveryTimeFrom + new Time(model.Params.OrderTimeWindowTicks);
 
             Order order = new()
@@ -669,9 +673,6 @@ namespace DARP.Windows
             _mainWindowModels.Add(WindowModel.Clone());
         }
 
-        #endregion
-
-        #region Simulation
 
         private async void RunSimulationTemplates()
         {
@@ -694,19 +695,21 @@ namespace DARP.Windows
             LoggerBase.Instance.Debug($"Started simulation template {model.Params.TemplateName}");
             LoggerBase.Instance.StopwatchStart();
 
+            // Initialize random instance with seed
+            Random random = new(model.Params.Seed);
+
             for (int run = 1; run <= model.Params.TemplateTotalRuns; run++)
             {
                 LoggerBase.Instance.Debug($"Started run {run}");
                 LoggerBase.Instance.StopwatchStart();
 
                 model.CurrentTime = Time.Zero;
-                Random random = new();
                 Plan plan = new();
                 MetricFunc metric = XMath.GetMetric(model.Params.Metric);
                 double vehicleCharge = model.Params.VehicleChargePerTick;
                 List<Order> orders = new();
                 List<Vehicle> vehicles = new();
-                vehicles.AddMany(() => GetRandomVehicle(model), model.Params.TemplateVehiclesCount);
+                vehicles.AddMany(() => GetRandomVehicle(model, random), model.Params.TemplateVehiclesCount);
                 int vehicleId = 0;
                 foreach (Vehicle vehicle in vehicles)
                 {
@@ -729,7 +732,7 @@ namespace DARP.Windows
                         for (int i = 0; i < model.Params.ExpectedOrdersCount * variance; i++)
                         {
                             if (random.NextDouble() > (1.0 / variance)) continue;
-                            Order order = GetRandomOrder(model);
+                            Order order = GetRandomOrder(model, random);
                             order.Id = ++orderId;
                             newOrders.Add(order);
                         }
@@ -775,6 +778,7 @@ namespace DARP.Windows
                             EvolutionarySolver solver = new();
                             EvolutionarySolverInput input = new EvolutionarySolverInput()
                             {
+                                RandomInstance = random,
                                 Generations = model.Params.EvoGenerations,
                                 PopulationSize = model.Params.EvoPopSize,
                                 Metric = metric,
@@ -843,6 +847,11 @@ namespace DARP.Windows
             LoggerBase.Instance.Debug($"Finished simulation template {model.Params.TemplateName}");
 
         }
+
+
+        #endregion
+
+        #region Simulation
 
         private void StartSimulation()
         {
