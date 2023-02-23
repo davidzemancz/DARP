@@ -675,20 +675,17 @@ namespace DARP.Windows
 
         private async void RunSimulationTemplates()
         {
-            if (WindowModel.Params.RunTemplateSimulationsInParallel)
+            List<Task> tasks = new();
+            //for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
+            foreach(MainWindowModel model in _mainWindowModels)
             {
-                List<Task> tasks = new();
-                for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
-                {
-                    MainWindowModel model = WindowModel.Clone();
-                    var task = Task.Run(() => RunSimulationTemplate(model));
-                    tasks.Add(task);
-                }
-                await Task.WhenAll(tasks);
-
-                btnRunSimTemplates.IsChecked = false;
-                WindowModel.SimulationTemplatesState = MainWindowModel.SimulationStateEnum.Ready;
+                var task = Task.Run(() => RunSimulationTemplate(model));
+                tasks.Add(task);
             }
+            await Task.WhenAll(tasks);
+
+            btnRunSimTemplates.IsChecked = false;
+            WindowModel.SimulationTemplatesState = MainWindowModel.SimulationStateEnum.Ready;
         }
 
         private void RunSimulationTemplate(MainWindowModel model)
@@ -697,141 +694,150 @@ namespace DARP.Windows
             LoggerBase.Instance.Debug($"Started simulation template {model.Params.TemplateName}");
             LoggerBase.Instance.StopwatchStart();
 
-            model.CurrentTime = Time.Zero;
-            Random random = new();
-            Plan plan = new();
-            MetricFunc metric = XMath.GetMetric(model.Params.Metric);
-            double vehicleCharge = model.Params.VehicleChargePerTick;
-            List<Order> orders = new();
-            List<Vehicle> vehicles = new();
-            vehicles.AddMany(() => GetRandomVehicle(model), model.Params.TemplateVehiclesCount);
-            int vehicleId = 0;
-            foreach (Vehicle vehicle in vehicles)
+            for (int run = 1; run <= model.Params.TemplateTotalRuns; run++)
             {
-                vehicle.Id = ++vehicleId;
-                plan.Routes.Add(new Route(vehicle, model.CurrentTime));
-            }
+                LoggerBase.Instance.Debug($"Started run {run}");
+                LoggerBase.Instance.StopwatchStart();
 
-            Time end = new(model.Params.TemplateTotalTicks);
-            double totalProfit = 0;
-            int orderId = 0;
-
-            for (; model.CurrentTime <= end; model.CurrentTime = model.CurrentTime.AddTicks(1))
-            {
-                // New orders
-                if (model.CurrentTime.Ticks % model.Params.GenerateNewOrderTicks == 0)
+                model.CurrentTime = Time.Zero;
+                Random random = new();
+                Plan plan = new();
+                MetricFunc metric = XMath.GetMetric(model.Params.Metric);
+                double vehicleCharge = model.Params.VehicleChargePerTick;
+                List<Order> orders = new();
+                List<Vehicle> vehicles = new();
+                vehicles.AddMany(() => GetRandomVehicle(model), model.Params.TemplateVehiclesCount);
+                int vehicleId = 0;
+                foreach (Vehicle vehicle in vehicles)
                 {
-                    List<Order> newOrders = new();
-                    int variance = model.Params.OrdersCountVariance;
-                    for (int i = 0; i < model.Params.ExpectedOrdersCount * variance; i++)
-                    {
-                        if (random.NextDouble() > (1.0 / variance)) continue;
-                        Order order = GetRandomOrder(model);
-                        order.Id = ++orderId;
-                        newOrders.Add(order);
-                    }
-                    orders.AddRange(newOrders);
+                    vehicle.Id = ++vehicleId;
+                    plan.Routes.Add(new Route(vehicle, model.CurrentTime));
                 }
 
-                // Update plans
-                (double profit, List<Order> removedOrders) = plan.UpdateVehiclesLocation(model.CurrentTime, metric, vehicleCharge);
-                removedOrders.ForEach(o => o.Handle());
-                totalProfit += profit;
+                Time end = new(model.Params.TemplateTotalTicks);
+                double totalProfit = 0;
+                int orderId = 0;
 
-                // Reject old orders
-                foreach (Order order in orders)
-                    if (order.State != OrderState.Handled && order.DeliveryTime.To < model.CurrentTime)
-                        order.Reject();
-
-                // Run optimization each n ticks
-                if (model.CurrentTime.Ticks % model.Params.UpdatePlanTicks == 0)
+                for (; model.CurrentTime <= end; model.CurrentTime = model.CurrentTime.AddTicks(1))
                 {
-                    // Insertion heuristics
-                    if (model.Params.UseInsertionHeuristics)
+                    // New orders
+                    if (model.CurrentTime.Ticks % model.Params.GenerateNewOrderTicks == 0)
                     {
-                        InsertionHeuristics insertion = new();
-                        LoggerBase.Instance.Debug("Running insertion heuristics");
-                        LoggerBase.Instance.StopwatchStart();
-                        InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
+                        List<Order> newOrders = new();
+                        int variance = model.Params.OrdersCountVariance;
+                        for (int i = 0; i < model.Params.ExpectedOrdersCount * variance; i++)
                         {
-                            Mode = model.Params.InsertionMode,
-                            Metric = metric,
-                            Orders = orders.Where(o => o.State == OrderState.Created),
-                            Vehicles = vehicles,
-                            Time = model.CurrentTime,
-                            Plan = plan,
-                            VehicleChargePerTick = vehicleCharge,
-                        });
-                        LoggerBase.Instance.StopwatchStop();
-                        plan = output.Plan;
+                            if (random.NextDouble() > (1.0 / variance)) continue;
+                            Order order = GetRandomOrder(model);
+                            order.Id = ++orderId;
+                            newOrders.Add(order);
+                        }
+                        orders.AddRange(newOrders);
                     }
 
-                    // Evolution
-                    if (model.Params.OptimizationMethod == OptimizationMethod.Evolutionary) 
-                    { 
-                        EvolutionarySolver solver = new();
-                        EvolutionarySolverInput input = new EvolutionarySolverInput()
-                        {
-                            Generations = model.Params.EvoGenerations,
-                            PopulationSize = model.Params.EvoPopSize,
-                            Metric = metric,
-                            Orders = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted),
-                            Vehicles = vehicles,
-                            Time = model.CurrentTime,
-                            Plan = plan,
-                            VehicleChargePerTick = model.Params.VehicleChargePerTick,
-                            RandomOrderInsertMutProb = model.Params.RandomOrderInsertMutProb,
-                            RandomOrderRemoveMutProb = model.Params.RandomOrderRemoveMutProb,
-                            BestfitOrderInsertMutProb = model.Params.BestfitOrderInsertMutProb,
-                            EnviromentalSelection = model.Params.EnviromentalSelection,
-                            RouteCrossoverProb = model.Params.RouteCrossoverProb,
-                            PlanCrossoverProb = model.Params.PlanCrossoverProb,
-                        };
-                        LoggerBase.Instance.Debug("Running evolutionary solver");
-                        LoggerBase.Instance.StopwatchStart();
-                        EvolutionarySolverOutput output = solver.Run(input);
-                        LoggerBase.Instance.StopwatchStop();
-                        plan = output.Plan;
-                    }
+                    // Update plans
+                    (double profit, List<Order> removedOrders) = plan.UpdateVehiclesLocation(model.CurrentTime, metric, vehicleCharge);
+                    removedOrders.ForEach(o => o.Handle());
+                    totalProfit += profit;
 
-                    LoggerBase.Instance.Debug($"Time {model.CurrentTime}, " +
-                       $"Total profit {totalProfit + plan.GetTotalProfit(metric, vehicleCharge)}, " +
-                       $"Total orders {orders.Count()}, " +
-                       $"Handled orders {orders.Count(o => o.State == OrderState.Handled)}, " +
-                       $"Rejected orders {orders.Count(o => o.State == OrderState.Rejected)}, " +
-                       $"");
+                    // Reject old orders
+                    foreach (Order order in orders)
+                        if (order.State != OrderState.Handled && order.DeliveryTime.To < model.CurrentTime)
+                            order.Reject();
+
+                    // Run optimization each n ticks
+                    if (model.CurrentTime.Ticks % model.Params.UpdatePlanTicks == 0)
+                    {
+                        // Insertion heuristics
+                        if (model.Params.UseInsertionHeuristics)
+                        {
+                            InsertionHeuristics insertion = new();
+                            LoggerBase.Instance.Debug("Running insertion heuristics");
+                            LoggerBase.Instance.StopwatchStart();
+                            InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
+                            {
+                                Mode = model.Params.InsertionMode,
+                                Metric = metric,
+                                Orders = orders.Where(o => o.State == OrderState.Created),
+                                Vehicles = vehicles,
+                                Time = model.CurrentTime,
+                                Plan = plan,
+                                VehicleChargePerTick = vehicleCharge,
+                            });
+                            LoggerBase.Instance.StopwatchStop();
+                            plan = output.Plan;
+                        }
+
+                        // Evolution
+                        if (model.Params.OptimizationMethod == OptimizationMethod.Evolutionary)
+                        {
+                            EvolutionarySolver solver = new();
+                            EvolutionarySolverInput input = new EvolutionarySolverInput()
+                            {
+                                Generations = model.Params.EvoGenerations,
+                                PopulationSize = model.Params.EvoPopSize,
+                                Metric = metric,
+                                Orders = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted),
+                                Vehicles = vehicles,
+                                Time = model.CurrentTime,
+                                Plan = plan,
+                                VehicleChargePerTick = model.Params.VehicleChargePerTick,
+                                RandomOrderInsertMutProb = model.Params.RandomOrderInsertMutProb,
+                                RandomOrderRemoveMutProb = model.Params.RandomOrderRemoveMutProb,
+                                BestfitOrderInsertMutProb = model.Params.BestfitOrderInsertMutProb,
+                                EnviromentalSelection = model.Params.EnviromentalSelection,
+                                RouteCrossoverProb = model.Params.RouteCrossoverProb,
+                                PlanCrossoverProb = model.Params.PlanCrossoverProb,
+                            };
+                            LoggerBase.Instance.Debug("Running evolutionary solver");
+                            LoggerBase.Instance.StopwatchStart();
+                            EvolutionarySolverOutput output = solver.Run(input);
+                            LoggerBase.Instance.StopwatchStop();
+                            plan = output.Plan;
+                        }
+
+                        LoggerBase.Instance.Debug($"Time {model.CurrentTime}, " +
+                           $"Total profit {totalProfit + plan.GetTotalProfit(metric, vehicleCharge)}, " +
+                           $"Total orders {orders.Count()}, " +
+                           $"Handled orders {orders.Count(o => o.State == OrderState.Handled)}, " +
+                           $"Rejected orders {orders.Count(o => o.State == OrderState.Rejected)}, " +
+                           $"");
+                    }
                 }
+
+                // Optimum estimation
+                model.CurrentTime = Time.Zero;
+                Plan estPlan = new();
+                foreach (var vehicle in vehicles)
+                {
+                    estPlan.Routes.Add(new Route(vehicle, model.CurrentTime));
+                }
+                MIPSolverInput mipInput = new()
+                {
+                    //TimeLimit = 30_000,
+                    Multithreading = false,
+                    Objective = model.Params.MIPObjective,
+                    Metric = metric,
+                    Orders = orders,
+                    Vehicles = vehicles,
+                    Time = model.CurrentTime,
+                    Plan = estPlan,
+                    VehicleChargePerTick = vehicleCharge,
+                    Integer = false, // Linear relaxation
+                };
+                MIPSolver ms = new();
+                LoggerBase.Instance.Debug($"Running MIP solver, Time limit {mipInput.TimeLimit / 1000} seconds");
+                LoggerBase.Instance.StopwatchStart();
+                MIPSolverOutput mipOutput = ms.Run(mipInput);
+                LoggerBase.Instance.StopwatchStop();
+                LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
+
+                LoggerBase.Instance.StopwatchStop();
+                LoggerBase.Instance.Debug($"Finished run {run}");
             }
 
-            // Optimum estimation
-            model.CurrentTime = Time.Zero;
-            Plan estPlan = new();
-            foreach ( var vehicle in vehicles)
-            {
-                estPlan.Routes.Add(new Route(vehicle, model.CurrentTime));
-            }
-            MIPSolverInput mipInput = new() 
-            {
-                //TimeLimit = 30_000,
-                Multithreading = false,
-                Objective = model.Params.MIPObjective,
-                Metric = metric,
-                Orders = orders,
-                Vehicles = vehicles,
-                Time = model.CurrentTime,
-                Plan = estPlan,
-                VehicleChargePerTick = vehicleCharge,
-                Integer = false, // Linear relaxation
-            };
-            MIPSolver ms = new();
-            LoggerBase.Instance.Debug($"Running MIP solver, Time limit {mipInput.TimeLimit / 1000} seconds");
-            LoggerBase.Instance.StopwatchStart();
-            MIPSolverOutput mipOutput = ms.Run(mipInput);
             LoggerBase.Instance.StopwatchStop();
-            LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
-
-            LoggerBase.Instance.StopwatchStop();
-            LoggerBase.Instance.Debug("Completed background simulation");
+            LoggerBase.Instance.Debug($"Finished simulation template {model.Params.TemplateName}");
             
         }
 
@@ -1462,16 +1468,12 @@ namespace DARP.Windows
         public int TemplateTotalRuns { get; set; } = 1;
 
         [Category("Simulation")]
-        [DisplayName("[Temmplate] Parallel")]
-        public bool RunTemplateSimulationsInParallel { get; set; } = true;
-
-        [Category("Simulation")]
         [DisplayName("[Temmplate] Vehicles count")]
         public int TemplateVehiclesCount { get; set; } = 10;
 
         [Category("Simulation")]
-        [DisplayName("[Temmplate] Template name")]
-        public int TemplateName { get; set; } = 10;
+        [DisplayName("[Temmplate] Name")]
+        public string TemplateName { get; set; } = "1";
 
         // ------------ Map ------------------
         [Category("Map")]
