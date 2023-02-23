@@ -26,6 +26,11 @@ namespace DARPConsole
             }
         }
 
+        private static void BuildGraph()
+        {
+
+        }
+
         public static void RunOnce()
         {
             Time time = Time.Zero;

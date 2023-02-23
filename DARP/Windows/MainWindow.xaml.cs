@@ -7,6 +7,7 @@ using DARP.Services;
 using DARP.Solvers;
 using DARP.Utils;
 using DARP.Views;
+using Google.OrTools.Sat;
 using MapControl;
 using MapControl.Caching;
 using Microsoft.Win32;
@@ -18,6 +19,7 @@ using OxyPlot.Wpf;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -62,6 +64,29 @@ namespace DARP.Windows
             _orderService = ServiceProvider.Instance.GetService<IOrderDataService>();
             _vehicleService = ServiceProvider.Instance.GetService<IVehicleDataService>();
             _planDataService = ServiceProvider.Instance.GetService<IPlanDataService>();
+
+            _mainWindowParams = new();
+            _mainWindowModels = new();
+            _mainWindowModels.CollectionChanged += (o, e) =>
+            {
+                switch (e.Action)
+                {
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
+                        foreach(MainWindowModel newItem in e.NewItems)
+                            _mainWindowParams.Add(newItem.Params);
+                        break;
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
+                        foreach (MainWindowModel newItem in e.NewItems)
+                            _mainWindowParams.Remove(newItem.Params);
+                        break;
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Replace:
+                        throw new NotImplementedException();
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Move:
+                        throw new NotImplementedException();
+                    case System.Collections.Specialized.NotifyCollectionChangedAction.Reset:
+                        throw new NotImplementedException();
+                }
+            };
 
             ImageLoader.HttpClient.DefaultRequestHeaders.Add("User-Agent", "XAML Map Control Test Application");
             TileImageLoader.Cache = new ImageFileCache(TileImageLoader.DefaultCacheFolder);
@@ -196,6 +221,9 @@ namespace DARP.Windows
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
         private readonly IPlanDataService _planDataService;
+
+        private readonly ObservableCollection<MainWindowModel> _mainWindowModels;
+        private readonly ObservableCollection<MainWindowParams> _mainWindowParams;
 
         #endregion
 
@@ -634,30 +662,39 @@ namespace DARP.Windows
 
         #endregion
 
+        #region Simulation templates
+
+        private void SaveParamsAsSimulationTemplate()
+        {
+            _mainWindowModels.Add(WindowModel.Clone());
+        }
+
+        #endregion
+
         #region Simulation
 
-        private async void RunBackgroundSimulations()
+        private async void RunSimulationTemplates()
         {
-            if (WindowModel.Params.BackgroundParallel)
+            if (WindowModel.Params.RunTemplateSimulationsInParallel)
             {
                 List<Task> tasks = new();
-                for (int run = 0; run < WindowModel.Params.BackgroundTotalRuns; run++)
+                for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
                 {
                     MainWindowModel model = WindowModel.Clone();
-                    var task = Task.Run(() => RunSingeBackgroundSimulation(model));
+                    var task = Task.Run(() => RunSimulationTemplate(model));
                     tasks.Add(task);
                 }
                 await Task.WhenAll(tasks);
 
-                btnRunBgSim.IsChecked = false;
-                WindowModel.BackgroundSimulationState = MainWindowModel.SimulationStateEnum.Ready;
+                btnRunSimTemplates.IsChecked = false;
+                WindowModel.SimulationTemplatesState = MainWindowModel.SimulationStateEnum.Ready;
             }
         }
 
-        private void RunSingeBackgroundSimulation(MainWindowModel model)
+        private void RunSimulationTemplate(MainWindowModel model)
         {
             LoggerBase.Instance.DisplayThread = true;
-            LoggerBase.Instance.Debug("Started background simulation");
+            LoggerBase.Instance.Debug($"Started simulation template {model.Params.TemplateName}");
             LoggerBase.Instance.StopwatchStart();
 
             model.CurrentTime = Time.Zero;
@@ -667,7 +704,7 @@ namespace DARP.Windows
             double vehicleCharge = model.Params.VehicleChargePerTick;
             List<Order> orders = new();
             List<Vehicle> vehicles = new();
-            vehicles.AddMany(() => GetRandomVehicle(model), model.Params.BackgroundVehiclesCount);
+            vehicles.AddMany(() => GetRandomVehicle(model), model.Params.TemplateVehiclesCount);
             int vehicleId = 0;
             foreach (Vehicle vehicle in vehicles)
             {
@@ -675,7 +712,7 @@ namespace DARP.Windows
                 plan.Routes.Add(new Route(vehicle, model.CurrentTime));
             }
 
-            Time end = new(model.Params.BackgroundTotalTicks);
+            Time end = new(model.Params.TemplateTotalTicks);
             double totalProfit = 0;
             int orderId = 0;
 
@@ -1078,6 +1115,8 @@ namespace DARP.Windows
 
             dgOrders.ItemsSource = _orderService.GetOrderViews();
             dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
+            dgSimTemplates.ItemsSource = _mainWindowParams;
+            
 
             pgSettings.ExpandAllProperties();
 
@@ -1096,6 +1135,7 @@ namespace DARP.Windows
                 {
                     var mi = new MenuItem();
                     mi.IsCheckable = true;
+                    mi.IsChecked = la.IsVisible;
                     mi.Header = la.Title;
                     mi.Click += (s1, e1) =>
                     {
@@ -1236,25 +1276,30 @@ namespace DARP.Windows
             }
         }
 
-        private void btnRunBgSim_Click(object sender, RoutedEventArgs e)
+        private void btnSimTemplates_Click(object sender, RoutedEventArgs e)
         {
-            if (WindowModel.BackgroundSimulationState == MainWindowModel.SimulationStateEnum.Ready)
+            if (WindowModel.SimulationTemplatesState == MainWindowModel.SimulationStateEnum.Ready)
             {
-                btnRunBgSim.IsChecked = true;
-                WindowModel.BackgroundSimulationState = MainWindowModel.SimulationStateEnum.Running;
+                btnRunSimTemplates.IsChecked = true;
+                WindowModel.SimulationTemplatesState = MainWindowModel.SimulationStateEnum.Running;
 
-                RunBackgroundSimulations();
+                RunSimulationTemplates();
             }
             else
             {
-                btnRunBgSim.IsChecked = false;
-                WindowModel.BackgroundSimulationState = MainWindowModel.SimulationStateEnum.Ready;
+                btnRunSimTemplates.IsChecked = false;
+                WindowModel.SimulationTemplatesState = MainWindowModel.SimulationStateEnum.Ready;
             }
         }
 
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void btnSaveParamsAsTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            SaveParamsAsSimulationTemplate();
         }
 
         #endregion
@@ -1284,13 +1329,14 @@ namespace DARP.Windows
         }
     }
 
+
     [AddINotifyPropertyChangedInterface]
     internal class MainWindowModel
     {
         public Time CurrentTime { get; set; }
         public double TotalDistance { get; set; }
         public SimulationStateEnum SimulationState { get; set; }
-        public SimulationStateEnum BackgroundSimulationState { get; set; }
+        public SimulationStateEnum SimulationTemplatesState { get; set; }
         public MainWindowStats Stats { get; set; } = new();
         public MainWindowParams Params { get; set; } = new();
         
@@ -1408,20 +1454,24 @@ namespace DARP.Windows
         public bool UseInsertionHeuristics { get; set; } = false;
 
         [Category("Simulation")]
-        [DisplayName("[Background] Total ticks")]
-        public int BackgroundTotalTicks { get; set; } = 120;
+        [DisplayName("[Temmplate] Total ticks")]
+        public int TemplateTotalTicks { get; set; } = 120;
 
         [Category("Simulation")]
-        [DisplayName("[Background] Total runs")]
-        public int BackgroundTotalRuns { get; set; } = 1;
+        [DisplayName("[Temmplate] Total runs")]
+        public int TemplateTotalRuns { get; set; } = 1;
 
         [Category("Simulation")]
-        [DisplayName("[Background] Parallel")]
-        public bool BackgroundParallel { get; set; } = true;
+        [DisplayName("[Temmplate] Parallel")]
+        public bool RunTemplateSimulationsInParallel { get; set; } = true;
 
         [Category("Simulation")]
-        [DisplayName("[Background] Vehicles count")]
-        public int BackgroundVehiclesCount { get; set; } = 10;
+        [DisplayName("[Temmplate] Vehicles count")]
+        public int TemplateVehiclesCount { get; set; } = 10;
+
+        [Category("Simulation")]
+        [DisplayName("[Temmplate] Template name")]
+        public int TemplateName { get; set; } = 10;
 
         // ------------ Map ------------------
         [Category("Map")]
