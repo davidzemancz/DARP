@@ -72,7 +72,7 @@ namespace DARP.Windows
                 switch (e.Action)
                 {
                     case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-                        foreach(MainWindowModel newItem in e.NewItems)
+                        foreach (MainWindowModel newItem in e.NewItems)
                             _mainWindowParams.Add(newItem.Params);
                         break;
                     case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
@@ -94,7 +94,7 @@ namespace DARP.Windows
             map.Background = System.Windows.Media.Brushes.Red;
             map.MapLayer = new MapTileLayer()
             {
-                TileSource = new TileSource() { UriTemplate = "https://tile.openstreetmap.org/{z}/{x}/{y}.png" } ,
+                TileSource = new TileSource() { UriTemplate = "https://tile.openstreetmap.org/{z}/{x}/{y}.png" },
                 SourceName = "OpenStreetMap",
                 Description = "© [OpenStreetMap contributors](http://www.openstreetmap.org/copyright)"
             };
@@ -242,7 +242,7 @@ namespace DARP.Windows
 
         private void AddRandomVehicle()
         {
-           
+
             Vehicle vehicle = GetRandomVehicle(WindowModel);
             _vehicleService.GetVehicleViews().Add(new VehicleView(vehicle) { Color = GetRandomColor(), ShowOnMap = true }); ;
             _planDataService.GetPlan().Routes.Add(new Route(vehicle, WindowModel.CurrentTime));
@@ -307,7 +307,7 @@ namespace DARP.Windows
         #region Time
         private void Tick()
         {
-            if (WindowModel.CurrentTime.ToDouble() % WindowModel.Params.TimeSeriesUpdateEachTicks == 0) 
+            if (WindowModel.CurrentTime.ToDouble() % WindowModel.Params.TimeSeriesUpdateEachTicks == 0)
                 UpdateTimeSeries();
 
             WindowModel.CurrentTime = new Time(WindowModel.CurrentTime.Ticks + 1);
@@ -390,7 +390,7 @@ namespace DARP.Windows
                 BestfitOrderInsertMutProb = WindowModel.Params.BestfitOrderInsertMutProb,
                 RouteCrossoverProb = WindowModel.Params.RouteCrossoverProb,
                 PlanCrossoverProb = WindowModel.Params.PlanCrossoverProb,
-                EnviromentalSelection = WindowModel.Params.EnviromentalSelection,   
+                EnviromentalSelection = WindowModel.Params.EnviromentalSelection,
                 FitnessLog = (gen, fittness) =>
                 {
                     _evolutionAvgFitnessSeries.Points.Add(new DataPoint(gen, fittness[0]));
@@ -677,7 +677,7 @@ namespace DARP.Windows
         {
             List<Task> tasks = new();
             //for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
-            foreach(MainWindowModel model in _mainWindowModels)
+            foreach (MainWindowModel model in _mainWindowModels)
             {
                 var task = Task.Run(() => RunSimulationTemplate(model));
                 tasks.Add(task);
@@ -838,7 +838,7 @@ namespace DARP.Windows
 
             LoggerBase.Instance.StopwatchStop();
             LoggerBase.Instance.Debug($"Finished simulation template {model.Params.TemplateName}");
-            
+
         }
 
         private void StartSimulation()
@@ -1031,7 +1031,7 @@ namespace DARP.Windows
         private void InitPlots()
         {
             // Order
-            WindowModel.OrdersStatePlot = new PlotModel { Title = "Orders"};
+            WindowModel.OrdersStatePlot = new PlotModel { Title = "Orders" };
             WindowModel.OrdersStatePlot.Legends.Add(new Legend()
             {
                 LegendPosition = LegendPosition.RightTop,
@@ -1109,7 +1109,7 @@ namespace DARP.Windows
 
         #region EVENT METHODS
 
-      
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -1122,7 +1122,7 @@ namespace DARP.Windows
             dgOrders.ItemsSource = _orderService.GetOrderViews();
             dgVehicles.ItemsSource = _vehicleService.GetVehicleViews();
             dgSimTemplates.ItemsSource = _mainWindowParams;
-            
+
 
             pgSettings.ExpandAllProperties();
 
@@ -1145,7 +1145,8 @@ namespace DARP.Windows
                     mi.Header = la.Title;
                     mi.Click += (s1, e1) =>
                     {
-                        la.Show();
+                        if (la.IsVisible) la.Hide();
+                        else la.Show();
                     };
                     miView.Items.Add(mi);
                 }
@@ -1233,7 +1234,7 @@ namespace DARP.Windows
             {
                 Application.Current.Dispatcher.BeginInvoke(() => RenderPlan());
             });
-           
+
         }
 
         private void btnUpdatePlan_Click(object sender, RoutedEventArgs e)
@@ -1345,7 +1346,7 @@ namespace DARP.Windows
         public SimulationStateEnum SimulationTemplatesState { get; set; }
         public MainWindowStats Stats { get; set; } = new();
         public MainWindowParams Params { get; set; } = new();
-        
+
         [JsonIgnore]
         public PlotModel OrdersStatePlot { get; set; }
         [JsonIgnore]
