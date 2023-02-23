@@ -218,6 +218,8 @@ namespace DARP.Windows
         private LineSeries _evolutionAvgFitnessSeries;
         private int _seriesLength;
 
+        private LoggerBase _simulationTemplatesLog;
+
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
         private readonly IPlanDataService _planDataService;
@@ -676,6 +678,11 @@ namespace DARP.Windows
 
         private async void RunSimulationTemplates()
         {
+            _simulationTemplatesLog = new();
+            MemoryStream ms = new();
+            StreamWriter sw = new(ms);
+            _simulationTemplatesLog.TextWriters.Add(sw);
+
             List<Task> tasks = new();
             //for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
             foreach (MainWindowModel model in _mainWindowModels)
@@ -685,6 +692,21 @@ namespace DARP.Windows
             }
             await Task.WhenAll(tasks);
 
+            if (MessageBox.Show("Do you want to save results to *.csv file?", "Save", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                SaveFileDialog sfd = new();
+                sfd.DefaultExt = "csv";
+                sfd.Filter = "CSV Files | *.csv";
+                sfd.FileName = $"darp_simulation_{DateTime.Now.ToString("yyyyMMddHHmmss")}.csv";
+                if (sfd.ShowDialog() ?? false)
+                {
+                    var fs = File.Create(sfd.FileName);
+                    ms.Seek(0, SeekOrigin.Begin);
+                    ms.CopyTo(fs);
+                    fs.Close();
+                }
+            }
+
             btnRunSimTemplates.IsChecked = false;
             WindowModel.SimulationTemplatesState = MainWindowModel.SimulationStateEnum.Ready;
         }
@@ -692,8 +714,10 @@ namespace DARP.Windows
         private void RunSimulationTemplate(MainWindowModel model)
         {
             LoggerBase.Instance.DisplayThread = true;
-            LoggerBase.Instance.Debug($"Started simulation template {model.Params.TemplateName}");
+            LoggerBase.Instance.Debug($"Started simulation template {model.Params.SimTemplateName}");
             LoggerBase.Instance.StopwatchStart();
+
+            string sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
 
             // Initialize random instance with seed
             Random random = new(model.Params.Seed);
@@ -839,12 +863,15 @@ namespace DARP.Windows
                 LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
                 LoggerBase.Instance.Debug($"Optimality ratio {totalCurrentProfit / mipOutput.ObjetiveValue}");
 
+                // Log results
+                _simulationTemplatesLog.Info($"{model.Params.SimTemplateName}{sep}{run}{sep}{totalCurrentProfit}{sep}{mipOutput.ObjetiveValue}");
+
                 LoggerBase.Instance.StopwatchStop();
                 LoggerBase.Instance.Debug($"Finished run {run}");
             }
 
             LoggerBase.Instance.StopwatchStop();
-            LoggerBase.Instance.Debug($"Finished simulation template {model.Params.TemplateName}");
+            LoggerBase.Instance.Debug($"Finished simulation template {model.Params.SimTemplateName}");
 
         }
 
@@ -1486,7 +1513,7 @@ namespace DARP.Windows
 
         [Category("Simulation")]
         [DisplayName("[Temmplate] Name")]
-        public string TemplateName { get; set; } = "1";
+        public string SimTemplateName { get; set; } = "1";
 
         // ------------ Map ------------------
         [Category("Map")]

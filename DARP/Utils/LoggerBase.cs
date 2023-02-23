@@ -61,6 +61,11 @@ namespace DARP.Utils
             Log(LogLevel.Debug, message);
         }
 
+        public void Info(string message)
+        {
+            Log(LogLevel.Info, message);
+        }
+
         public virtual void Log(LogLevel level, string message)
         {
             lock (TextWriters)
