@@ -678,6 +678,9 @@ namespace DARP.Windows
 
         private async void RunSimulationTemplates()
         {
+            LoggerBase.Instance.DisplayThread = true;
+            LoggerBase.Instance.Enabled = WindowModel.Params.TemplateLog;
+
             _simulationTemplatesLog = new();
             MemoryStream ms = new();
             StreamWriter sw = new(ms);
@@ -718,7 +721,6 @@ namespace DARP.Windows
 
         private void RunSimulationTemplate(MainWindowModel model)
         {
-            LoggerBase.Instance.DisplayThread = true;
             LoggerBase.Instance.Debug($"Started simulation template {model.Params.SimTemplateName}");
             LoggerBase.Instance.StopwatchStart();
 
@@ -1546,6 +1548,10 @@ namespace DARP.Windows
         [Category("Simulation")]
         [DisplayName("[Template] Total ticks")]
         public int TemplateTotalTicks { get; set; } = 120;
+
+        [Category("Simulation")]
+        [DisplayName("[Template] Log")]
+        public bool TemplateLog { get; set; } = false;
 
         [Category("Simulation")]
         [DisplayName("[Template] Total runs")]

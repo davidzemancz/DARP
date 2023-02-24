@@ -27,6 +27,7 @@ namespace DARP.Utils
         public bool DisplayLevel { get; set; }
         public bool DisplayThread { get; set; }
         public bool DisplayLineNumbers { get; set; } = true;
+        public bool Enabled { get; set; } = true;
 
         public static LoggerBase Instance { get; protected set; } = new LoggerBase();
 
@@ -34,6 +35,8 @@ namespace DARP.Utils
 
         public void StopwatchStart()
         {
+            if(!Enabled) return;
+
             int count = 0;
             lock (_stopwatches)
             {
@@ -47,6 +50,8 @@ namespace DARP.Utils
 
         public void StopwatchStop()
         {
+            if (!Enabled) return;
+
             int count = 0;
             TimeSpan elapsed = TimeSpan.Zero;
             lock (_stopwatches)
@@ -81,6 +86,8 @@ namespace DARP.Utils
 
         public virtual void Log(LogLevel level, string message)
         {
+            if (!Enabled) return;
+
             lock (TextWriters)
             {
                 foreach (TextWriter writer in TextWriters)
