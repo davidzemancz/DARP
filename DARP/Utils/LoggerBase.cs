@@ -26,6 +26,7 @@ namespace DARP.Utils
 
         public bool DisplayLevel { get; set; }
         public bool DisplayThread { get; set; }
+        public bool DisplayLineNumbers { get; set; }
 
         public static LoggerBase Instance { get; protected set; } = new LoggerBase();
 
@@ -36,14 +37,15 @@ namespace DARP.Utils
             Stopwatch sw = new();
             _stopwatches.Push(sw);
             sw.Start();
-            Debug($"Stopwatch {sw.GetHashCode()} started");
+            Debug($"Stopwatch {_stopwatches.Count} started");
         }
 
         public void StopwatchStop()
         {
+            int count = _stopwatches.Count;
             Stopwatch sw = _stopwatches.Pop();
             sw.Stop();
-            Debug($"Stopwatch {sw.GetHashCode()} stopped, time {sw.Elapsed}");
+            Debug($"Stopwatch {count} stopped, time {sw.Elapsed}");
         }
 
         public void Error(string message)
@@ -72,7 +74,7 @@ namespace DARP.Utils
             {
                 foreach (TextWriter writer in TextWriters)
                 {
-                    writer.WriteLine($"{++_lineCounter}> {(DisplayLevel ? $"[{level}] " : "")} {(DisplayThread ? $"[Thread {Thread.CurrentThread.ManagedThreadId}] " : "")} {message}");
+                    writer.WriteLine($"{(DisplayLineNumbers ? ++_lineCounter + "> " : "")}{(DisplayLevel ? $"[{level}] " : "")}{(DisplayThread ? $"[Thread {Thread.CurrentThread.ManagedThreadId}] " : "")}{message}");
                 }
             }
         }

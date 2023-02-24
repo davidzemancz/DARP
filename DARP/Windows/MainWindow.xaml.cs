@@ -682,6 +682,7 @@ namespace DARP.Windows
             MemoryStream ms = new();
             StreamWriter sw = new(ms);
             _simulationTemplatesLog.TextWriters.Add(sw);
+            _simulationTemplatesLog.DisplayLineNumbers = false;
 
             List<Task> tasks = new();
             //for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
@@ -722,7 +723,7 @@ namespace DARP.Windows
 
             string sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
 
-            // Initialize random instance with seed
+            // Initialize random instance with seed 
             Random random = new(model.Params.Seed);
 
             for (int run = 1; run <= model.Params.TemplateTotalRuns; run++)
@@ -797,15 +798,17 @@ namespace DARP.Windows
                             });
                             LoggerBase.Instance.StopwatchStop();
                             plan = output.Plan;
+
+                            output.RemainingOrders.ForEach(o => o.Reject());
                         }
 
                         // Evolution
                         if (model.Params.OptimizationMethod == OptimizationMethod.Evolutionary)
                         {
                             EvolutionarySolver solver = new();
-                            EvolutionarySolverInput input = new EvolutionarySolverInput()
+                            EvolutionarySolverInput input = new()
                             {
-                                RandomInstance = random,
+                                //RandomInstance = random,
                                 Generations = model.Params.EvoGenerations,
                                 PopulationSize = model.Params.EvoPopSize,
                                 Metric = metric,
@@ -824,6 +827,26 @@ namespace DARP.Windows
                             LoggerBase.Instance.Debug("Running evolutionary solver");
                             LoggerBase.Instance.StopwatchStart();
                             EvolutionarySolverOutput output = solver.Run(input);
+                            LoggerBase.Instance.StopwatchStop();
+                            plan = output.Plan;
+                        }
+                        // MIP
+                        else if (model.Params.OptimizationMethod == OptimizationMethod.MIP)
+                        {
+                            MIPSolver solver = new();
+                            MIPSolverInput input = new()
+                            {
+                                Metric = metric,
+                                Orders = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted),
+                                Vehicles = vehicles,
+                                Time = model.CurrentTime,
+                                Plan = plan,
+                                VehicleChargePerTick = model.Params.VehicleChargePerTick,
+                                TimeLimit = model.Params.MIPTimeLimit,
+                            };
+                            LoggerBase.Instance.Debug("Running MIP solver");
+                            LoggerBase.Instance.StopwatchStart();
+                            MIPSolverOutput output = solver.Run(input);
                             LoggerBase.Instance.StopwatchStop();
                             plan = output.Plan;
                         }
