@@ -691,6 +691,8 @@ namespace DARP.Windows
                 tasks.Add(task);
             }
             await Task.WhenAll(tasks);
+            
+            sw.Flush();
 
             if (MessageBox.Show("Do you want to save results to *.csv file?", "Save", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
@@ -703,6 +705,7 @@ namespace DARP.Windows
                     var fs = File.Create(sfd.FileName);
                     ms.Seek(0, SeekOrigin.Begin);
                     ms.CopyTo(fs);
+                    sw.Close();
                     fs.Close();
                 }
             }
