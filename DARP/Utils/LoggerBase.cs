@@ -26,7 +26,7 @@ namespace DARP.Utils
 
         public bool DisplayLevel { get; set; }
         public bool DisplayThread { get; set; }
-        public bool DisplayLineNumbers { get; set; }
+        public bool DisplayLineNumbers { get; set; } = true;
 
         public static LoggerBase Instance { get; protected set; } = new LoggerBase();
 

@@ -683,6 +683,7 @@ namespace DARP.Windows
             StreamWriter sw = new(ms);
             _simulationTemplatesLog.TextWriters.Add(sw);
             _simulationTemplatesLog.DisplayLineNumbers = false;
+            _simulationTemplatesLog.Info("Name;Run;Objetive;OptimumEstimation");
 
             List<Task> tasks = new();
             //for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
@@ -806,50 +807,58 @@ namespace DARP.Windows
                         // Evolution
                         if (model.Params.OptimizationMethod == OptimizationMethod.Evolutionary)
                         {
-                            EvolutionarySolver solver = new();
-                            EvolutionarySolverInput input = new()
+                            var ordesToSchedule = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted);
+                            if (ordesToSchedule.Any()) 
                             {
-                                //RandomInstance = random,
-                                Generations = model.Params.EvoGenerations,
-                                PopulationSize = model.Params.EvoPopSize,
-                                Metric = metric,
-                                Orders = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted),
-                                Vehicles = vehicles,
-                                Time = model.CurrentTime,
-                                Plan = plan,
-                                VehicleChargePerTick = model.Params.VehicleChargePerTick,
-                                RandomOrderInsertMutProb = model.Params.RandomOrderInsertMutProb,
-                                RandomOrderRemoveMutProb = model.Params.RandomOrderRemoveMutProb,
-                                BestfitOrderInsertMutProb = model.Params.BestfitOrderInsertMutProb,
-                                EnviromentalSelection = model.Params.EnviromentalSelection,
-                                RouteCrossoverProb = model.Params.RouteCrossoverProb,
-                                PlanCrossoverProb = model.Params.PlanCrossoverProb,
-                            };
-                            LoggerBase.Instance.Debug("Running evolutionary solver");
-                            LoggerBase.Instance.StopwatchStart();
-                            EvolutionarySolverOutput output = solver.Run(input);
-                            LoggerBase.Instance.StopwatchStop();
-                            plan = output.Plan;
+                                EvolutionarySolver solver = new();
+                                EvolutionarySolverInput input = new()
+                                {
+                                    //RandomInstance = random,
+                                    Generations = model.Params.EvoGenerations,
+                                    PopulationSize = model.Params.EvoPopSize,
+                                    Metric = metric,
+                                    Orders = ordesToSchedule,
+                                    Vehicles = vehicles,
+                                    Time = model.CurrentTime,
+                                    Plan = plan,
+                                    VehicleChargePerTick = model.Params.VehicleChargePerTick,
+                                    RandomOrderInsertMutProb = model.Params.RandomOrderInsertMutProb,
+                                    RandomOrderRemoveMutProb = model.Params.RandomOrderRemoveMutProb,
+                                    BestfitOrderInsertMutProb = model.Params.BestfitOrderInsertMutProb,
+                                    EnviromentalSelection = model.Params.EnviromentalSelection,
+                                    RouteCrossoverProb = model.Params.RouteCrossoverProb,
+                                    PlanCrossoverProb = model.Params.PlanCrossoverProb,
+                                };
+                                LoggerBase.Instance.Debug("Running evolutionary solver");
+                                LoggerBase.Instance.StopwatchStart();
+                                EvolutionarySolverOutput output = solver.Run(input);
+                                LoggerBase.Instance.StopwatchStop();
+                                plan = output.Plan;
+                            }
                         }
                         // MIP
                         else if (model.Params.OptimizationMethod == OptimizationMethod.MIP)
                         {
-                            MIPSolver solver = new();
-                            MIPSolverInput input = new()
+                            var ordesToSchedule = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted);
+                            if (ordesToSchedule.Any())
                             {
-                                Metric = metric,
-                                Orders = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted),
-                                Vehicles = vehicles,
-                                Time = model.CurrentTime,
-                                Plan = plan,
-                                VehicleChargePerTick = model.Params.VehicleChargePerTick,
-                                TimeLimit = model.Params.MIPTimeLimit,
-                            };
-                            LoggerBase.Instance.Debug("Running MIP solver");
-                            LoggerBase.Instance.StopwatchStart();
-                            MIPSolverOutput output = solver.Run(input);
-                            LoggerBase.Instance.StopwatchStop();
-                            plan = output.Plan;
+                                MIPSolver solver = new();
+                                MIPSolverInput input = new()
+                                {
+                                    Metric = metric,
+                                    Orders = ordesToSchedule,
+                                    Vehicles = vehicles,
+                                    Time = model.CurrentTime,
+                                    Plan = plan,
+                                    VehicleChargePerTick = model.Params.VehicleChargePerTick,
+                                    TimeLimit = model.Params.MIPTimeLimit,
+                                };
+                                LoggerBase.Instance.Debug("Running MIP solver");
+                                LoggerBase.Instance.StopwatchStart();
+                                MIPSolverOutput output = solver.Run(input);
+                                LoggerBase.Instance.StopwatchStop();
+                                plan = output.Plan;
+                            }
                         }
 
                         totalCurrentProfit = totalProfit + plan.GetTotalProfit(metric, vehicleCharge);
@@ -871,7 +880,7 @@ namespace DARP.Windows
                 }
                 MIPSolverInput mipInput = new()
                 {
-                    //TimeLimit = 30_000,
+                    TimeLimit = 60_000,
                     Multithreading = false,
                     Objective = model.Params.MIPObjective,
                     Metric = metric,
@@ -1050,7 +1059,8 @@ namespace DARP.Windows
                             _orderService.GetOrderViews().Select(ov => ov.GetModel()),
                             _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
                             WindowModel,
-                            null
+                            _planDataService.GetPlan(),
+                            _mainWindowModels
                             )));
                 }
             }
@@ -1079,8 +1089,13 @@ namespace DARP.Windows
                     {
                         _vehicleService.AddVehicle(vehicle);
                     }
+                    foreach(var wm in dataModel.SimulationTemplates)
+                    {
+                        _mainWindowModels.Add(wm);
+                    }
 
-                    //_planningService.Init(dataModel.Plan);
+
+                    _planDataService.SetPlan(dataModel.Plan);
                     WindowModel = dataModel.WindowModel;
 
                     RenderPlan();
@@ -1385,6 +1400,7 @@ namespace DARP.Windows
     {
         public IEnumerable<Order> Orders { get; set; }
         public IEnumerable<Vehicle> Vehicles { get; set; }
+        public IEnumerable<MainWindowModel> SimulationTemplates { get; set; }
         public MainWindowModel WindowModel { get; set; }
         public Plan Plan { get; set; }
 
@@ -1393,12 +1409,13 @@ namespace DARP.Windows
 
         }
 
-        public MainWindowDataModel(IEnumerable<Order> orders, IEnumerable<Vehicle> vehicles, MainWindowModel windowModel, Plan plan)
+        public MainWindowDataModel(IEnumerable<Order> orders, IEnumerable<Vehicle> vehicles, MainWindowModel windowModel, Plan plan, IEnumerable<MainWindowModel> simulationTemplates)
         {
             Orders = orders;
             Vehicles = vehicles;
             WindowModel = windowModel;
             Plan = plan;
+            SimulationTemplates = simulationTemplates;
         }
     }
 
@@ -1527,19 +1544,19 @@ namespace DARP.Windows
         public bool UseInsertionHeuristics { get; set; } = false;
 
         [Category("Simulation")]
-        [DisplayName("[Temmplate] Total ticks")]
+        [DisplayName("[Template] Total ticks")]
         public int TemplateTotalTicks { get; set; } = 120;
 
         [Category("Simulation")]
-        [DisplayName("[Temmplate] Total runs")]
+        [DisplayName("[Template] Total runs")]
         public int TemplateTotalRuns { get; set; } = 1;
 
         [Category("Simulation")]
-        [DisplayName("[Temmplate] Vehicles count")]
+        [DisplayName("[Template] Vehicles count")]
         public int TemplateVehiclesCount { get; set; } = 10;
 
         [Category("Simulation")]
-        [DisplayName("[Temmplate] Name")]
+        [DisplayName("[Template] Name")]
         public string SimTemplateName { get; set; } = "1";
 
         // ------------ Map ------------------

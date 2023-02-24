@@ -272,7 +272,7 @@ namespace DARP.Solvers
             insHInput.Plan = offspring.Plan;
             insHInput.Orders = offspring.RemaningOrders;
             InsertionHeuristics insH = new();
-            InsertionHeuristicsOutput insHOutput = insH.RunFirstFit(insHInput);
+            InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
             offspring.Plan = insHOutput.Plan;
             offspring.RemaningOrders = insHOutput.RemainingOrders;
         }
