@@ -34,18 +34,29 @@ namespace DARP.Utils
 
         public void StopwatchStart()
         {
-            Stopwatch sw = new();
-            _stopwatches.Push(sw);
-            sw.Start();
-            Debug($"Stopwatch {_stopwatches.Count} started");
+            int count = 0;
+            lock (_stopwatches)
+            {
+                Stopwatch sw = new();
+                _stopwatches.Push(sw);
+                sw.Start();
+                count = _stopwatches.Count;
+            }
+            Debug($"Stopwatch {count} started");
         }
 
         public void StopwatchStop()
         {
-            int count = _stopwatches.Count;
-            Stopwatch sw = _stopwatches.Pop();
-            sw.Stop();
-            Debug($"Stopwatch {count} stopped, time {sw.Elapsed}");
+            int count = 0;
+            TimeSpan elapsed = TimeSpan.Zero;
+            lock (_stopwatches)
+            {
+                count = _stopwatches.Count;
+                Stopwatch sw = _stopwatches.Pop();
+                sw.Stop();
+                elapsed = sw.Elapsed;
+            }
+            Debug($"Stopwatch {count} stopped, time {elapsed}");
         }
 
         public void Error(string message)

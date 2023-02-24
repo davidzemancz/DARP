@@ -744,6 +744,7 @@ namespace DARP.Windows
                     vehicle.Id = ++vehicleId;
                     plan.Routes.Add(new Route(vehicle, model.CurrentTime));
                 }
+                List<Vehicle> vehiclesOrig = new(vehicles.Select(v => v.Clone()));
 
                 Time end = new(model.Params.TemplateTotalTicks);
                 double totalProfit = 0;
@@ -864,7 +865,7 @@ namespace DARP.Windows
                 // Optimum estimation
                 model.CurrentTime = Time.Zero;
                 Plan estPlan = new();
-                foreach (var vehicle in vehicles)
+                foreach (var vehicle in vehiclesOrig)
                 {
                     estPlan.Routes.Add(new Route(vehicle, model.CurrentTime));
                 }
@@ -875,7 +876,7 @@ namespace DARP.Windows
                     Objective = model.Params.MIPObjective,
                     Metric = metric,
                     Orders = orders,
-                    Vehicles = vehicles,
+                    Vehicles = vehiclesOrig,
                     Time = model.CurrentTime,
                     Plan = estPlan,
                     VehicleChargePerTick = vehicleCharge,

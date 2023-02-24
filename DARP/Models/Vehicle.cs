@@ -17,5 +17,10 @@ namespace DARP.Models
             return $"{nameof(Vehicle)} {Id}";
         }
 
+        public Vehicle Clone()
+        {
+            return MemberwiseClone() as Vehicle;    
+        }
+
     }
 }
