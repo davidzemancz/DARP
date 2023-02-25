@@ -219,6 +219,7 @@ namespace DARP.Windows
         private int _seriesLength;
 
         private LoggerBase _simulationTemplatesLog;
+        private Dictionary<int, bool> _simulationTemplateEstimationRunFlag;
 
         private readonly IOrderDataService _orderService;
         private readonly IVehicleDataService _vehicleService;
@@ -681,12 +682,14 @@ namespace DARP.Windows
             LoggerBase.Instance.DisplayThread = true;
             LoggerBase.Instance.Enabled = WindowModel.Params.TemplateLog;
 
+            _simulationTemplateEstimationRunFlag = new();
+
             _simulationTemplatesLog = new();
             MemoryStream ms = new();
             StreamWriter sw = new(ms);
             _simulationTemplatesLog.TextWriters.Add(sw);
             _simulationTemplatesLog.DisplayLineNumbers = false;
-            _simulationTemplatesLog.Info("Name;Run;Objetive;OptimumEstimation");
+            _simulationTemplatesLog.Info("Name;Run;Objective");
 
             List<Task> tasks = new();
             //for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
@@ -873,36 +876,49 @@ namespace DARP.Windows
                     }
                 }
 
-                // Optimum estimation
-                model.CurrentTime = Time.Zero;
-                Plan estPlan = new();
-                foreach (var vehicle in vehiclesOrig)
-                {
-                    estPlan.Routes.Add(new Route(vehicle, model.CurrentTime));
-                }
-                MIPSolverInput mipInput = new()
-                {
-                    TimeLimit = 60_000,
-                    Multithreading = false,
-                    Objective = model.Params.MIPObjective,
-                    Metric = metric,
-                    Orders = orders,
-                    Vehicles = vehiclesOrig,
-                    Time = model.CurrentTime,
-                    Plan = estPlan,
-                    VehicleChargePerTick = vehicleCharge,
-                    Integer = false, // Linear relaxation
-                };
-                MIPSolver ms = new();
-                LoggerBase.Instance.Debug($"Running MIP solver, Time limit {mipInput.TimeLimit / 1000} seconds");
-                LoggerBase.Instance.StopwatchStart();
-                MIPSolverOutput mipOutput = ms.Run(mipInput);
-                LoggerBase.Instance.StopwatchStop();
-                LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
-                LoggerBase.Instance.Debug($"Optimality ratio {totalCurrentProfit / mipOutput.ObjetiveValue}");
+                _simulationTemplatesLog.Info($"{model.Params.SimTemplateName}{sep}{run}{sep}{totalCurrentProfit}");
 
-                // Log results
-                _simulationTemplatesLog.Info($"{model.Params.SimTemplateName}{sep}{run}{sep}{totalCurrentProfit}{sep}{mipOutput.ObjetiveValue}");
+                // Run optimum estimation just once for each run
+                bool runEstimation = false;
+                lock (_simulationTemplateEstimationRunFlag)
+                {
+                    runEstimation = _simulationTemplateEstimationRunFlag.ContainsKey(run);
+                    if (!runEstimation) _simulationTemplateEstimationRunFlag.Add(run, true);    
+                }
+
+                if (runEstimation)
+                {
+                    // Optimum estimation
+                    model.CurrentTime = Time.Zero;
+                    Plan estPlan = new();
+                    foreach (var vehicle in vehiclesOrig)
+                    {
+                        estPlan.Routes.Add(new Route(vehicle, model.CurrentTime));
+                    }
+                    MIPSolverInput mipInput = new()
+                    {
+                        TimeLimit = 60_000,
+                        Multithreading = false,
+                        Objective = model.Params.MIPObjective,
+                        Metric = metric,
+                        Orders = orders,
+                        Vehicles = vehiclesOrig,
+                        Time = model.CurrentTime,
+                        Plan = estPlan,
+                        VehicleChargePerTick = vehicleCharge,
+                        Integer = false, // Linear relaxation
+                    };
+                    MIPSolver ms = new();
+                    LoggerBase.Instance.Debug($"Running MIP solver, Time limit {mipInput.TimeLimit / 1000} seconds");
+                    LoggerBase.Instance.StopwatchStart();
+                    MIPSolverOutput mipOutput = ms.Run(mipInput);
+                    LoggerBase.Instance.StopwatchStop();
+                    LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
+                    LoggerBase.Instance.Debug($"Optimality ratio {totalCurrentProfit / mipOutput.ObjetiveValue}");
+
+                    _simulationTemplatesLog.Info($"OptimumEstimation{sep}{run}{sep}{totalCurrentProfit}");
+                }
+                
 
                 LoggerBase.Instance.StopwatchStop();
                 LoggerBase.Instance.Debug($"Finished run {run}");
