@@ -916,7 +916,7 @@ namespace DARP.Windows
                     LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
                     LoggerBase.Instance.Debug($"Optimality ratio {totalCurrentProfit / mipOutput.ObjetiveValue}");
 
-                    _simulationTemplatesLog.Info($"OptimumEstimation{sep}{run}{sep}{totalCurrentProfit}");
+                    _simulationTemplatesLog.Info($"OptimumEstimation{sep}{run}{sep}{mipOutput.ObjetiveValue}");
                 }
                 
 
