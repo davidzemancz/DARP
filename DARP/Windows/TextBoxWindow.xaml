@@ -5,13 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DARP.Windows"
         mc:Ignorable="d"
+        ResizeMode="NoResize"
         Loaded="Window_Loaded"
         KeyDown="Window_KeyDown"
-        Title="TextBoxWindow" Height="119" Width="467">
-    <Grid>
-        <TextBox x:Name="txtVal" HorizontalAlignment="Left" Margin="10,35,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="447" Grid.ColumnSpan="3"/>
-        <Label x:Name="lbDesc" Content="Value" HorizontalAlignment="Left" Margin="10,10,0,0" Padding="2" VerticalAlignment="Top"/>
-        <Button x:Name="btnOk" Content="OK" HorizontalAlignment="Left" Margin="383,65,0,0" Padding="5" VerticalAlignment="Top" Width="74"  Click="btnOk_Click"/>
-        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="307,65,0,0" Padding="5" VerticalAlignment="Top" Width="72"  Click="btnCancel_Click"/>
+        Title="TextBoxWindow" Height="146" Width="432">
+    <Grid DockPanel.Dock="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="txtVal" Margin="10,35,10,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+        <Label x:Name="lbDesc" Content="Value" HorizontalAlignment="Left" Margin="10,10,0,0" Padding="2" Height="20" VerticalAlignment="Top" />
+        <Button x:Name="btnOk" Content="OK" HorizontalAlignment="Right" Margin="0,0,10,10" Padding="5" VerticalAlignment="Bottom" Width="74" Click="btnOk_Click" RenderTransformOrigin="0.032,0.562"/>
+        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,88,10" Padding="5"  VerticalAlignment="Bottom" Width="72" Click="btnCancel_Click" />
     </Grid>
 </Window>
