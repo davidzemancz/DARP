@@ -673,7 +673,13 @@ namespace DARP.Windows
 
         private void SaveParamsAsSimulationTemplate()
         {
-            _mainWindowModels.Add(WindowModel.Clone());
+            string templateName = WindowModel.Params.SimTemplateName;
+            TextBoxWindow txbW = new();
+            if (txbW.ShowDialog("Template name", "Insert unique template name", ref templateName))
+            {
+                WindowModel.Params.SimTemplateName = templateName;
+                _mainWindowModels.Add(WindowModel.Clone());
+            }
         }
 
 

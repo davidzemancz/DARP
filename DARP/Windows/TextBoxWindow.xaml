@@ -1,0 +1,17 @@
+﻿<Window x:Class="DARP.Windows.TextBoxWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DARP.Windows"
+        mc:Ignorable="d"
+        Loaded="Window_Loaded"
+        KeyDown="Window_KeyDown"
+        Title="TextBoxWindow" Height="119" Width="467">
+    <Grid>
+        <TextBox x:Name="txtVal" HorizontalAlignment="Left" Margin="10,35,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="447" Grid.ColumnSpan="3"/>
+        <Label x:Name="lbDesc" Content="Value" HorizontalAlignment="Left" Margin="10,10,0,0" Padding="2" VerticalAlignment="Top"/>
+        <Button x:Name="btnOk" Content="OK" HorizontalAlignment="Left" Margin="383,65,0,0" Padding="5" VerticalAlignment="Top" Width="74"  Click="btnOk_Click"/>
+        <Button x:Name="btnCancel" Content="Cancel" HorizontalAlignment="Left" Margin="307,65,0,0" Padding="5" VerticalAlignment="Top" Width="72"  Click="btnCancel_Click"/>
+    </Grid>
+</Window>
