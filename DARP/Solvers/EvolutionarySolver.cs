@@ -49,6 +49,7 @@ namespace DARP.Solvers
         public double RouteCrossoverProb { get; set; } = 0.3;
         public FitnessLogFunc FitnessLog { get; set; }
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
+        public InsertionHeuristicFunc CrossoverInsertionHeuristic { get; set; } = null;
 
         public EvolutionarySolverInput() { }
         public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
@@ -68,8 +69,10 @@ namespace DARP.Solvers
 
         public EvolutionarySolverOutput Run(EvolutionarySolverInput input) 
         {
+            if (input.CrossoverInsertionHeuristic == null) input.CrossoverInsertionHeuristic = new InsertionHeuristics().RunGlobalBestFit;
             _random = input.RandomInstance == null ? new() : input.RandomInstance;
             _input = input;
+           
 
             // Initialize population
             Individual bestInd = new() { Fitness = double.MinValue };
@@ -271,8 +274,7 @@ namespace DARP.Solvers
             InsertionHeuristicsInput insHInput = new(_input);
             insHInput.Plan = offspring.Plan;
             insHInput.Orders = offspring.RemaningOrders;
-            InsertionHeuristics insH = new();
-            InsertionHeuristicsOutput insHOutput = insH.RunGlobalBestFit(insHInput);
+            InsertionHeuristicsOutput insHOutput = _input.CrossoverInsertionHeuristic(insHInput);
             offspring.Plan = insHOutput.Plan;
             offspring.RemaningOrders = insHOutput.RemainingOrders;
         }
