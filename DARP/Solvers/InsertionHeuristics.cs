@@ -39,7 +39,7 @@ namespace DARP.Solvers
     public class InsertionHeuristicsInput : SolverInputBase
     {
         public InsertionHeuristicsMode Mode { get; set; }
-        public double Epsilon { get; set; } = 0.2;
+        public double Epsilon { get; set; } = 0.1;
 
         public InsertionHeuristicsInput() { }
         public InsertionHeuristicsInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
