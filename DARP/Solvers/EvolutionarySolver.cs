@@ -48,6 +48,7 @@ namespace DARP.Solvers
         public double PlanCrossoverProb {  get; set; } = 0.3;
         public double RouteCrossoverProb { get; set; } = 0.3;
         public FitnessLogFunc FitnessLog { get; set; }
+        public bool AdaptiveMutation { get; set; }
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
         public InsertionHeuristicFunc CrossoverInsertionHeuristic { get; set; } = null;
 
@@ -92,7 +93,7 @@ namespace DARP.Solvers
             {
                 Individual individual = new() { Plan = input.Plan.Clone(), RemaningOrders = new(input.Orders) };
 
-                for (int j = 0; j < individual.RemaningOrders.Count * 3; j++)
+                for (int j = 0; j < individual.RemaningOrders.Count * 1; j++)
                 {
                     MutateInsertOrderRandomly(individual, false);
                 }
@@ -102,6 +103,12 @@ namespace DARP.Solvers
             // Evolution
             for (int g  = 0; g < input.Generations; g++)
             {
+                if (input.AdaptiveMutation && g > 0 && g % (input.Generations / 5) == 0)
+                {
+                    input.BestfitOrderInsertMutProb /= 1.25;
+                    input.RandomOrderInsertMutProb /= 1.5;
+                }
+
                 // Compute fitnesses
                 double fitnessAvg = 0, min = double.MaxValue, max = double.MinValue;
                 for (int i = 0; i < input.PopulationSize; i++)
@@ -246,11 +253,11 @@ namespace DARP.Solvers
                         double thirdProfit = newPopulation[third].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                         double fourthProfit = newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
-                        if (firstProfit > secondProfit && firstProfit > thirdProfit && firstProfit > fourthProfit)
+                        if (firstProfit > secondProfit && firstProfit > thirdProfit && firstProfit > fourthProfit && _random.Next() < 0.8)
                             population.Add(newPopulation[first]);
-                        else if (secondProfit > thirdProfit && secondProfit > fourthProfit)
+                        else if (secondProfit > thirdProfit && secondProfit > fourthProfit && _random.Next() < 0.8)
                             population.Add(newPopulation[second]);
-                        else if (thirdProfit > fourthProfit)
+                        else if (thirdProfit > fourthProfit && _random.Next() < 0.8)
                             population.Add(newPopulation[third]);
                         else
                             population.Add(newPopulation[fourth]);

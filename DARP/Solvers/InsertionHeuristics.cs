@@ -197,6 +197,7 @@ namespace DARP.Solvers
             Plan plan = input.Plan.Clone();
 
             List<Order> remainingOrders = new(input.Orders);
+            List<Order> removedOrders = new();
             while (remainingOrders.Any())
             {
                 Route globalBestRoute = null;
@@ -243,6 +244,11 @@ namespace DARP.Solvers
                     route.InsertOrder(order, index, input.Metric);  
                     remainingOrders.Remove(order);
                 }
+                else if (globalBestInsertionIndex >= 0 && random.NextDouble() < 0.05)
+                {
+                    removedOrders.Add(globalBestOrder);
+                    remainingOrders.Remove(globalBestOrder);
+                }
                 else if (globalBestInsertionIndex >= 0)
                 {
                     globalBestRoute.InsertOrder(globalBestOrder, globalBestInsertionIndex, input.Metric);
@@ -250,7 +256,7 @@ namespace DARP.Solvers
                 }
                 else break;
             }
-            return new InsertionHeuristicsOutput(plan, Status.Success, remainingOrders);
+            return new InsertionHeuristicsOutput(plan, Status.Success, new(remainingOrders.Union(removedOrders)));
         }
     }
 }
