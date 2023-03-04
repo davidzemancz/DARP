@@ -109,7 +109,7 @@ namespace DARPConsole
             InsertionHeuristics insH4 = new();
             insHInput4.Epsilon = 0.1;
             double iProfit4Max = double.MinValue;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 20; i++)
             {
                 InsertionHeuristicsOutput insHOutput4 = insH4.RunRandomizedGlobalBestFit(insHInput4);
                 double iProfit4 = insHOutput4.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
@@ -161,13 +161,13 @@ namespace DARPConsole
 
             sw.Restart();
             EvolutionarySolverInput esInput2 = new(input);
-            esInput2.Generations = 300;
-            esInput2.PopulationSize = 100;
+            esInput2.Generations = 500;
+            esInput2.PopulationSize = 300;
             esInput2.BestfitOrderInsertMutProb = 1;
             esInput2.RandomOrderInsertMutProb = 1;
             esInput2.RandomOrderRemoveMutProb = 0.45;
-            esInput2.RouteCrossoverProb = 0.3;
-            esInput2.PlanCrossoverProb = 0.3;
+            esInput2.RouteCrossoverProb = 0.2;
+            esInput2.PlanCrossoverProb = 0.2;
             esInput2.AdaptiveMutation = true;   
             esInput2.EnviromentalSelection = EnviromentalSelection.Tournament;
             esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
