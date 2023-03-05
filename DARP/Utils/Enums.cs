@@ -37,6 +37,10 @@ namespace DARP.Utils
         /// Finds best fitting order and inserts it until there are none
         /// </summary>
         GlobalBestFit = 2,
+        /// <summary>
+        /// Finds best fitting order and inserts it until there are none
+        /// </summary>
+        RandomizedGlobalBestFit = 3,
     }
 
     public enum StatusCode

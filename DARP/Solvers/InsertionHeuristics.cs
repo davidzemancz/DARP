@@ -39,7 +39,8 @@ namespace DARP.Solvers
     public class InsertionHeuristicsInput : SolverInputBase
     {
         public InsertionHeuristicsMode Mode { get; set; }
-        public double Epsilon { get; set; } = 0.3;
+        public double Epsilon { get; set; } = 0.1;
+        public int Runs { get; set; } = 1;
 
         public InsertionHeuristicsInput() { }
         public InsertionHeuristicsInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
@@ -65,6 +66,20 @@ namespace DARP.Solvers
                     return RunLocalBestFit(input);
                 case InsertionHeuristicsMode.GlobalBestFit:
                     return RunGlobalBestFit(input);
+                case InsertionHeuristicsMode.RandomizedGlobalBestFit:
+                    InsertionHeuristicsOutput output = null;
+                    double totalProfit = double.MinValue;
+                    for (int run = 0; run < input.Runs; run++)
+                    {
+                        InsertionHeuristicsOutput output1 = RunRandomizedGlobalBestFit(input);
+                        double totalProfit1 = output1.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        if (totalProfit1 >= totalProfit)
+                        {
+                            output = output1;
+                            totalProfit = totalProfit1;
+                        }
+                    }
+                    return output;
                 default: throw new NotImplementedException();
             }
         }

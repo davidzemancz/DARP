@@ -7,6 +7,7 @@ using DARP.Services;
 using DARP.Solvers;
 using DARP.Utils;
 using DARP.Views;
+using DocumentFormat.OpenXml.EMMA;
 using Google.OrTools.Sat;
 using MapControl;
 using MapControl.Caching;
@@ -334,6 +335,8 @@ namespace DARP.Windows
             InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
             {
                 Mode = WindowModel.Params.InsertionMode,
+                Epsilon = WindowModel.Params.Epsilon,
+                Runs = WindowModel.Params.Runs,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToInsert(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
@@ -802,6 +805,8 @@ namespace DARP.Windows
                             InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
                             {
                                 Mode = model.Params.InsertionMode,
+                                Epsilon = model.Params.Epsilon,
+                                Runs = model.Params.Runs,
                                 Metric = metric,
                                 Orders = orders.Where(o => o.State == OrderState.Created),
                                 Vehicles = vehicles,
@@ -1668,6 +1673,16 @@ namespace DARP.Windows
         [DisplayName("Mode")]
         [Description("Insertion heuristics mode. A First fit inserts a order into first route found. A Best fit finds the most tight space where the order fits. Best fit might be slightly slower than First fit.")]
         public InsertionHeuristicsMode InsertionMode { get; set; } = InsertionHeuristicsMode.FirstFit;
+
+        [Category("Insertion heuristics")]
+        [DisplayName("Epsilon")]
+        [Description("Probability of inserting order randomly instead of to the best place in RandomizedGlobalBestFit.")]
+        public double Epsilon { get; set; } = 0.1;
+
+        [Category("Insertion heuristics")]
+        [DisplayName("Randomized runs")]
+        [Description("Total runs of RandomizedGlobalBestFit, the best one is chosen.")]
+        public int Runs { get; set; } = 10;
 
         public MainWindowParams Clone()
         {
