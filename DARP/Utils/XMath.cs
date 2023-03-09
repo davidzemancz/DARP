@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace DARP.Utils
 {
     public delegate Time MetricFunc(Cords2D c1, Cords2D c2);
-    
-    public class XMath
+
+    internal class XMath
     {
         public static T Max<T>(T x, T y) where T : IComparable<T>
         {

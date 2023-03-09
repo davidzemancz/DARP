@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace DARP.Utils
 {
-    public class TextBoxWriter : TextWriter
+    internal class TextBoxWriter : TextWriter
     {
         private TextBox _txtBox;
         public override Encoding Encoding => Encoding.Unicode;

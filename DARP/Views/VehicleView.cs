@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace DARP.Views
 {
-    public class VehicleView : IModelView<Vehicle>
+    internal class VehicleView
     {
         private readonly Vehicle _vehicle;
 
@@ -32,7 +32,6 @@ namespace DARP.Views
         public bool ShowOnMap { get; set; }
 
 
-        public Vehicle GetModel() => _vehicle;
-        object IModelView.GetModelObj() => GetModel();
+        public Vehicle GetVehicle() => _vehicle;
     }
 }

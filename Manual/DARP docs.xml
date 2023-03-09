@@ -249,6 +249,110 @@
             Returns user-friendly formated string
             </summary>
         </member>
+        <member name="T:DARP.Models.RoutePoint">
+            <summary>
+            Point at a route
+            </summary>
+        </member>
+        <member name="P:DARP.Models.RoutePoint.Time">
+            <summary>
+            Time of arrival
+            </summary>
+        </member>
+        <member name="P:DARP.Models.RoutePoint.Location">
+            <summary>
+            Location in metric space
+            </summary>
+        </member>
+        <member name="M:DARP.Models.RoutePoint.Clone">
+            <summary>
+            Clone the point
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:DARP.Models.VehicleRoutePoint">
+            <summary>
+            Vehicle location point, always the first point on a route and the route contains exactly the one
+            </summary>
+        </member>
+        <member name="P:DARP.Models.VehicleRoutePoint.Vehicle">
+            <summary>
+            The vehicle
+            </summary>
+        </member>
+        <member name="P:DARP.Models.VehicleRoutePoint.Location">
+            <summary>
+            Vehicle's location
+            </summary>
+        </member>
+        <member name="M:DARP.Models.VehicleRoutePoint.#ctor(DARP.Models.Vehicle)">
+            <summary>
+            Initialize the VehicleRoutePoint
+            </summary>
+            <param name="vehicle">A vehicle</param>
+        </member>
+        <member name="M:DARP.Models.VehicleRoutePoint.Clone">
+            <summary>
+            Clone the VehicleRoutePoint
+            </summary>
+        </member>
+        <member name="T:DARP.Models.OrderPickupRoutePoint">
+            <summary>
+            Order pickup route point. It is always followed by delivery point.
+            </summary>
+        </member>
+        <member name="P:DARP.Models.OrderPickupRoutePoint.Order">
+            <summary>
+            The order to be picked up
+            </summary>
+        </member>
+        <member name="P:DARP.Models.OrderPickupRoutePoint.Location">
+            <summary>
+            Pickup location
+            </summary>
+        </member>
+        <member name="M:DARP.Models.OrderPickupRoutePoint.#ctor(DARP.Models.Order)">
+            <summary>
+            Initialize the OrderPickupRoutePoint
+            </summary>
+            <param name="order">An order</param>
+        </member>
+        <member name="M:DARP.Models.OrderPickupRoutePoint.Clone">
+            <summary>
+            Clone the OrderPickupRoutePoint
+            </summary>
+        </member>
+        <member name="T:DARP.Models.OrderDeliveryRoutePoint">
+            <summary>
+            Order delivery route point.
+            </summary>
+        </member>
+        <member name="P:DARP.Models.OrderDeliveryRoutePoint.Order">
+            <summary>
+            The order to be picked up
+            </summary>
+        </member>
+        <member name="P:DARP.Models.OrderDeliveryRoutePoint.Location">
+            <summary>
+            Delivery location
+            </summary>
+        </member>
+        <member name="P:DARP.Models.OrderDeliveryRoutePoint.Time">
+            <summary>
+            Delivery time. Setter checks whether delivery time is in the order's time window.
+            </summary>
+        </member>
+        <member name="M:DARP.Models.OrderDeliveryRoutePoint.#ctor(DARP.Models.Order)">
+            <summary>
+            Initialize the OrderDeliveryRoutePoint
+            </summary>
+            <param name="order">An order</param>
+        </member>
+        <member name="M:DARP.Models.OrderDeliveryRoutePoint.Clone">
+            <summary>
+            Clone the OrderDeliveryRoutePoint
+            </summary>
+        </member>
         <member name="T:DARP.Models.Time">
             <summary>
             Time structure using Ticks as default units.

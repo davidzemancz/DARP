@@ -1,0 +1,189 @@
+\hypertarget{class_d_a_r_p_1_1_models_1_1_route}{}\doxysection{DARP.\+Models.\+Route Class Reference}
+\label{class_d_a_r_p_1_1_models_1_1_route}\index{DARP.Models.Route@{DARP.Models.Route}}
+
+
+Route is collection of Route\+Points for one vehicle. There exists three types of point, pickups, deliveries and vehicle location.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route_a14ce02840ab35c94b5d70c54e2aa6ad2}{Route}} (\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_vehicle}{Vehicle}} vehicle, \mbox{\hyperlink{struct_d_a_r_p_1_1_models_1_1_time}{Time}} time)
+\begin{DoxyCompactList}\small\item\em Initialize new route for the vehicle in the time. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route_a37efde9a84c58129ed6e346a1f00b1ec}{Get\+Total\+Profit}} (Metric\+Func metric, double vehicle\+Charge\+Per\+Tick)
+\begin{DoxyCompactList}\small\item\em Returns the sum of all delivered orders profit and subtracts vehicle charges. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route_ad1a4bea713ec8799bf84ba6bb02add80}{Contains}} (\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}} order)
+\begin{DoxyCompactList}\small\item\em Check whether the route contains an order. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route_a5b85bfdabad2942cdbfd6ae70e70aac6}{Can\+Insert\+Order}} (\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}} new\+Order, int index, Metric\+Func metric)
+\begin{DoxyCompactList}\small\item\em Check whether an order can be inserted into the route at specific index. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route_aa1b972fdef1966c87f240ac281d40a89}{Insert\+Order}} (\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}} new\+Order, int index, Metric\+Func metric)
+\begin{DoxyCompactList}\small\item\em Inserts an order into the route at specific inde. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route_a8714acbabacc8eca12db37fbf244c105}{Remove\+Order}} (\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}} order)
+\begin{DoxyCompactList}\small\item\em Removes an order from route. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_ab9869f40767874783d9b5b281e5d0304}\label{class_d_a_r_p_1_1_models_1_1_route_ab9869f40767874783d9b5b281e5d0304}} 
+double List$<$ \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}} $>$ removed\+Orders {\bfseries Update\+Vehicles\+Location} (\mbox{\hyperlink{struct_d_a_r_p_1_1_models_1_1_time}{Time}} time, Metric\+Func metric, double vehicle\+Charge\+Per\+Tick)
+\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a5c3336079d8c853f7998689fbe51949a}\label{class_d_a_r_p_1_1_models_1_1_route_a5c3336079d8c853f7998689fbe51949a}} 
+\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route}{Route}} {\bfseries Clone} ()
+\begin{DoxyCompactList}\small\item\em Clone the route. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a843d62e3053e1ab1992b2f059657aae2}\label{class_d_a_r_p_1_1_models_1_1_route_a843d62e3053e1ab1992b2f059657aae2}} 
+override string {\bfseries To\+String} ()
+\begin{DoxyCompactList}\small\item\em Returns user-\/friendly formated string. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route_a6fe9d155637659639db60240c6281e5e}{profit}}
+\begin{DoxyCompactList}\small\item\em Updates vehicle location with respect to a time. All point that were passed before the time are thrown away. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a436d078afa27d213c7d81d13d8d45f66}\label{class_d_a_r_p_1_1_models_1_1_route_a436d078afa27d213c7d81d13d8d45f66}} 
+\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_vehicle}{Vehicle}} {\bfseries Vehicle}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The vehicle. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_af792c4d34e57a7e658ecb8831ec63c5d}\label{class_d_a_r_p_1_1_models_1_1_route_af792c4d34e57a7e658ecb8831ec63c5d}} 
+List$<$ \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_route_point}{Route\+Point}} $>$ {\bfseries Points} = new()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Collection of points. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a47db845757327aa1ff3de56b9e6008cd}\label{class_d_a_r_p_1_1_models_1_1_route_a47db845757327aa1ff3de56b9e6008cd}} 
+IEnumerable$<$ \mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}} $>$ {\bfseries Orders}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Collection of order that are scheduled on the route. Iterates over Points and yields orders. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Route is collection of Route\+Points for one vehicle. There exists three types of point, pickups, deliveries and vehicle location. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a14ce02840ab35c94b5d70c54e2aa6ad2}\label{class_d_a_r_p_1_1_models_1_1_route_a14ce02840ab35c94b5d70c54e2aa6ad2}} 
+\index{DARP.Models.Route@{DARP.Models.Route}!Route@{Route}}
+\index{Route@{Route}!DARP.Models.Route@{DARP.Models.Route}}
+\doxysubsubsection{\texorpdfstring{Route()}{Route()}}
+{\footnotesize\ttfamily DARP.\+Models.\+Route.\+Route (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_vehicle}{Vehicle}}}]{vehicle,  }\item[{\mbox{\hyperlink{struct_d_a_r_p_1_1_models_1_1_time}{Time}}}]{time }\end{DoxyParamCaption})}
+
+
+
+Initialize new route for the vehicle in the time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vehicle} & \\
+\hline
+{\em time} & \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a5b85bfdabad2942cdbfd6ae70e70aac6}\label{class_d_a_r_p_1_1_models_1_1_route_a5b85bfdabad2942cdbfd6ae70e70aac6}} 
+\index{DARP.Models.Route@{DARP.Models.Route}!CanInsertOrder@{CanInsertOrder}}
+\index{CanInsertOrder@{CanInsertOrder}!DARP.Models.Route@{DARP.Models.Route}}
+\doxysubsubsection{\texorpdfstring{CanInsertOrder()}{CanInsertOrder()}}
+{\footnotesize\ttfamily bool DARP.\+Models.\+Route.\+Can\+Insert\+Order (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}}}]{new\+Order,  }\item[{int}]{index,  }\item[{Metric\+Func}]{metric }\end{DoxyParamCaption})}
+
+
+
+Check whether an order can be inserted into the route at specific index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Order} & The order\\
+\hline
+{\em index} & The index\\
+\hline
+{\em metric} & Metric\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_ad1a4bea713ec8799bf84ba6bb02add80}\label{class_d_a_r_p_1_1_models_1_1_route_ad1a4bea713ec8799bf84ba6bb02add80}} 
+\index{DARP.Models.Route@{DARP.Models.Route}!Contains@{Contains}}
+\index{Contains@{Contains}!DARP.Models.Route@{DARP.Models.Route}}
+\doxysubsubsection{\texorpdfstring{Contains()}{Contains()}}
+{\footnotesize\ttfamily bool DARP.\+Models.\+Route.\+Contains (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}}}]{order }\end{DoxyParamCaption})}
+
+
+
+Check whether the route contains an order. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em order} & The order\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a37efde9a84c58129ed6e346a1f00b1ec}\label{class_d_a_r_p_1_1_models_1_1_route_a37efde9a84c58129ed6e346a1f00b1ec}} 
+\index{DARP.Models.Route@{DARP.Models.Route}!GetTotalProfit@{GetTotalProfit}}
+\index{GetTotalProfit@{GetTotalProfit}!DARP.Models.Route@{DARP.Models.Route}}
+\doxysubsubsection{\texorpdfstring{GetTotalProfit()}{GetTotalProfit()}}
+{\footnotesize\ttfamily double DARP.\+Models.\+Route.\+Get\+Total\+Profit (\begin{DoxyParamCaption}\item[{Metric\+Func}]{metric,  }\item[{double}]{vehicle\+Charge\+Per\+Tick }\end{DoxyParamCaption})}
+
+
+
+Returns the sum of all delivered orders profit and subtracts vehicle charges. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em metric} & Metric\\
+\hline
+{\em vehicle\+Charge\+Per\+Tick} & Vehicle\textquotesingle{}s charge per tick\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_aa1b972fdef1966c87f240ac281d40a89}\label{class_d_a_r_p_1_1_models_1_1_route_aa1b972fdef1966c87f240ac281d40a89}} 
+\index{DARP.Models.Route@{DARP.Models.Route}!InsertOrder@{InsertOrder}}
+\index{InsertOrder@{InsertOrder}!DARP.Models.Route@{DARP.Models.Route}}
+\doxysubsubsection{\texorpdfstring{InsertOrder()}{InsertOrder()}}
+{\footnotesize\ttfamily void DARP.\+Models.\+Route.\+Insert\+Order (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}}}]{new\+Order,  }\item[{int}]{index,  }\item[{Metric\+Func}]{metric }\end{DoxyParamCaption})}
+
+
+
+Inserts an order into the route at specific inde. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+Order} & The order\\
+\hline
+{\em index} & The index\\
+\hline
+{\em metric} & Metric\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a8714acbabacc8eca12db37fbf244c105}\label{class_d_a_r_p_1_1_models_1_1_route_a8714acbabacc8eca12db37fbf244c105}} 
+\index{DARP.Models.Route@{DARP.Models.Route}!RemoveOrder@{RemoveOrder}}
+\index{RemoveOrder@{RemoveOrder}!DARP.Models.Route@{DARP.Models.Route}}
+\doxysubsubsection{\texorpdfstring{RemoveOrder()}{RemoveOrder()}}
+{\footnotesize\ttfamily void DARP.\+Models.\+Route.\+Remove\+Order (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{class_d_a_r_p_1_1_models_1_1_order}{Order}}}]{order }\end{DoxyParamCaption})}
+
+
+
+Removes an order from route. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em order} & The order\\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_route_a6fe9d155637659639db60240c6281e5e}\label{class_d_a_r_p_1_1_models_1_1_route_a6fe9d155637659639db60240c6281e5e}} 
+\index{DARP.Models.Route@{DARP.Models.Route}!profit@{profit}}
+\index{profit@{profit}!DARP.Models.Route@{DARP.Models.Route}}
+\doxysubsubsection{\texorpdfstring{profit}{profit}}
+{\footnotesize\ttfamily double DARP.\+Models.\+Route.\+profit}
+
+
+
+Updates vehicle location with respect to a time. All point that were passed before the time are thrown away. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em time} & The time\\
+\hline
+{\em metric} & Metric\\
+\hline
+{\em vehicle\+Charge\+Per\+Tick} & Vehicle charge per tick\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Gained profit and removed orders that were handled
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+MFFUK/\+DARP/\+DARP/\+Models/Route.\+cs\end{DoxyCompactItemize}

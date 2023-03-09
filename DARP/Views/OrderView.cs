@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DARP.Views
 {
-    public class OrderView : IModelView<Order>
+    internal class OrderView
     {
         private readonly Order _order;
 
@@ -33,7 +33,6 @@ namespace DARP.Views
         public double DeliveryToTick { get => _order.DeliveryTime.To.Ticks; set => _order.DeliveryTime = new(_order.DeliveryTime.From, new(value)); }
         public double Profit { get => _order.TotalProfit; set => _order.TotalProfit = value; }
 
-        public Order GetModel() => _order;
-        object IModelView.GetModelObj() => GetModel();
+        public Order GetOrder() => _order;
     }
 }

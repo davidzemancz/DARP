@@ -301,12 +301,12 @@ namespace DARP.Windows
 
         private List<Order> GetOrdersToSchedule()
         {
-            return _orderService.GetOrderViews().Select(ov => ov.GetModel()).Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted).ToList();
+            return _orderService.GetOrderViews().Select(ov => ov.GetOrder()).Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted).ToList();
         }
 
         private List<Order> GetOrdersToInsert()
         {
-            return _orderService.GetOrderViews().Select(ov => ov.GetModel()).Where(o => o.State == OrderState.Created).ToList();
+            return _orderService.GetOrderViews().Select(ov => ov.GetOrder()).Where(o => o.State == OrderState.Created).ToList();
         }
 
         #endregion
@@ -338,7 +338,7 @@ namespace DARP.Windows
                 Runs = WindowModel.Params.Runs,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToInsert(),
-                Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
+                Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetVehicle()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
                 VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
@@ -363,7 +363,7 @@ namespace DARP.Windows
                 Objective = WindowModel.Params.MIPObjective,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToSchedule(),
-                Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
+                Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetVehicle()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
                 VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
@@ -390,7 +390,7 @@ namespace DARP.Windows
                 PopulationSize = WindowModel.Params.EvoPopSize,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToSchedule(),
-                Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
+                Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetVehicle()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
                 VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
@@ -437,7 +437,7 @@ namespace DARP.Windows
             {
                 if (orderView.State != OrderState.Handled && orderView.DeliveryToTick < WindowModel.CurrentTime.Ticks)
                 {
-                    orderView.GetModel().Reject();
+                    orderView.GetOrder().Reject();
                 }
             }
         }
@@ -515,7 +515,7 @@ namespace DARP.Windows
             {
                 foreach (Route route in _planDataService.GetPlan().Routes)
                 {
-                    VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetModel() == route.Vehicle);
+                    VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetVehicle() == route.Vehicle);
                     if (vv.ShowOnMap)
                     {
                         DrawVehicle(route.Vehicle);
@@ -563,7 +563,7 @@ namespace DARP.Windows
                 (double p1X, double p1Y) = _cords[(point1.Location.X, point1.Location.Y)];
                 (double p2X, double p2Y) = _cords[(point2.Location.X, point2.Location.Y)];
 
-                VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetModel() == route.Vehicle);
+                VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetVehicle() == route.Vehicle);
                 DrawPath(p1X, p2X, p1Y, p2Y, vv.Color);
 
                 Color orderColor = Color.Multiply(vv.Color, 2);
@@ -581,7 +581,7 @@ namespace DARP.Windows
         private void DrawVehicle(Vehicle vehicle)
         {
             const int VEHICLE_SIZE = 16;
-            VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetModel() == vehicle);
+            VehicleView vv = _vehicleService.GetVehicleViews().First(vv => vv.GetVehicle() == vehicle);
 
             (double vehicleX, double vehicleY) = _cords[(vehicle.Location.X, vehicle.Location.Y)];
 
@@ -1047,7 +1047,7 @@ namespace DARP.Windows
 
             double totalTravelTime = _planDataService.GetPlan().Routes.Sum(r => r.Points[^1].Time.ToDouble());
             MetricFunc metric = XMath.GetMetric(WindowModel.Params.Metric);
-            double optimalTravelTime = _orderService.GetOrderViews().Sum(ov => metric(ov.GetModel().PickupLocation, ov.GetModel().DeliveryLocation).ToDouble());
+            double optimalTravelTime = _orderService.GetOrderViews().Sum(ov => metric(ov.GetOrder().PickupLocation, ov.GetOrder().DeliveryLocation).ToDouble());
             double travelTimeOptimality = 100 * (optimalTravelTime / totalTravelTime);
             _travelTimeOptimalitySeries.Points.Add(new DataPoint(WindowModel.CurrentTime.ToDouble(), travelTimeOptimality));
 
@@ -1084,8 +1084,8 @@ namespace DARP.Windows
                 {
                     sw.Write(JsonSerializer.Serialize(
                         new MainWindowDataModel(
-                            _orderService.GetOrderViews().Select(ov => ov.GetModel()),
-                            _vehicleService.GetVehicleViews().Select(vv => vv.GetModel()),
+                            _orderService.GetOrderViews().Select(ov => ov.GetOrder()),
+                            _vehicleService.GetVehicleViews().Select(vv => vv.GetVehicle()),
                             WindowModel,
                             _planDataService.GetPlan(),
                             _mainWindowModels

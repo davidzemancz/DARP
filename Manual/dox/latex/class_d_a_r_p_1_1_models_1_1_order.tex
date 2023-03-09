@@ -1,0 +1,51 @@
+\hypertarget{class_d_a_r_p_1_1_models_1_1_order}{}\doxysection{DARP.\+Models.\+Order Class Reference}
+\label{class_d_a_r_p_1_1_models_1_1_order}\index{DARP.Models.Order@{DARP.Models.Order}}
+
+
+Order represents a request for transportation from one place to another.  
+
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_a2f93d922029e76843f73566d4233f6a0}\label{class_d_a_r_p_1_1_models_1_1_order_a2f93d922029e76843f73566d4233f6a0}} 
+void {\bfseries Reject} ()
+\begin{DoxyCompactList}\small\item\em Set State to Rejected. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_a0bb2a2afc542207b686c5dfda5f2f373}\label{class_d_a_r_p_1_1_models_1_1_order_a0bb2a2afc542207b686c5dfda5f2f373}} 
+void {\bfseries Handle} ()
+\begin{DoxyCompactList}\small\item\em Set State to Handled. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_aad29506dccdf2032a0b3dfa720854d6b}\label{class_d_a_r_p_1_1_models_1_1_order_aad29506dccdf2032a0b3dfa720854d6b}} 
+override string {\bfseries To\+String} ()
+\begin{DoxyCompactList}\small\item\em Returns user-\/friendly formated string. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_a5064a63b715a6593aaeefc1ebacb0cf7}\label{class_d_a_r_p_1_1_models_1_1_order_a5064a63b715a6593aaeefc1ebacb0cf7}} 
+int {\bfseries Id}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Unique identifier. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_ae19ed5bb33c341ec0d3c7f3ebd24350d}\label{class_d_a_r_p_1_1_models_1_1_order_ae19ed5bb33c341ec0d3c7f3ebd24350d}} 
+string {\bfseries Name} = string.\+Empty\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Optional description. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_acf901e22dc6599a8fe4fa303201c22de}\label{class_d_a_r_p_1_1_models_1_1_order_acf901e22dc6599a8fe4fa303201c22de}} 
+\mbox{\hyperlink{namespace_d_a_r_p_1_1_models_a937ecb78e8f388932c0b1684120f8dc6}{Order\+State}} {\bfseries State} = \mbox{\hyperlink{namespace_d_a_r_p_1_1_models_a937ecb78e8f388932c0b1684120f8dc6a0eceeb45861f9585dd7a97a3e36f85c6}{Order\+State.\+Created}}\hspace{0.3cm}{\ttfamily  \mbox{[}get, protected set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Current state. Can be changed via method Set\+State(...) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_a8f22e10c6e0336b540e761a26af7dd95}\label{class_d_a_r_p_1_1_models_1_1_order_a8f22e10c6e0336b540e761a26af7dd95}} 
+\mbox{\hyperlink{struct_d_a_r_p_1_1_models_1_1_cords2_d}{Cords2D}} {\bfseries Pickup\+Location} = new(0, 0)\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Pickup location in 2D metric space. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_a1070446fd949e3982b5d8b46ae2704d3}\label{class_d_a_r_p_1_1_models_1_1_order_a1070446fd949e3982b5d8b46ae2704d3}} 
+\mbox{\hyperlink{struct_d_a_r_p_1_1_models_1_1_cords2_d}{Cords2D}} {\bfseries Delivery\+Location} = new(0, 0)\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Delivery location in 2D metric space. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_a9a7c3f3e9c26b0c32f4d5e1c4e98032d}\label{class_d_a_r_p_1_1_models_1_1_order_a9a7c3f3e9c26b0c32f4d5e1c4e98032d}} 
+\mbox{\hyperlink{struct_d_a_r_p_1_1_models_1_1_time_window}{Time\+Window}} {\bfseries Delivery\+Time} = new \mbox{\hyperlink{struct_d_a_r_p_1_1_models_1_1_time_window}{Time\+Window}}()\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Delivery time window determining when order must be delivered to delivery location. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_a_r_p_1_1_models_1_1_order_ac24b1df9a6ced81a8bb5ae3867c5c890}\label{class_d_a_r_p_1_1_models_1_1_order_ac24b1df9a6ced81a8bb5ae3867c5c890}} 
+double {\bfseries Total\+Profit}\hspace{0.3cm}{\ttfamily  \mbox{[}get, set\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Amount of money recieved if the order is successfuly delivered. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Order represents a request for transportation from one place to another. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+MFFUK/\+DARP/\+DARP/\+Models/Order.\+cs\end{DoxyCompactItemize}
