@@ -9,7 +9,7 @@ namespace DARP.Models
     public class RoutePoint
     {
         public virtual Time Time { get; set; }
-        public virtual Cords Location { get; set; }
+        public virtual Cords2D Location { get; set; }
         public virtual RoutePoint Clone()
         {
             return new RoutePoint { Time = Time, Location = Location };
@@ -24,7 +24,7 @@ namespace DARP.Models
     public class VehicleRoutePoint : RoutePoint
     {
         public Vehicle Vehicle { get; set; }
-        public override Cords Location { get => Vehicle.Location; set => Vehicle.Location = value; }
+        public override Cords2D Location { get => Vehicle.Location; set => Vehicle.Location = value; }
 
         public VehicleRoutePoint(Vehicle vehicle)
         {
@@ -40,7 +40,7 @@ namespace DARP.Models
     public class OrderPickupRoutePoint : RoutePoint
     {
         public Order Order { get; set; }
-        public override Cords Location { get => Order.PickupLocation; set => Order.PickupLocation = value; }
+        public override Cords2D Location { get => Order.PickupLocation; set => Order.PickupLocation = value; }
 
         public OrderPickupRoutePoint(Order order)
         {
@@ -58,7 +58,7 @@ namespace DARP.Models
         private Time _time;
 
         public Order Order { get; set; }
-        public override Cords Location { get => Order.DeliveryLocation; set => Order.DeliveryLocation = value; }
+        public override Cords2D Location { get => Order.DeliveryLocation; set => Order.DeliveryLocation = value; }
         public override Time Time
         {
             get => _time;

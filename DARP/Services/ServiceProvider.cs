@@ -7,7 +7,7 @@ using DARP.Utils;
 
 namespace DARP.Services
 {
-    public class ServiceProvider : IServiceProvider
+    internal class ServiceProvider : IServiceProvider
     {
         public static ServiceProvider Instance { get; private set; } = new ServiceProvider();
 

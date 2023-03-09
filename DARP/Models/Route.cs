@@ -8,10 +8,24 @@ using System.Threading.Tasks;
 
 namespace DARP.Models
 {
+    /// <summary>
+    /// Route is collection of RoutePoints for one vehicle. There exists three types of point, pickups, deliveries and vehicle location.
+    /// </summary>
     public class Route
     {
+        /// <summary>
+        /// The vehicle
+        /// </summary>
         public Vehicle Vehicle { get; set; }
+
+        /// <summary>
+        /// Collection of points
+        /// </summary>
         public List<RoutePoint> Points { get; set; } = new();
+
+        /// <summary>
+        /// Collection of order that are scheduled on the route. Iterates over Points and yields orders.
+        /// </summary>
         public IEnumerable<Order> Orders
         {
             get
@@ -23,20 +37,30 @@ namespace DARP.Models
             }
         }
 
+        /// <summary>
+        /// Initialize new route for the vehicle in the time
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="time"></param>
         public Route(Vehicle vehicle, Time time)
         {
             Vehicle = vehicle;
             Points.Add(new VehicleRoutePoint(vehicle) { Location = vehicle.Location, Time = time });
         }
 
-        public double GetTotalProfit(MetricFunc metric, double vehicleCharge)
+        /// <summary>
+        /// Returns the sum of all delivered orders profit and subtracts vehicle charges
+        /// </summary>
+        /// <param name="metric">Metric</param>
+        /// <param name="vehicleChargePerTick">Vehicle's charge per tick</param>
+        public double GetTotalProfit(MetricFunc metric, double vehicleChargePerTick)
         {
             double ordersProfit = 0;
             double travelCosts = 0;
 
             for (int i = 0; i < Points.Count - 1; i++)
             {
-                travelCosts += metric(Points[i].Location, Points[i + 1].Location).ToDouble() * vehicleCharge;
+                travelCosts += metric(Points[i].Location, Points[i + 1].Location).ToDouble() * vehicleChargePerTick;
                 if (Points[i] is OrderPickupRoutePoint oprp)
                 {
                     ordersProfit += oprp.Order.TotalProfit;
@@ -46,11 +70,21 @@ namespace DARP.Models
             return ordersProfit - travelCosts;
         }
 
+        /// <summary>
+        /// Check whether the route contains an order
+        /// </summary>
+        /// <param name="order">The order</param>
         public bool Contains(Order order)
         {
             return Points.Any(p => p is  OrderPickupRoutePoint oprp && oprp.Order == order);
         }
 
+        /// <summary>
+        /// Check whether an order can be inserted into the route at specific index
+        /// </summary>
+        /// <param name="newOrder">The order</param>
+        /// <param name="index">The index</param>
+        /// <param name="metric">Metric</param>
         public bool CanInsertOrder(Order newOrder, int index, MetricFunc metric)
         {
             if (index % 2 == 0) return false; // Index 0 is vehicles location
@@ -76,6 +110,12 @@ namespace DARP.Models
            return newOrderCanBeInserted && FollowingOrdersCanBeDelivered(followingPickupTime, index, metric);
         }
 
+        /// <summary>
+        /// Inserts an order into the route at specific inde
+        /// </summary>
+        /// <param name="newOrder">The order</param>
+        /// <param name="index">The index</param>
+        /// <param name="metric">Metric</param>
         public void InsertOrder(Order newOrder, int index, MetricFunc metric)
         {
             // Compute pickup & delivery time
@@ -97,6 +137,10 @@ namespace DARP.Models
             UpdateFollowingOrders(deliveryTime, index + 2, metric);
         }
 
+        /// <summary>
+        /// Removes an order from route
+        /// </summary>
+        /// <param name="order">The order</param>
         public void RemoveOrder(Order order)
         {
             RoutePoint pickup = Points.FirstOrDefault(rp => rp is OrderPickupRoutePoint oprp && oprp.Order == order);
@@ -107,7 +151,14 @@ namespace DARP.Models
             Points.Remove(delivery);
         }
 
-        public (double profit, List<Order> removedOrders) UpdateVehiclesLocation(Time time, MetricFunc metric, double vehicleCharge)
+        /// <summary>
+        /// Updates vehicle location with respect to a time. All point that were passed before the time are thrown away.
+        /// </summary>
+        /// <param name="time">The time</param>
+        /// <param name="metric">Metric</param>
+        /// <param name="vehicleChargePerTick">Vehicle charge per tick</param>
+        /// <returns>Gained profit and removed orders that were handled</returns>
+        public (double profit, List<Order> removedOrders) UpdateVehiclesLocation(Time time, MetricFunc metric, double vehicleChargePerTick)
         {
             // Remove all route point which were visited before current time
             double ordersProfit = 0;
@@ -119,7 +170,7 @@ namespace DARP.Models
                 if (Points[1] is OrderPickupRoutePoint orderPickup) // Already pickedup an order -> need to deliver it too, so move vehicle to delivery location
                 {
                     removedOrders.Add(orderPickup.Order);
-                    travelCosts += (metric(Points[0].Location, Points[1].Location).ToDouble() + metric(Points[1].Location, Points[2].Location).ToDouble()) * vehicleCharge;
+                    travelCosts += (metric(Points[0].Location, Points[1].Location).ToDouble() + metric(Points[1].Location, Points[2].Location).ToDouble()) * vehicleChargePerTick;
                     ordersProfit += orderPickup.Order.TotalProfit;
 
                     // Remove handled order from plan
@@ -180,8 +231,9 @@ namespace DARP.Models
             return allOrdersCanBeDelivered;
         }
 
-      
-
+        /// <summary>
+        /// Clone the route
+        /// </summary>
         public Route Clone()
         {
             Route route = new(Vehicle, Points[0].Time);
@@ -189,6 +241,9 @@ namespace DARP.Models
             return route;
         }
 
+        /// <summary>
+        /// Returns user-friendly formated string
+        /// </summary>
         public override string ToString()
         {
             return $"Route [{string.Join(',', Points)}]";

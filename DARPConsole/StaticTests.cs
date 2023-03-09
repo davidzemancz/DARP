@@ -49,8 +49,8 @@ namespace DARPConsole
             const int ORDERS = 60;
             for (int o = 1; o <= ORDERS; o++)
             {
-                Cords pickup = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
-                Cords delivery = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
+                Cords2D pickup = new Cords2D(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
+                Cords2D delivery = new Cords2D(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
 
                 double totalProfit = PROFIT_PM * XMath.ManhattanMetric(pickup, delivery).Ticks;
 
@@ -74,7 +74,7 @@ namespace DARPConsole
                 Vehicle vehicle = new()
                 {
                     Id = v,
-                    Location = new Cords(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE))
+                    Location = new Cords2D(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE))
                 };
                 vehicles.Add(vehicle);
                 input.Plan.Routes.Add(new Route(vehicle, time));

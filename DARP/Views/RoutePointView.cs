@@ -27,7 +27,7 @@ namespace DARP.Views
             }
         }
         public Time Time => _routePoint.Time;
-        public Cords Location => _routePoint.Location;
+        public Cords2D Location => _routePoint.Location;
         public int? VehicleId => _routePoint is VehicleRoutePoint vrp ? vrp.Vehicle.Id : null;
         public int? OrderId
         {

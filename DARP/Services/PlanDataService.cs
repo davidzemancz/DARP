@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace DARP.Services
 {
-    public interface IPlanDataService
+    internal interface IPlanDataService
     {
         Plan GetPlan();
         void SetPlan (Plan plan);
     }
 
-    public class PlanDataService : IPlanDataService
+    internal class PlanDataService : IPlanDataService
     {
         private Plan _plan;
 

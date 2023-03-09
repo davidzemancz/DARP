@@ -2,7 +2,6 @@
 using AvalonDock.Layout.Serialization;
 using ClosedXML.Excel;
 using DARP.Models;
-using DARP.Providers;
 using DARP.Services;
 using DARP.Solvers;
 using DARP.Utils;
@@ -241,7 +240,7 @@ namespace DARP.Windows
 
             var vehicle = new Vehicle()
             {
-                Location = new Cords(random.Next(0, model.Params.MapSize), random.Next(0, model.Params.MapSize)),
+                Location = new Cords2D(random.Next(0, model.Params.MapSize), random.Next(0, model.Params.MapSize)),
             };
             return vehicle;
         }
@@ -264,8 +263,8 @@ namespace DARP.Windows
         {
             if (random == null) random = _random;
 
-            Cords pickup = new Cords(random.Next(0, model.Params.MapSize), random.Next(0, (int)model.Params.MapSize));
-            Cords delivery = new Cords(random.Next(0, model.Params.MapSize), random.Next(0, (int)model.Params.MapSize));
+            Cords2D pickup = new Cords2D(random.Next(0, model.Params.MapSize), random.Next(0, (int)model.Params.MapSize));
+            Cords2D delivery = new Cords2D(random.Next(0, model.Params.MapSize), random.Next(0, (int)model.Params.MapSize));
 
             double totalProfit = model.Params.OrderProfitPerTick * XMath.GetMetric(model.Params.Metric)(pickup, delivery).Ticks;
 
@@ -1578,7 +1577,7 @@ namespace DARP.Windows
 
         [Category("Simulation")]
         [DisplayName("[Template] Log")]
-        public bool TemplateLog { get; set; } = false;
+        public bool TemplateLog { get; set; } = true;
 
         [Category("Simulation")]
         [DisplayName("[Template] Total runs")]

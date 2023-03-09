@@ -6,39 +6,75 @@ using System.Threading.Tasks;
 
 namespace DARP.Models
 {
+    /// <summary>
+    /// Order represents a request for transportation from one place to another.
+    /// </summary>
     public class Order
     {
+        /// <summary>
+        /// Unique identifier
+        /// </summary>
         public int Id { get; set; }
+        
+        /// <summary>
+        /// Optional description
+        /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Current state. Can be changed via method SetState(...)
+        /// </summary>
         public OrderState State { get; protected set; } = OrderState.Created;
-        public Cords PickupLocation { get; set; } = new(0, 0);
-        public Cords DeliveryLocation { get; set; } = new(0, 0);
+
+        /// <summary>
+        /// Pickup location in 2D metric space
+        /// </summary>
+        public Cords2D PickupLocation { get; set; } = new(0, 0);
+
+        /// <summary>
+        /// Delivery location in 2D metric space
+        /// </summary>
+        public Cords2D DeliveryLocation { get; set; } = new(0, 0);
+
+        /// <summary>
+        /// Delivery time window determining when order must be delivered to delivery location
+        /// </summary>
         public TimeWindow DeliveryTime { get; set; } = new TimeWindow();
+
+        /// <summary>
+        /// Amount of money recieved if the order is successfuly delivered
+        /// </summary>
         public double TotalProfit { get; set; }
 
-        public void Decline()
-        {
-            State = OrderState.Created;
-        }
-        public void Accept()
-        {
-            State = OrderState.Accepted;
-        }
+       
+        /// <summary>
+        /// Set State to Rejected
+        /// </summary>
         public void Reject()
         {
             State = OrderState.Rejected;
         }
+
+        /// <summary>
+        /// Set State to Handled
+        /// </summary>
         public void Handle()
         {
             State = OrderState.Handled;
         }
 
+        /// <summary>
+        /// Returns user-friendly formated string
+        /// </summary>
         public override string ToString()
         {
             return $"{nameof(Order)} {Id} {State}";
         }
     }
 
+    /// <summary>
+    /// Order state enum
+    /// </summary>
     public enum OrderState
     {
         /// <summary>

@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 
 namespace DARP.Services
 {
-    public interface IOrderDataService
+    internal interface IOrderDataService
     {
         public ObservableCollection<OrderView> GetOrderViews();
         public void AddOrder(Order order);
         public void Clear();
     }
 
-    public class OrderDataService : IOrderDataService
+    internal class OrderDataService : IOrderDataService
     {
         private readonly ObservableCollection<OrderView> _collection;
         private int _lastId;

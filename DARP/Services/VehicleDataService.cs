@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace DARP.Services
 {
-    public interface IVehicleDataService
+    internal interface IVehicleDataService
     {
         public ObservableCollection<VehicleView> GetVehicleViews();
         public void AddVehicle(Vehicle vehicle);
         public void Clear();
     }
 
-    public class VehicleDataService : IVehicleDataService
+    internal class VehicleDataService : IVehicleDataService
     {
         private readonly ObservableCollection<VehicleView> _collection;
         private int _lastId;

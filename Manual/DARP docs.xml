@@ -1,0 +1,456 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DARP</name>
+    </assembly>
+    <members>
+        <member name="T:DARP.App">
+            <summary>
+            Interaction logic for App.xaml
+            </summary>
+            <summary>
+            App
+            </summary>
+        </member>
+        <member name="M:DARP.App.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:DARP.App.Main">
+            <summary>
+            Application Entry Point.
+            </summary>
+        </member>
+        <member name="T:DARP.Models.Cords2D">
+            <summary>
+            Coordinates structure in 2 dimensional space
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Cords2D.X">
+            <summary>
+            X coordinate
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Cords2D.Y">
+            <summary>
+            Y coordinate
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Cords2D.#ctor(System.Double,System.Double)">
+            <summary>
+            Creates new instance of coordinates type
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Cords2D.ToString">
+            <summary>
+            Returns user-friendly formated string
+            </summary>
+        </member>
+        <member name="T:DARP.Models.Order">
+            <summary>
+            Order represents a request for transportation from one place to another.
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Order.Id">
+            <summary>
+            Unique identifier
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Order.Name">
+            <summary>
+            Optional description
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Order.State">
+            <summary>
+            Current state. Can be changed via method SetState(...)
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Order.PickupLocation">
+            <summary>
+            Pickup location in 2D metric space
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Order.DeliveryLocation">
+            <summary>
+            Delivery location in 2D metric space
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Order.DeliveryTime">
+            <summary>
+            Delivery time window determining when order must be delivered to delivery location
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Order.TotalProfit">
+            <summary>
+            Amount of money recieved if the order is successfuly delivered
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Order.Reject">
+            <summary>
+            Set State to Rejected
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Order.Handle">
+            <summary>
+            Set State to Handled
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Order.ToString">
+            <summary>
+            Returns user-friendly formated string
+            </summary>
+        </member>
+        <member name="T:DARP.Models.OrderState">
+            <summary>
+            Order state enum
+            </summary>
+        </member>
+        <member name="F:DARP.Models.OrderState.Created">
+            <summary>
+            New order, has not been scheduled yet
+            </summary>
+        </member>
+        <member name="F:DARP.Models.OrderState.Accepted">
+            <summary>
+            Allready scheduled order, has not been handled yet
+            </summary>
+        </member>
+        <member name="F:DARP.Models.OrderState.Rejected">
+            <summary>
+            Rejected order
+            </summary>
+        </member>
+        <member name="F:DARP.Models.OrderState.Handled">
+            <summary>
+            Handled order
+            </summary>
+        </member>
+        <member name="T:DARP.Models.Plan">
+            <summary>
+            Plan is a collection of routes for fixed set of vehicles. For each vehicle there exists exactly one route.
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Plan.Routes">
+            <summary>
+            Collection of routes
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Plan.Orders">
+            <summary>
+            Collection of order that are scheduled on routes. Iterates over Routes and yields orders.
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Plan.GetTotalProfit(DARP.Utils.MetricFunc,System.Double)">
+            <summary>
+            Returns sum of total profits of all routes
+            </summary>
+            <param name="metric">Metric</param>
+            <param name="vehicleChargePerTick">Vehicle's charge per tick</param>
+        </member>
+        <member name="M:DARP.Models.Plan.UpdateVehiclesLocation(DARP.Models.Time,DARP.Utils.MetricFunc,System.Double)">
+            <summary>
+            Update vehicles location for each route
+            </summary>
+            <param name="time">Current time</param>
+            <param name="metric">Metric</param>
+            <param name="vehicleChargePerTick">Vehicle's charge per tick</param>
+        </member>
+        <member name="M:DARP.Models.Plan.Contains(DARP.Models.Order)">
+            <summary>
+            Check whether the plan contains an order
+            </summary>
+            <param name="order">The order</param>
+        </member>
+        <member name="M:DARP.Models.Plan.Clone">
+            <summary>
+            Clone the plane and all its routes
+            </summary>
+        </member>
+        <member name="T:DARP.Models.Route">
+            <summary>
+            Route is collection of RoutePoints for one vehicle. There exists three types of point, pickups, deliveries and vehicle location.
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Route.Vehicle">
+            <summary>
+            The vehicle
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Route.Points">
+            <summary>
+            Collection of points
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Route.Orders">
+            <summary>
+            Collection of order that are scheduled on the route. Iterates over Points and yields orders.
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Route.#ctor(DARP.Models.Vehicle,DARP.Models.Time)">
+            <summary>
+            Initialize new route for the vehicle in the time
+            </summary>
+            <param name="vehicle"></param>
+            <param name="time"></param>
+        </member>
+        <member name="M:DARP.Models.Route.GetTotalProfit(DARP.Utils.MetricFunc,System.Double)">
+            <summary>
+            Returns the sum of all delivered orders profit and subtracts vehicle charges
+            </summary>
+            <param name="metric">Metric</param>
+            <param name="vehicleChargePerTick">Vehicle's charge per tick</param>
+        </member>
+        <member name="M:DARP.Models.Route.Contains(DARP.Models.Order)">
+            <summary>
+            Check whether the route contains an order
+            </summary>
+            <param name="order">The order</param>
+        </member>
+        <member name="M:DARP.Models.Route.CanInsertOrder(DARP.Models.Order,System.Int32,DARP.Utils.MetricFunc)">
+            <summary>
+            Check whether an order can be inserted into the route at specific index
+            </summary>
+            <param name="newOrder">The order</param>
+            <param name="index">The index</param>
+            <param name="metric">Metric</param>
+        </member>
+        <member name="M:DARP.Models.Route.InsertOrder(DARP.Models.Order,System.Int32,DARP.Utils.MetricFunc)">
+            <summary>
+            Inserts an order into the route at specific inde
+            </summary>
+            <param name="newOrder">The order</param>
+            <param name="index">The index</param>
+            <param name="metric">Metric</param>
+        </member>
+        <member name="M:DARP.Models.Route.RemoveOrder(DARP.Models.Order)">
+            <summary>
+            Removes an order from route
+            </summary>
+            <param name="order">The order</param>
+        </member>
+        <member name="M:DARP.Models.Route.UpdateVehiclesLocation(DARP.Models.Time,DARP.Utils.MetricFunc,System.Double)">
+            <summary>
+            Updates vehicle location with respect to a time. All point that were passed before the time are thrown away.
+            </summary>
+            <param name="time">The time</param>
+            <param name="metric">Metric</param>
+            <param name="vehicleChargePerTick">Vehicle charge per tick</param>
+            <returns>Gained profit and removed orders that were handled</returns>
+        </member>
+        <member name="M:DARP.Models.Route.Clone">
+            <summary>
+            Clone the route
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Route.ToString">
+            <summary>
+            Returns user-friendly formated string
+            </summary>
+        </member>
+        <member name="T:DARP.Models.Time">
+            <summary>
+            Time structure using Ticks as default units.
+            </summary>
+        </member>
+        <member name="F:DARP.Models.Time.Zero">
+            <summary>
+            Zero time
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Time.Ticks">
+            <summary>
+            Ticks
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Time.#ctor(System.Int64)">
+            <summary>
+            Initialize the time structure
+            </summary>
+            <param name="ticks">Ticks</param>
+        </member>
+        <member name="M:DARP.Models.Time.#ctor(System.Double)">
+            <summary>
+            Initialize the time structure
+            </summary>
+            <param name="ticks">Ticks</param>
+        </member>
+        <member name="M:DARP.Models.Time.ToDouble">
+            <summary>
+            Returns Ticks as double
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Time.CompareTo(DARP.Models.Time)">
+            <summary>
+            Implementation for IComparable
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Time.Equals(System.Object)">
+            <summary>
+            Implementation for IComparable
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Time.ToString">
+            <summary>
+            Returns user-friendly formated string 
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Time.GetHashCode">
+            <summary>
+            Returns Ticks
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Time.AddTicks(System.Int32)">
+            <summary>
+            Reutnrs new istance of Time with Ticks increased
+            </summary>
+        </member>
+        <member name="T:DARP.Models.TimeWindow">
+            <summary>
+            Time window structure
+            </summary>
+        </member>
+        <member name="P:DARP.Models.TimeWindow.From">
+            <summary>
+            Time from
+            </summary>
+        </member>
+        <member name="P:DARP.Models.TimeWindow.To">
+            <summary>
+            Time to
+            </summary>
+        </member>
+        <member name="M:DARP.Models.TimeWindow.#ctor(DARP.Models.Time,DARP.Models.Time)">
+            <summary>
+            Initialize TimeWindow
+            </summary>
+        </member>
+        <member name="M:DARP.Models.TimeWindow.ToString">
+            <summary>
+            Returns user-friendly formated string 
+            </summary>
+        </member>
+        <member name="T:DARP.Models.Vehicle">
+            <summary>
+            Vehicle delivers orders between pickups and deliveries points
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Vehicle.Id">
+            <summary>
+            Unique identifier
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Vehicle.Name">
+            <summary>
+            Optional description
+            </summary>
+        </member>
+        <member name="P:DARP.Models.Vehicle.Location">
+            <summary>
+            Current vehicles location
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Vehicle.ToString">
+            <summary>
+            Returns user-friendly formated string 
+            </summary>
+        </member>
+        <member name="M:DARP.Models.Vehicle.Clone">
+            <summary>
+            Clone the vehicle
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.InsertionHeuristicsMode.FirstFit">
+            <summary>
+            Gets orders in order and inserts them to first possible place
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.InsertionHeuristicsMode.LocalBestFit">
+            <summary>
+            Gets orders in order and inserts them to best possible place
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.InsertionHeuristicsMode.GlobalBestFit">
+            <summary>
+            Finds best fitting order and inserts it until there are none
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.InsertionHeuristicsMode.RandomizedGlobalBestFit">
+            <summary>
+            Finds best fitting order and inserts it until there are none
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.OptimizationObjective.MinimizeDeliveryTime">
+            <summary>
+            Not supported yet
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.OptimizationObjective.MinimizeTime">
+            <summary>
+            Minimizes distance traveled by vehicles. All orders must be handled for optimality.
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.OptimizationObjective.MaximizeProfit">
+            <summary>
+            Maximizes profit. Not all orders must be handled for optimality.
+            </summary>
+        </member>
+        <member name="T:DARP.Windows.MainWindow">
+            <summary>
+            Interaction logic for MainWindow.xaml
+            </summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="M:DARP.Windows.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:DARP.Windows.TextBoxWindow">
+            <summary>
+            Interaction logic for TextBoxWindow.xaml
+            </summary>
+            <summary>
+            TextBoxWindow
+            </summary>
+        </member>
+        <member name="M:DARP.Windows.TextBoxWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
+        </member>
+    </members>
+</doc>
