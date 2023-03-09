@@ -23,7 +23,7 @@ namespace DARP.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Current vehicles location
+        /// Current location
         /// </summary>
         public Cords2D Location { get; set; } = new(0, 0);
 

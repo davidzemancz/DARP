@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_d_a_r_p_1_1_services" xml:lang="en-US">
+<title>DARP.Services Namespace Reference</title>
+<indexterm><primary>DARP.Services</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>interface <emphasis role="strong">IOrderDataService</emphasis></para>
+</listitem>
+            <listitem><para>interface <emphasis role="strong">IPlanDataService</emphasis></para>
+</listitem>
+            <listitem><para>interface <emphasis role="strong">IVehicleDataService</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">OrderDataService</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">PlanDataService</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">ServiceProvider</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">VehicleDataService</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+</section>

@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_d_a_r_p_1_1_models_1_1_cords2_d" xml:lang="en-US">
+<title>DARP.Models.Cords2D Struct Reference</title>
+<indexterm><primary>DARP.Models.Cords2D</primary></indexterm>
+<para>
+
+<para>Coordinates structure in 2 dimensional space. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_cords2_d_1a707627517333c1deb00e057866f02b69"/><emphasis role="strong">Cords2D</emphasis> (double x, double y)</para>
+
+<para>Creates new instance of coordinates type. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_cords2_d_1a788c2cc775a648de2a8f681840b74091"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+
+<para>Returns user-friendly formated string. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_cords2_d_1a4bf0891c0a432c89d2e098658a597d99"/>static readonly <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Empty</emphasis> = new <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link>(double.NaN, double.NaN)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_cords2_d_1a2ab32e52b14f16c4ee556354f6276e24"/>static readonly <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Zero</emphasis> = new <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link>(double.NaN, double.NaN)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_cords2_d_1ac1e933fcc6af468c83412fba2948cd71"/>double <emphasis role="strong">X</emphasis> = double.NaN<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>X coordinate. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_cords2_d_1a5f91c0534ec1f26f8e5a83af1dc88d68"/>double <emphasis role="strong">Y</emphasis> = double.NaN<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Y coordinate. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Coordinates structure in 2 dimensional space. </para>
+<para>
+The documentation for this struct was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/Cords.cs</section>
+</section>

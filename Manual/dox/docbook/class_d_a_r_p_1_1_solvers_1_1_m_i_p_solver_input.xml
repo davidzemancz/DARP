@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input" xml:lang="en-US">
+<title>DARP.Solvers.MIPSolverInput Class Reference</title>
+<indexterm><primary>DARP.Solvers.MIPSolverInput</primary></indexterm>
+<para>
+
+<para>Mixed integer programming solver input. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input_1a7aeca920a15c9dd91bc3032457e7dae6"/><emphasis role="strong">MIPSolverInput</emphasis> ()</para>
+
+<para>Initialize. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input_1a224c6e911fb2830431470005915aa687">MIPSolverInput</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</para>
+
+<para>Initialize EvolutionarySolverInput base on SolverInputBase instance. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Public Member Functions inherited from <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">DARP.Solvers.SolverInputBase</link>        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a944bf65c43707b34963ef8835ae0f140">SolverInputBase</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</para>
+
+<para>Initialize SolverInputBase based on another instance. </para>
+</listitem>
+        </itemizedlist>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input_1a863e7e84cb20c8bb8c7394ec3c2c4430"/>bool <emphasis role="strong">Multithreading</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Enable multithreading. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input_1a160c3482cb689aed643df963f7fa8ba3"/>long <emphasis role="strong">TimeLimit</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time limit in miliseconds. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input_1a5f282cf7089d449630cce8c4b0570275"/>string <emphasis role="strong">Solver</emphasis> = &quot;SCIP&quot;<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Internal solver. SCIP or CP-SAT are available. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input_1a0fc4d550475b00afbfc94eb3e1942d6b"/>bool <emphasis role="strong">Integer</emphasis> = true<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Require integeral solution. Default is true. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input_1af04f7492f6fcc02363345771efe7e2aa"/><link linkend="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1">OptimizationObjective</link> <emphasis role="strong">Objective</emphasis> = OptimizationObjective.MaximizeProfit<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Objective function. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">DARP.Solvers.SolverInputBase</link>        <itemizedlist>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1abe3672f27097e06ca1b5bd67305f5add">Time</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1afcd77f9f138ec8e554d050ed1ffebfb1">Plan</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> &gt; <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a8f94fa563177380860a7975ac4350c3c">Vehicles</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of vehicles. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a9c45185ce300ecb1d6459e4c147b2fb6">Orders</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of orders. </para>
+</listitem>
+            <listitem><para>MetricFunc <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a9c4d1e05a4957131ce6d65c2cc78606d">Metric</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Metric. </para>
+</listitem>
+            <listitem><para>double <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a2a39bf8935f17460b0b97f3aa40f5927">VehicleChargePerTick</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Vehicle charge per tick. </para>
+</listitem>
+        </itemizedlist>
+Properties inherited from <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">DARP.Solvers.ISolverInput</link>        <itemizedlist>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1abef147abdad41bcd215e5e4a5cb9bfe2">Time</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a6f344c8b4d7e0038708cc10fef7c0fcd">Plan</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> &gt; <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a3d969adeae7b5df96ac5b21350fd4a30">Vehicles</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of vehicles. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a779370f89d4867c31dd1110239fe13b6">Orders</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of orders. </para>
+</listitem>
+            <listitem><para>MetricFunc <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a84c4d6610947e6359318a4fa214148d7">Metric</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Metric. </para>
+</listitem>
+            <listitem><para>double <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a555be27de293fe9d4b2e21e7447f2d76">VehicleChargePerTick</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Vehicle charge per tick. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Mixed integer programming solver input. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input_1a224c6e911fb2830431470005915aa687"/><section>
+    <title>MIPSolverInput()</title>
+<indexterm><primary>MIPSolverInput</primary><secondary>DARP.Solvers.MIPSolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.MIPSolverInput</primary><secondary>MIPSolverInput</secondary></indexterm>
+<para><computeroutput>DARP.Solvers.MIPSolverInput.MIPSolverInput (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</computeroutput></para><para>
+
+<para>Initialize EvolutionarySolverInput base on SolverInputBase instance. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>solverInputBase</entry><entry>
+<para>Instance</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/MIPSolver.cs</section>
+</section>

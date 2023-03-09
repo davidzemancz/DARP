@@ -8,16 +8,45 @@ using System.Threading.Tasks;
 
 namespace DARP.Solvers
 {
+    /// <summary>
+    /// Solver input
+    /// </summary>
     public interface ISolverInput
     {
+        /// <summary>
+        /// Time
+        /// </summary>
         Time Time { get; set; }
+
+        /// <summary>
+        /// Plan
+        /// </summary>
         Plan Plan { get; set; }
+
+        /// <summary>
+        /// Collection of vehicles
+        /// </summary>
         IEnumerable<Vehicle> Vehicles { get; set; }
+
+        /// <summary>
+        /// Collection of orders
+        /// </summary>
         IEnumerable<Order> Orders { get; set; }
+
+        /// <summary>
+        /// Metric
+        /// </summary>
         MetricFunc Metric { get; set; }
+
+        /// <summary>
+        /// Vehicle charge per tick
+        /// </summary>
         double VehicleChargePerTick { get; set; }
     }
 
+    /// <summary>
+    /// Default basic implementation of ISolverInput
+    /// </summary>
     public class SolverInputBase : ISolverInput
     {
         public Time Time { get; set; }
@@ -29,6 +58,10 @@ namespace DARP.Solvers
 
         public SolverInputBase() { }
 
+        /// <summary>
+        /// Initialize SolverInputBase based on another instance
+        /// </summary>
+        /// <param name="solverInputBase">Instance</param>
         public SolverInputBase(SolverInputBase solverInputBase)
         {
             Time = solverInputBase.Time;
@@ -40,14 +73,32 @@ namespace DARP.Solvers
         }
     }
 
+    /// <summary>
+    /// Solver output
+    /// </summary>
     public interface ISolverOutput
     {
+        /// <summary>
+        /// Plan
+        /// </summary>
         Plan Plan { get; }
+
+        /// <summary>
+        /// Status
+        /// </summary>
         Status Status { get; }
     }
 
+    /// <summary>
+    /// Solver
+    /// </summary>
     public interface ISolver
     {
+        /// <summary>
+        /// Run solver
+        /// </summary>
+        /// <param name="input">Input</param>
+        /// <returns></returns>
         ISolverOutput Run(ISolverInput input);
     }
 }

@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_models_1_1_route_point" xml:lang="en-US">
+<title>DARP.Models.RoutePoint Class Reference</title>
+<indexterm><primary>DARP.Models.RoutePoint</primary></indexterm>
+<para>
+
+<para>Point at a route. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para>virtual <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point_1a12bf601c8ab1ea07559a2c2b70f7c01b">Clone</link> ()</para>
+
+<para>Clone the point. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a6580e08d35c8918705bd780de9ab96a9"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1ad2384c0ebfd76b8f91d764086e74af14"/>virtual <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">Time</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time of arrival. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a8554943dc360eed2edd73cc0fd6473ae"/>virtual <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Location</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Location in metric space. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Point at a route. </para>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a12bf601c8ab1ea07559a2c2b70f7c01b"/><section>
+    <title>Clone()</title>
+<indexterm><primary>Clone</primary><secondary>DARP.Models.RoutePoint</secondary></indexterm>
+<indexterm><primary>DARP.Models.RoutePoint</primary><secondary>Clone</secondary></indexterm>
+<para><computeroutput>virtual <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> DARP.Models.RoutePoint.Clone ( )<computeroutput>[virtual]</computeroutput></computeroutput></para><para>
+
+<para>Clone the point. </para>
+</para>
+
+<para><formalpara><title>Returns</title>
+
+<para></para>
+</formalpara>
+</para>
+<para>
+Reimplemented in <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point_1a7c8f7074196b3d44b7ca593a7df80168">DARP.Models.VehicleRoutePoint</link>, <link linkend="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point_1af206f3eb308aecf26b03b0b3e27f9eb4">DARP.Models.OrderPickupRoutePoint</link>, and <link linkend="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point_1ab5825b599b71ebd990f3c8fafeb760c3">DARP.Models.OrderDeliveryRoutePoint</link>.</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/RoutePoint.cs</section>
+</section>

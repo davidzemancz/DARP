@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output" xml:lang="en-US">
+<title>DARP.Solvers.MIPSolverOutput Class Reference</title>
+<indexterm><primary>DARP.Solvers.MIPSolverOutput</primary></indexterm>
+<para>
+
+<para>Mixed integer programming solver output. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1a944bdb30b180780e988b946dd881e86c"/><emphasis role="strong">MIPSolverOutput</emphasis> ()</para>
+
+<para>Initialize. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1a9cd57d27d3268cb4694c518254737c00">MIPSolverOutput</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> plan, <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> status, double objetiveValue)</para>
+
+<para>Initialize. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1a5b1559f7ba75ecdf38da08c8582ecf4c">Plan</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1abf738fe9735b3adf0385cc58ceb972af">Status</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Status. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1adbeca7f1f1d663345b03444d77f65e2f"/>double <emphasis role="strong">ObjetiveValue</emphasis><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Objective value. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">DARP.Solvers.ISolverOutput</link>        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1ab608951b5156044ff441a74b5de15b06">Plan</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1af88c347defa152373f3728d3031d43e8">Status</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Status. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Mixed integer programming solver output. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1a9cd57d27d3268cb4694c518254737c00"/><section>
+    <title>MIPSolverOutput()</title>
+<indexterm><primary>MIPSolverOutput</primary><secondary>DARP.Solvers.MIPSolverOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.MIPSolverOutput</primary><secondary>MIPSolverOutput</secondary></indexterm>
+<para><computeroutput>DARP.Solvers.MIPSolverOutput.MIPSolverOutput (<link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> plan, <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> status, double objetiveValue)</computeroutput></para><para>
+
+<para>Initialize. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>plan</entry><entry>
+<para>Plan</para>
+</entry>
+                            </row>
+                            <row>
+<entry>status</entry><entry>
+<para>Status</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+</section>
+<section>
+<title>Property Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1a5b1559f7ba75ecdf38da08c8582ecf4c"/><section>
+    <title>Plan</title>
+<indexterm><primary>Plan</primary><secondary>DARP.Solvers.MIPSolverOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.MIPSolverOutput</primary><secondary>Plan</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> DARP.Solvers.MIPSolverOutput.Plan<computeroutput>[get]</computeroutput></computeroutput></para><para>
+
+<para>Plan. </para>
+</para>
+<para>
+Implements <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1ab608951b5156044ff441a74b5de15b06">DARP.Solvers.ISolverOutput</link>.</para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1abf738fe9735b3adf0385cc58ceb972af"/><section>
+    <title>Status</title>
+<indexterm><primary>Status</primary><secondary>DARP.Solvers.MIPSolverOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.MIPSolverOutput</primary><secondary>Status</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> DARP.Solvers.MIPSolverOutput.Status<computeroutput>[get]</computeroutput></computeroutput></para><para>
+
+<para>Status. </para>
+</para>
+<para>
+Implements <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1af88c347defa152373f3728d3031d43e8">DARP.Solvers.ISolverOutput</link>.</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/MIPSolver.cs</section>
+</section>

@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_d_a_r_p_1_1_models_1_1_time" xml:lang="en-US">
+<title>DARP.Models.Time Struct Reference</title>
+<indexterm><primary>DARP.Models.Time</primary></indexterm>
+<para>
+
+<para>Time structure using Ticks as default units. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time_1a99f2f407c264f4a3b520391fdb53890b">Time</link> (long ticks)</para>
+
+<para>Initialize the time structure. </para>
+</listitem>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time_1a13fb1a3cf15499070343ca97d6e20029">Time</link> (double ticks)</para>
+
+<para>Initialize the time structure. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1aacfae8c3eb17892d8f92d0590431b886"/>double <emphasis role="strong">ToDouble</emphasis> ()</para>
+
+<para>Returns Ticks as double. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1ab8f4070da8a65106b0c8b4e58e1852ca"/>int <emphasis role="strong">CompareTo</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> other)</para>
+
+<para>Implementation for IComparable. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a62df87881eb30c42daefbf08ba27082a"/>override bool <emphasis role="strong">Equals</emphasis> (object obj)</para>
+
+<para>Implementation for IComparable. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a134901c1810a95c9e0fd47cfb2cbb296"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+
+<para>Returns user-friendly formated string. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a8a9bd3f45289685ecca0c52db4f29c1d"/>override int <emphasis role="strong">GetHashCode</emphasis> ()</para>
+
+<para>Returns Ticks. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a9903e97211c46ced1f4e5934ef4b250f"/><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">AddTicks</emphasis> (int ticks)</para>
+
+<para>Reutnrs new istance of Time with Ticks increased. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1ae93f69d5cffdc256ca9f604c0863124e"/>static <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">operator+</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> left, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> right)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a900eec0f21ae0b32025622f2d3293c61"/>static <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">operator-</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> left, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> right)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1af65b4bd45fd5fa8b54f3dbcd209d7542"/>static bool <emphasis role="strong">operator==</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> left, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> right)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a2237e7d468de721d41d8e5f31e773d10"/>static bool <emphasis role="strong">operator!=</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> left, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> right)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a8ee054146b34026eb3527066e606941a"/>static bool <emphasis role="strong">operator&lt;</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> left, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> right)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a8596441461796a9bbdd8e4a8ef015ec6"/>static bool <emphasis role="strong">operator&gt;</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> left, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> right)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a02b50e462e264bc2d0920fa8a8a49ab1"/>static bool <emphasis role="strong">operator&lt;=</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> left, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> right)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1ae620443491a92fa436e6ad6cc37074f0"/>static bool <emphasis role="strong">operator&gt;=</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> left, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> right)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a0858b2692e6bf9e4db1d8e07e508bb1f"/>static readonly <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">Zero</emphasis> = new <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link>(0)</para>
+
+<para>Zero time. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a099941cf38e5e870b2efc3b9a7a4d734"/>long <emphasis role="strong">Ticks</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Ticks. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Time structure using Ticks as default units. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a99f2f407c264f4a3b520391fdb53890b"/><section>
+    <title>Time()<computeroutput>[1/2]</computeroutput></title>
+<indexterm><primary>Time</primary><secondary>DARP.Models.Time</secondary></indexterm>
+<indexterm><primary>DARP.Models.Time</primary><secondary>Time</secondary></indexterm>
+<para><computeroutput>DARP.Models.Time.Time (long ticks)</computeroutput></para><para>
+
+<para>Initialize the time structure. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>ticks</entry><entry>
+<para>Ticks</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_1a13fb1a3cf15499070343ca97d6e20029"/><section>
+    <title>Time()<computeroutput>[2/2]</computeroutput></title>
+<indexterm><primary>Time</primary><secondary>DARP.Models.Time</secondary></indexterm>
+<indexterm><primary>DARP.Models.Time</primary><secondary>Time</secondary></indexterm>
+<para><computeroutput>DARP.Models.Time.Time (double ticks)</computeroutput></para><para>
+
+<para>Initialize the time structure. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>ticks</entry><entry>
+<para>Ticks</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this struct was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/Time.cs</section>
+</section>

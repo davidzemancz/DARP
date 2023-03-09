@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics" xml:lang="en-US">
+<title>DARP.Solvers.InsertionHeuristics Class Reference</title>
+<indexterm><primary>DARP.Solvers.InsertionHeuristics</primary></indexterm>
+<para>
+
+<para>Insertion heurstics solver. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_1ad9d6e6768300cf2c408af2180b222ade">Run</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</para>
+
+<para>Run insertion heurstics. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_1a474ff9697d3ae276caeb5972d3056ab4">RunFirstFit</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</para>
+
+<para>Run first fit insertion heurstics. It inserts every order to first possible place. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_1af13d33cfead4179767e8d96f4b143cea"/><link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> <emphasis role="strong">RunLocalBestFit</emphasis> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</para>
+
+<para>Run local best fit insertion heurstics. It iterates over orders and each is inserted to best possible place. 
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>input</entry><entry>
+<para>Input</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_1afb4199f8c290b6fce91f5acf64564879"/><link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> <emphasis role="strong">RunGlobalBestFit</emphasis> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</para>
+
+<para>Run global best fit insertion heurstics. It iterates over orders and each iteration it inserts only the order that increases total profit the most. It iterates unitl no insertion is possible. 
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>input</entry><entry>
+<para>Input</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_1a075ee612912bc40590314ebd6e108410"/><link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> <emphasis role="strong">RunRandomizedGlobalBestFit</emphasis> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</para>
+
+<para>Run global best fit several times and with epsilon probability it inserts order randomly instead of to the best place. The it returns the best run. 
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>input</entry><entry>
+<para>Input</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+        <itemizedlist>
+            <listitem><para><link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">ISolverOutput</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_1aacf3059b2cee20d5a3acb7f487351981">Run</link> (<link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">ISolverInput</link> input)</para>
+
+<para>Run solver. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Insertion heurstics solver. </para>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_1ad9d6e6768300cf2c408af2180b222ade"/><section>
+    <title>Run()</title>
+<indexterm><primary>Run</primary><secondary>DARP.Solvers.InsertionHeuristics</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.InsertionHeuristics</primary><secondary>Run</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> DARP.Solvers.InsertionHeuristics.Run (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</computeroutput></para><para>
+
+<para>Run insertion heurstics. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>input</entry><entry>
+<para>Input</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_1a474ff9697d3ae276caeb5972d3056ab4"/><section>
+    <title>RunFirstFit()</title>
+<indexterm><primary>RunFirstFit</primary><secondary>DARP.Solvers.InsertionHeuristics</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.InsertionHeuristics</primary><secondary>RunFirstFit</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> DARP.Solvers.InsertionHeuristics.RunFirstFit (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</computeroutput></para><para>
+
+<para>Run first fit insertion heurstics. It inserts every order to first possible place. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>input</entry><entry>
+<para>Input</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/InsertionHeuristics.cs</section>
+</section>

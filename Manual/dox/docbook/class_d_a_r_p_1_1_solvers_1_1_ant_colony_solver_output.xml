@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output" xml:lang="en-US">
+<title>DARP.Solvers.AntColonySolverOutput Class Reference</title>
+<indexterm><primary>DARP.Solvers.AntColonySolverOutput</primary></indexterm>
+<para>
+
+<para>Ant colony solver output. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output_1abba45f305d3ec931d5723bc2b50171e6"/><emphasis role="strong">AntColonySolverOutput</emphasis> ()</para>
+
+<para>Initialize. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output_1a9dfcc3425dd2a8816cad179334b7b120">Plan</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output_1a029b0b6fa84a94893476df154ba23615">Status</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Status. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">DARP.Solvers.ISolverOutput</link>        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1ab608951b5156044ff441a74b5de15b06">Plan</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1af88c347defa152373f3728d3031d43e8">Status</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Status. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Ant colony solver output. </para>
+</section>
+<section>
+<title>Property Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output_1a9dfcc3425dd2a8816cad179334b7b120"/><section>
+    <title>Plan</title>
+<indexterm><primary>Plan</primary><secondary>DARP.Solvers.AntColonySolverOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.AntColonySolverOutput</primary><secondary>Plan</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> DARP.Solvers.AntColonySolverOutput.Plan<computeroutput>[get]</computeroutput></computeroutput></para><para>
+
+<para>Plan. </para>
+</para>
+<para>
+Implements <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1ab608951b5156044ff441a74b5de15b06">DARP.Solvers.ISolverOutput</link>.</para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output_1a029b0b6fa84a94893476df154ba23615"/><section>
+    <title>Status</title>
+<indexterm><primary>Status</primary><secondary>DARP.Solvers.AntColonySolverOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.AntColonySolverOutput</primary><secondary>Status</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> DARP.Solvers.AntColonySolverOutput.Status<computeroutput>[get]</computeroutput></computeroutput></para><para>
+
+<para>Status. </para>
+</para>
+<para>
+Implements <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1af88c347defa152373f3728d3031d43e8">DARP.Solvers.ISolverOutput</link>.</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/AntColonySolver.cs</section>
+</section>

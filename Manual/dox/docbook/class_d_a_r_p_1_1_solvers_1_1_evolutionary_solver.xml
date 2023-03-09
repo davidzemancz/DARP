@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver" xml:lang="en-US">
+<title>DARP.Solvers.EvolutionarySolver Class Reference</title>
+<indexterm><primary>DARP.Solvers.EvolutionarySolver</primary></indexterm>
+<para>
+
+<para>Evolutionary solver. </para>
+ 
+</para>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual">Individual</link></para>
+
+<para>Individual representation. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_output">EvolutionarySolverOutput</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1a50df5e0d5221f3683c7ebde673ebf005">Run</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input">EvolutionarySolverInput</link> input)</para>
+
+<para>Run evolutionary solver. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+        <itemizedlist>
+            <listitem><para><link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">ISolverOutput</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_1aacf3059b2cee20d5a3acb7f487351981">Run</link> (<link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">ISolverInput</link> input)</para>
+
+<para>Run solver. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Evolutionary solver. </para>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1a50df5e0d5221f3683c7ebde673ebf005"/><section>
+    <title>Run()</title>
+<indexterm><primary>Run</primary><secondary>DARP.Solvers.EvolutionarySolver</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.EvolutionarySolver</primary><secondary>Run</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_output">EvolutionarySolverOutput</link> DARP.Solvers.EvolutionarySolver.Run (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input">EvolutionarySolverInput</link> input)</computeroutput></para><para>
+
+<para>Run evolutionary solver. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>input</entry><entry>
+<para>Input</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/EvolutionarySolver.cs</section>
+</section>

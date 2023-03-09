@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input" xml:lang="en-US">
+<title>DARP.Solvers.EvolutionarySolverInput Class Reference</title>
+<indexterm><primary>DARP.Solvers.EvolutionarySolverInput</primary></indexterm>
+<para>
+
+<para>Evolutionary solver input. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1aae3510b9a7884e0ad8031b067bfe84c9"/><emphasis role="strong">EvolutionarySolverInput</emphasis> ()</para>
+
+<para>Initialize. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1a5494e7f9779daa0ded397bf9b5e385bd">EvolutionarySolverInput</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</para>
+
+<para>Initialize EvolutionarySolverInput base on SolverInputBase instance. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Public Member Functions inherited from <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">DARP.Solvers.SolverInputBase</link>        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a944bf65c43707b34963ef8835ae0f140">SolverInputBase</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</para>
+
+<para>Initialize SolverInputBase based on another instance. </para>
+</listitem>
+        </itemizedlist>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1a92d3c93c0301588ebc324645e67c5622"/>Random <emphasis role="strong">RandomInstance</emphasis> = null<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Instance of random generator. If null, new instance is created. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1a2e8fa2bdba9a7abc60d327925f0db441"/>int <emphasis role="strong">Generations</emphasis> = 100<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Number of generations. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1a09959a71f297ec2a557a5f22b658a485"/>int <emphasis role="strong">PopulationSize</emphasis> = 100<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Population size. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1aa5fb5b6bf1ff24a7d04395ee1aa5e76a"/>double <emphasis role="strong">RandomOrderRemoveMutProb</emphasis> = 0.4<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Probability of removing order in insertion mutations. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1afdf11301a3bd88f8f0fe8298c522f876"/>double <emphasis role="strong">RandomOrderInsertMutProb</emphasis> = 0.5<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Probability of trying to randomly insert order into random route. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1aaf2a459a3d12e738a843b333a1bc74da"/>double <emphasis role="strong">BestfitOrderInsertMutProb</emphasis> = 0.5<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Probability of inserting order into random route in best possible place. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1acada24f2b6bf8888a2037f320093757b"/>double <emphasis role="strong">PlanCrossoverProb</emphasis> = 0.3<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Probability of crossing over two plans. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1aee48885e8e3b435ed1ac918def040623"/>double <emphasis role="strong">RouteCrossoverProb</emphasis> = 0.3<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Probability of crossing over two routes in the same plan. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1a6a410c244b1d73f75f7a199e7de319a0"/><link linkend="_namespace_d_a_r_p_1_1_solvers_1a9ff6efa9f67375e49799db1bd97ec16e">FitnessLogFunc</link> <emphasis role="strong">FitnessLog</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Function for logging fitness. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1a43659a91687ff3cf7d63daa4440580d7"/>bool <emphasis role="strong">AdaptiveMutation</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Use adaptive mutation. Decreases mutations probability over generations. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1aca02bb5e6de0fd2f76a472ffce11aa69"/>EnviromentalSelection <emphasis role="strong">EnviromentalSelection</emphasis> = EnviromentalSelection.Elitism<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Enviromental selection. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1af91f14435395d22bf058250fd0344f5b"/><link linkend="_namespace_d_a_r_p_1_1_solvers_1ad7d7d24b2a2f09182d8fdd3149c0345a">InsertionHeuristicFunc</link> <emphasis role="strong">CrossoverInsertionHeuristic</emphasis> = null<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Heuristic that is used after crossover to insert remained orders. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">DARP.Solvers.SolverInputBase</link>        <itemizedlist>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1abe3672f27097e06ca1b5bd67305f5add">Time</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1afcd77f9f138ec8e554d050ed1ffebfb1">Plan</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> &gt; <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a8f94fa563177380860a7975ac4350c3c">Vehicles</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of vehicles. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a9c45185ce300ecb1d6459e4c147b2fb6">Orders</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of orders. </para>
+</listitem>
+            <listitem><para>MetricFunc <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a9c4d1e05a4957131ce6d65c2cc78606d">Metric</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Metric. </para>
+</listitem>
+            <listitem><para>double <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a2a39bf8935f17460b0b97f3aa40f5927">VehicleChargePerTick</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Vehicle charge per tick. </para>
+</listitem>
+        </itemizedlist>
+Properties inherited from <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">DARP.Solvers.ISolverInput</link>        <itemizedlist>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1abef147abdad41bcd215e5e4a5cb9bfe2">Time</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a6f344c8b4d7e0038708cc10fef7c0fcd">Plan</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> &gt; <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a3d969adeae7b5df96ac5b21350fd4a30">Vehicles</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of vehicles. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a779370f89d4867c31dd1110239fe13b6">Orders</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of orders. </para>
+</listitem>
+            <listitem><para>MetricFunc <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a84c4d6610947e6359318a4fa214148d7">Metric</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Metric. </para>
+</listitem>
+            <listitem><para>double <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a555be27de293fe9d4b2e21e7447f2d76">VehicleChargePerTick</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Vehicle charge per tick. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Evolutionary solver input. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input_1a5494e7f9779daa0ded397bf9b5e385bd"/><section>
+    <title>EvolutionarySolverInput()</title>
+<indexterm><primary>EvolutionarySolverInput</primary><secondary>DARP.Solvers.EvolutionarySolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.EvolutionarySolverInput</primary><secondary>EvolutionarySolverInput</secondary></indexterm>
+<para><computeroutput>DARP.Solvers.EvolutionarySolverInput.EvolutionarySolverInput (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</computeroutput></para><para>
+
+<para>Initialize EvolutionarySolverInput base on SolverInputBase instance. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>solverInputBase</entry><entry>
+<para>Instance</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/EvolutionarySolver.cs</section>
+</section>

@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point" xml:lang="en-US">
+<title>DARP.Models.OrderDeliveryRoutePoint Class Reference</title>
+<indexterm><primary>DARP.Models.OrderDeliveryRoutePoint</primary></indexterm>
+<para>
+
+<para>Order delivery route point. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point_1a92cd4757a167313b0e8952cd7279ac45">OrderDeliveryRoutePoint</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</para>
+
+<para>Initialize the OrderDeliveryRoutePoint. </para>
+</listitem>
+            <listitem><para>override <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> <link linkend="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point_1ab5825b599b71ebd990f3c8fafeb760c3">Clone</link> ()</para>
+
+<para>Clone the OrderDeliveryRoutePoint. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Public Member Functions inherited from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">DARP.Models.RoutePoint</link>        <itemizedlist>
+            <listitem><para>virtual <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point_1a12bf601c8ab1ea07559a2c2b70f7c01b">Clone</link> ()</para>
+
+<para>Clone the point. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a6580e08d35c8918705bd780de9ab96a9"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point_1a2ad704071c52b5590fe27ced25f804d8"/><link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> <emphasis role="strong">Order</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>The order to be picked up. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point_1a220480ee027d96e5fd1d38e65888a9e9"/>override <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Location</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Delivery location. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point_1adaf60419b6ecdd552011c960f0a15544"/>override <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">Time</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Delivery time. Setter checks whether delivery time is in the order&apos;s time window. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">DARP.Models.RoutePoint</link>        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1ad2384c0ebfd76b8f91d764086e74af14"/>virtual <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">Time</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time of arrival. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a8554943dc360eed2edd73cc0fd6473ae"/>virtual <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Location</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Location in metric space. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Order delivery route point. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point_1a92cd4757a167313b0e8952cd7279ac45"/><section>
+    <title>OrderDeliveryRoutePoint()</title>
+<indexterm><primary>OrderDeliveryRoutePoint</primary><secondary>DARP.Models.OrderDeliveryRoutePoint</secondary></indexterm>
+<indexterm><primary>DARP.Models.OrderDeliveryRoutePoint</primary><secondary>OrderDeliveryRoutePoint</secondary></indexterm>
+<para><computeroutput>DARP.Models.OrderDeliveryRoutePoint.OrderDeliveryRoutePoint (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</computeroutput></para><para>
+
+<para>Initialize the OrderDeliveryRoutePoint. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>order</entry><entry>
+<para>An order</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point_1ab5825b599b71ebd990f3c8fafeb760c3"/><section>
+    <title>Clone()</title>
+<indexterm><primary>Clone</primary><secondary>DARP.Models.OrderDeliveryRoutePoint</secondary></indexterm>
+<indexterm><primary>DARP.Models.OrderDeliveryRoutePoint</primary><secondary>Clone</secondary></indexterm>
+<para><computeroutput>override <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> DARP.Models.OrderDeliveryRoutePoint.Clone ( )<computeroutput>[virtual]</computeroutput></computeroutput></para><para>
+
+<para>Clone the OrderDeliveryRoutePoint. </para>
+</para>
+<para>
+Reimplemented from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point_1a12bf601c8ab1ea07559a2c2b70f7c01b">DARP.Models.RoutePoint</link>.</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/RoutePoint.cs</section>
+</section>

@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_d_a_r_p_1_1_views" xml:lang="en-US">
+<title>DARP.Views Namespace Reference</title>
+<indexterm><primary>DARP.Views</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <emphasis role="strong">OrderView</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">RoutePointView</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">VehicleView</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+</section>

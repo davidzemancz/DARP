@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_annotated" xml:lang="en-US">
+<title>Class List</title>
+Here are the classes, structs, unions and interfaces with brief descriptions:<link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver">DARP.Solvers.AntColonySolver</link>
+<para>Ant colony solver </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_input">DARP.Solvers.AntColonySolverInput</link>
+<para>Ant colony solver output </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output">DARP.Solvers.AntColonySolverOutput</link>
+<para>Ant colony solver output </para>
+<link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">DARP.Models.Cords2D</link>
+<para>Coordinates structure in 2 dimensional space </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver">DARP.Solvers.EvolutionarySolver</link>
+<para>Evolutionary solver </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input">DARP.Solvers.EvolutionarySolverInput</link>
+<para>Evolutionary solver input </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_output">DARP.Solvers.EvolutionarySolverOutput</link>
+<para>Evolutionary solver output </para>
+<link linkend="_class_xaml_generated_namespace_1_1_generated_internal_type_helper">XamlGeneratedNamespace.GeneratedInternalTypeHelper</link>
+<para>GeneratedInternalTypeHelper </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual">DARP.Solvers.EvolutionarySolver.Individual</link>
+<para>Individual representation </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics">DARP.Solvers.InsertionHeuristics</link>
+<para>Insertion heurstics solver </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">DARP.Solvers.InsertionHeuristicsInput</link>
+<para>Insertion heurstics input </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">DARP.Solvers.InsertionHeuristicsOutput</link>
+<para>Insertion heuristics solver output </para>
+<link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver">DARP.Solvers.ISolver</link>
+<para>Solver </para>
+<link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">DARP.Solvers.ISolverInput</link>
+<para>Solver input </para>
+<link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">DARP.Solvers.ISolverOutput</link>
+<para>Solver output </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver">DARP.Solvers.MIPSolver</link>
+<para>Mixed integer programming solver </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input">DARP.Solvers.MIPSolverInput</link>
+<para>Mixed integer programming solver input </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output">DARP.Solvers.MIPSolverOutput</link>
+<para>Mixed integer programming solver output </para>
+<link linkend="_class_d_a_r_p_1_1_models_1_1_order">DARP.Models.Order</link>
+<para>Order represents a request for transportation from one place to another </para>
+<link linkend="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point">DARP.Models.OrderDeliveryRoutePoint</link>
+<para>Order delivery route point </para>
+<link linkend="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point">DARP.Models.OrderPickupRoutePoint</link>
+<para>Order pickup route point. It is always followed by delivery point </para>
+<link linkend="_class_d_a_r_p_1_1_models_1_1_plan">DARP.Models.Plan</link>
+<para>Plan is a collection of routes for fixed set of vehicles. For each vehicle there exists exactly one route </para>
+<link linkend="_class_d_a_r_p_1_1_models_1_1_route">DARP.Models.Route</link>
+<para>Route is collection of RoutePoints for one vehicle. There exists three types of point, pickups, deliveries and vehicle location </para>
+<link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">DARP.Models.RoutePoint</link>
+<para>Point at a route </para>
+<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">DARP.Solvers.SolverInputBase</link>
+<para>Default basic implementation of ISolverInput </para>
+<link linkend="_class_d_a_r_p_1_1_utils_1_1_status">DARP.Utils.Status</link>
+<para>Status </para>
+<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">DARP.Models.Time</link>
+<para>Time structure using Ticks as default units </para>
+<link linkend="_struct_d_a_r_p_1_1_models_1_1_time_window">DARP.Models.TimeWindow</link>
+<para>Time window structure </para>
+<link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">DARP.Models.Vehicle</link>
+<para>Vehicle delivers orders between pickups and deliveries points </para>
+<link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point">DARP.Models.VehicleRoutePoint</link>
+<para>Vehicle location point, always the first point on a route and the route contains exactly the one </para>
+</section>

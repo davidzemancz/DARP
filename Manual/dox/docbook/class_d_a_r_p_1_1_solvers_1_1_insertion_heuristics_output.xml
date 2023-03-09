@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output" xml:lang="en-US">
+<title>DARP.Solvers.InsertionHeuristicsOutput Class Reference</title>
+<indexterm><primary>DARP.Solvers.InsertionHeuristicsOutput</primary></indexterm>
+<para>
+
+<para>Insertion heuristics solver output. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1a892de55eb6e8b78d6ec784a3d2eb38b1"/><emphasis role="strong">InsertionHeuristicsOutput</emphasis> ()</para>
+
+<para>Initialize. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1ae33abf06915eb9a3bdd7b43a093caff1">InsertionHeuristicsOutput</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> plan, <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> status, List&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; remainingOrders)</para>
+
+<para>Initialize. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1a43152564a3cc82e159aefb84afd969d7">Plan</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1a1f2f435ce6ed49d64afd509b73564a8e">Status</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Status. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1aa0a856bbea15f340b77db3ccabc8e932"/>List&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <emphasis role="strong">RemainingOrders</emphasis><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Not inserted orders. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">DARP.Solvers.ISolverOutput</link>        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1ab608951b5156044ff441a74b5de15b06">Plan</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1af88c347defa152373f3728d3031d43e8">Status</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Status. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Insertion heuristics solver output. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1ae33abf06915eb9a3bdd7b43a093caff1"/><section>
+    <title>InsertionHeuristicsOutput()</title>
+<indexterm><primary>InsertionHeuristicsOutput</primary><secondary>DARP.Solvers.InsertionHeuristicsOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.InsertionHeuristicsOutput</primary><secondary>InsertionHeuristicsOutput</secondary></indexterm>
+<para><computeroutput>DARP.Solvers.InsertionHeuristicsOutput.InsertionHeuristicsOutput (<link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> plan, <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> status, List&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; remainingOrders)</computeroutput></para><para>
+
+<para>Initialize. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>plan</entry><entry>
+<para>Plan</para>
+</entry>
+                            </row>
+                            <row>
+<entry>status</entry><entry>
+<para>Status</para>
+</entry>
+                            </row>
+                            <row>
+<entry>remainingOrders</entry><entry>
+<para>Remaining orders</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+</section>
+<section>
+<title>Property Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1a43152564a3cc82e159aefb84afd969d7"/><section>
+    <title>Plan</title>
+<indexterm><primary>Plan</primary><secondary>DARP.Solvers.InsertionHeuristicsOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.InsertionHeuristicsOutput</primary><secondary>Plan</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> DARP.Solvers.InsertionHeuristicsOutput.Plan<computeroutput>[get]</computeroutput></computeroutput></para><para>
+
+<para>Plan. </para>
+</para>
+<para>
+Implements <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1ab608951b5156044ff441a74b5de15b06">DARP.Solvers.ISolverOutput</link>.</para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1a1f2f435ce6ed49d64afd509b73564a8e"/><section>
+    <title>Status</title>
+<indexterm><primary>Status</primary><secondary>DARP.Solvers.InsertionHeuristicsOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.InsertionHeuristicsOutput</primary><secondary>Status</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> DARP.Solvers.InsertionHeuristicsOutput.Status<computeroutput>[get]</computeroutput></computeroutput></para><para>
+
+<para>Status. </para>
+</para>
+<para>
+Implements <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1af88c347defa152373f3728d3031d43e8">DARP.Solvers.ISolverOutput</link>.</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/InsertionHeuristics.cs</section>
+</section>

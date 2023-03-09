@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_utils_1_1_status" xml:lang="en-US">
+<title>DARP.Utils.Status Class Reference</title>
+<indexterm><primary>DARP.Utils.Status</primary></indexterm>
+<para>
+
+<para>Status. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_utils_1_1_status_1af6ed62c26734067600a4fa245747fa64">Status</link> (StatusCode code, string message)</para>
+
+<para>Initialize new status. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Static Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_utils_1_1_status_1a37ec2710983910ada9e07e8a408e8c0d"/>static readonly <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <emphasis role="strong">Success</emphasis> = new <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link>(StatusCode.Ok, &quot;&quot;)</para>
+
+<para>Success status. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_utils_1_1_status_1ad22a2853315b8297253d1cf6e7a68f96"/>static readonly <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <emphasis role="strong">Failed</emphasis> = new <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link>(StatusCode.Failed, &quot;&quot;)</para>
+
+<para>Fail status. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_utils_1_1_status_1af47747f8f06c2de2e14dc33591a8e83e"/>StatusCode <emphasis role="strong">Code</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Status code. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_utils_1_1_status_1abc8f5bd24524a669c622032fdad18631"/>string <emphasis role="strong">Message</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Status message. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Status. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_utils_1_1_status_1af6ed62c26734067600a4fa245747fa64"/><section>
+    <title>Status()</title>
+<indexterm><primary>Status</primary><secondary>DARP.Utils.Status</secondary></indexterm>
+<indexterm><primary>DARP.Utils.Status</primary><secondary>Status</secondary></indexterm>
+<para><computeroutput>DARP.Utils.Status.Status (StatusCode code, string message)</computeroutput></para><para>
+
+<para>Initialize new status. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>code</entry><entry>
+<para>Code</para>
+</entry>
+                            </row>
+                            <row>
+<entry>message</entry><entry>
+<para>Message</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Utils/Status.cs</section>
+</section>

@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_input" xml:lang="en-US">
+<title>DARP.Solvers.AntColonySolverInput Class Reference</title>
+<indexterm><primary>DARP.Solvers.AntColonySolverInput</primary></indexterm>
+<para>
+
+<para>Ant colony solver output. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_input_1aa90f2a50ab94efbd236a47952f2a1b97"/><emphasis role="strong">AntColonySolverInput</emphasis> ()</para>
+
+<para>Initialize. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_input_1a8fa471cced10d594e18fb4737b05eaf3">AntColonySolverInput</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</para>
+
+<para>Initialize AntColonySolverInput base on SolverInputBase instance. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Public Member Functions inherited from <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">DARP.Solvers.SolverInputBase</link>        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a944bf65c43707b34963ef8835ae0f140">SolverInputBase</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</para>
+
+<para>Initialize SolverInputBase based on another instance. </para>
+</listitem>
+        </itemizedlist>
+<simplesect>
+    <title>Additional Inherited Members    </title>
+Properties inherited from <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">DARP.Solvers.SolverInputBase</link>        <itemizedlist>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1abe3672f27097e06ca1b5bd67305f5add">Time</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1afcd77f9f138ec8e554d050ed1ffebfb1">Plan</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> &gt; <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a8f94fa563177380860a7975ac4350c3c">Vehicles</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of vehicles. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a9c45185ce300ecb1d6459e4c147b2fb6">Orders</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of orders. </para>
+</listitem>
+            <listitem><para>MetricFunc <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a9c4d1e05a4957131ce6d65c2cc78606d">Metric</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Metric. </para>
+</listitem>
+            <listitem><para>double <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a2a39bf8935f17460b0b97f3aa40f5927">VehicleChargePerTick</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Vehicle charge per tick. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">DARP.Solvers.ISolverInput</link>        <itemizedlist>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1abef147abdad41bcd215e5e4a5cb9bfe2">Time</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a6f344c8b4d7e0038708cc10fef7c0fcd">Plan</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> &gt; <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a3d969adeae7b5df96ac5b21350fd4a30">Vehicles</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of vehicles. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a779370f89d4867c31dd1110239fe13b6">Orders</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of orders. </para>
+</listitem>
+            <listitem><para>MetricFunc <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a84c4d6610947e6359318a4fa214148d7">Metric</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Metric. </para>
+</listitem>
+            <listitem><para>double <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a555be27de293fe9d4b2e21e7447f2d76">VehicleChargePerTick</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Vehicle charge per tick. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Ant colony solver output. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_input_1a8fa471cced10d594e18fb4737b05eaf3"/><section>
+    <title>AntColonySolverInput()</title>
+<indexterm><primary>AntColonySolverInput</primary><secondary>DARP.Solvers.AntColonySolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.AntColonySolverInput</primary><secondary>AntColonySolverInput</secondary></indexterm>
+<para><computeroutput>DARP.Solvers.AntColonySolverInput.AntColonySolverInput (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link> solverInputBase)</computeroutput></para><para>
+
+<para>Initialize AntColonySolverInput base on SolverInputBase instance. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>solverInputBase</entry><entry>
+<para>Instance</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/AntColonySolver.cs</section>
+</section>

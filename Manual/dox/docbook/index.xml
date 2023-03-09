@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_index" xml:lang="en-US">
+    <info>
+    <title>DARP</title>
+    </info>
+<chapter>
+    <title>Namespace Documentation</title>
+<xi:include href="namespace_d_a_r_p.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_d_a_r_p_1_1_models.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_d_a_r_p_1_1_services.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_d_a_r_p_1_1_solvers.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_d_a_r_p_1_1_utils.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_d_a_r_p_1_1_views.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_d_a_r_p_1_1_windows.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<xi:include href="namespace_xaml_generated_namespace.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<chapter>
+    <title>Class Documentation</title>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_input.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_d_a_r_p_1_1_models_1_1_cords2_d.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_output.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_xaml_generated_namespace_1_1_generated_internal_type_helper.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="interface_d_a_r_p_1_1_solvers_1_1_i_solver.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="interface_d_a_r_p_1_1_solvers_1_1_i_solver_input.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="interface_d_a_r_p_1_1_solvers_1_1_i_solver_output.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_models_1_1_order.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_models_1_1_order_delivery_route_point.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_models_1_1_order_pickup_route_point.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_models_1_1_plan.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_models_1_1_route.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_models_1_1_route_point.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_solvers_1_1_solver_input_base.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_utils_1_1_status.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_d_a_r_p_1_1_models_1_1_time.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="struct_d_a_r_p_1_1_models_1_1_time_window.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_models_1_1_vehicle.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    <xi:include href="class_d_a_r_p_1_1_models_1_1_vehicle_route_point.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</chapter>
+<index/>
+</book>

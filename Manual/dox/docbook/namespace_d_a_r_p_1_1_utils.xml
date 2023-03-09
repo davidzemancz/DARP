@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_d_a_r_p_1_1_utils" xml:lang="en-US">
+<title>DARP.Utils Namespace Reference</title>
+<indexterm><primary>DARP.Utils</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <emphasis role="strong">IListExtensions</emphasis></para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link></para>
+
+<para>Status. </para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">TextBoxWriter</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">XMath</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Enumerations    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a545e0e099f95344c92506f926a79ab04"/>enum <emphasis role="strong">EnviromentalSelection</emphasis> { <emphasis role="strong">Elitism</emphasis> = 0
+, <emphasis role="strong">Tournament</emphasis> = 1
+ }</para>
+</listitem>
+            <listitem><para><anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a6740e29f4f1bff4e6a987a942cfc9b32"/>enum <emphasis role="strong">ParentalSelection</emphasis> { <emphasis role="strong">RouletteWheel</emphasis> = 0
+ }</para>
+</listitem>
+            <listitem><para><anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a17bc53954669dd2ed18c01a05fc0f38d"/>enum <emphasis role="strong">Metric</emphasis> { <emphasis role="strong">Manhattan</emphasis>
+, <emphasis role="strong">Euclidean</emphasis>
+ }</para>
+</listitem>
+            <listitem><para>enum <link linkend="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08">InsertionHeuristicsMode</link> { <link linkend="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08ac7f39b24722abe0c524d1459c74ba4ff">FirstFit</link> = 0
+, <link linkend="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08a448dc6b5a16c8c250ebccf8ddb27fb4a">LocalBestFit</link> = 1
+, <link linkend="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08a1bce59b0530375aba4ed6ce76469d0dd">GlobalBestFit</link> = 2
+, <link linkend="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08a397add7a041893d21f454743de475ff5">RandomizedGlobalBestFit</link> = 3
+ }</para>
+</listitem>
+            <listitem><para><anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a5f6bc1783af9919e2e75057598332580"/>enum <emphasis role="strong">StatusCode</emphasis> { <emphasis role="strong">Ok</emphasis> = 0
+, <emphasis role="strong">Failed</emphasis> = 1
+, <emphasis role="strong">Exception</emphasis> = 2
+ }</para>
+</listitem>
+            <listitem><para><anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a65f58ac805816557288b2a42e64f517a"/>enum <emphasis role="strong">InsertionObjective</emphasis> { <emphasis role="strong">MinimizeDeliveryTime</emphasis> = 0
+, <emphasis role="strong">MinimizeDistance</emphasis> = 1
+, <emphasis role="strong">MaximizeProfit</emphasis> = 2
+ }</para>
+</listitem>
+            <listitem><para>enum <link linkend="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1">OptimizationObjective</link> { <link linkend="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1a4e5169a46632cbaa5a75ff77e88c7608">MinimizeDeliveryTime</link> = 0
+, <link linkend="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1a027ca39f911b2abd5ce78c055f474f68">MinimizeTime</link> = 1
+, <link linkend="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1a578b28c3b76022d457322875cb54c483">MaximizeProfit</link> = 2
+ }</para>
+</listitem>
+            <listitem><para><anchor xml:id="_namespace_d_a_r_p_1_1_utils_1adfe390d99c95019e7ef1df11f319ae8e"/>enum <emphasis role="strong">OptimizationMethod</emphasis> { <?linebreak?><emphasis role="strong">Disabled</emphasis> = 0
+, <emphasis role="strong">MIP</emphasis> = 1
+, <emphasis role="strong">Evolutionary</emphasis> = 2
+, <emphasis role="strong">AntColony</emphasis> = 3
+, <?linebreak?><emphasis role="strong">GraphSearch</emphasis> = 4
+ }</para>
+</listitem>
+            <listitem><para><anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a5a23762659e8beed251bf3e7701bd372"/>enum <emphasis role="strong">LogLevel</emphasis> { <?linebreak?><emphasis role="strong">Debug</emphasis> = 1
+, <emphasis role="strong">Info</emphasis> = 2
+, <emphasis role="strong">Warn</emphasis> = 3
+, <emphasis role="strong">Error</emphasis> = 4
+, <?linebreak?><emphasis role="strong">Fatal</emphasis> = 5
+ }</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_namespace_d_a_r_p_1_1_utils_1ac4ee4af24e731a43eafc02db53a9f749"/>delegate <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">MetricFunc</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> c1, <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> c2)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Enumeration Type Documentation</title>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08"/><section>
+    <title>InsertionHeuristicsMode</title>
+<indexterm><primary>InsertionHeuristicsMode</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>InsertionHeuristicsMode</secondary></indexterm>
+<para><computeroutput>enum <link linkend="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08">DARP.Utils.InsertionHeuristicsMode</link></computeroutput></para><informaltable frame="all">
+<title>Enumerator</title>
+    <tgroup cols="2" align="left" colsep="1" rowsep="1">
+      <colspec colname='c1'/>
+      <colspec colname='c2'/>
+<tbody>
+<row><entry><indexterm><primary>FirstFit</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>FirstFit</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08ac7f39b24722abe0c524d1459c74ba4ff"/>FirstFit</entry><entry>
+<para>Gets orders in order and inserts them to first possible place. </para>
+</entry></row><row><entry><indexterm><primary>LocalBestFit</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>LocalBestFit</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08a448dc6b5a16c8c250ebccf8ddb27fb4a"/>LocalBestFit</entry><entry>
+<para>Gets orders in order and inserts them to best possible place. </para>
+</entry></row><row><entry><indexterm><primary>GlobalBestFit</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>GlobalBestFit</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08a1bce59b0530375aba4ed6ce76469d0dd"/>GlobalBestFit</entry><entry>
+<para>Finds best fitting order and inserts it until there are none. </para>
+</entry></row><row><entry><indexterm><primary>RandomizedGlobalBestFit</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>RandomizedGlobalBestFit</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a94fa489a58d890951d2c0dcde891bf08a397add7a041893d21f454743de475ff5"/>RandomizedGlobalBestFit</entry><entry>
+<para>Finds best fitting order and inserts it until there are none. </para>
+</entry></row>    </tbody>
+    </tgroup>
+</informaltable>
+</section>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1"/><section>
+    <title>OptimizationObjective</title>
+<indexterm><primary>OptimizationObjective</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>OptimizationObjective</secondary></indexterm>
+<para><computeroutput>enum <link linkend="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1">DARP.Utils.OptimizationObjective</link></computeroutput></para><informaltable frame="all">
+<title>Enumerator</title>
+    <tgroup cols="2" align="left" colsep="1" rowsep="1">
+      <colspec colname='c1'/>
+      <colspec colname='c2'/>
+<tbody>
+<row><entry><indexterm><primary>MinimizeDeliveryTime</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>MinimizeDeliveryTime</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1a4e5169a46632cbaa5a75ff77e88c7608"/>MinimizeDeliveryTime</entry><entry>
+<para>Not supported yet. </para>
+</entry></row><row><entry><indexterm><primary>MinimizeTime</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>MinimizeTime</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1a027ca39f911b2abd5ce78c055f474f68"/>MinimizeTime</entry><entry>
+<para>Minimizes distance traveled by vehicles. All orders must be handled for optimality. </para>
+</entry></row><row><entry><indexterm><primary>MaximizeProfit</primary><secondary>DARP.Utils</secondary></indexterm>
+<indexterm><primary>DARP.Utils</primary><secondary>MaximizeProfit</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_utils_1a8030ac2836dd7421eb78016154e951e1a578b28c3b76022d457322875cb54c483"/>MaximizeProfit</entry><entry>
+<para>Maximizes profit. Not all orders must be handled for optimality. </para>
+</entry></row>    </tbody>
+    </tgroup>
+</informaltable>
+</section>
+</section>
+</section>

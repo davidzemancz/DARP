@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_d_a_r_p_1_1_windows" xml:lang="en-US">
+<title>DARP.Windows Namespace Reference</title>
+<indexterm><primary>DARP.Windows</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <emphasis role="strong">MainWindow</emphasis></para>
+
+<para>Interaction logic for MainWindow.xaml. </para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">MainWindowDataModel</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">MainWindowModel</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">MainWindowParams</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">MainWindowStats</emphasis></para>
+</listitem>
+            <listitem><para>struct <emphasis role="strong">PropertyRange</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">TaskItem</emphasis></para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">TextBoxWindow</emphasis></para>
+
+<para>Interaction logic for TextBoxWindow.xaml. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+</section>

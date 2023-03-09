@@ -10,21 +10,38 @@ using System.Windows.Controls;
 
 namespace DARP.Solvers
 {
+    /// <summary>
+    /// Mixed integer programming solver output
+    /// </summary>
     public class MIPSolverOutput : ISolverOutput
     {
+        /// <summary>
+        /// Plan
+        /// </summary>
         public Plan Plan { get; }
+
+        /// <summary>
+        /// Status
+        /// </summary>
         public Status Status { get; }
+
+        /// <summary>
+        /// Objective value
+        /// </summary>
         public double ObjetiveValue { get; }
 
+        /// <summary>
+        /// Initialize
+        /// </summary>
         public MIPSolverOutput()
         {
         }
 
-        public MIPSolverOutput(Status status)
-        {
-            Status = status;
-        }
-
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        /// <param name="plan">Plan</param>
+        /// <param name="status">Status</param>
         public MIPSolverOutput(Plan plan, Status status, double objetiveValue)
         {
             Plan = plan;
@@ -32,30 +49,78 @@ namespace DARP.Solvers
             ObjetiveValue = objetiveValue;
         }
     }
+
+    /// <summary>
+    /// Mixed integer programming solver input
+    /// </summary>
     public class MIPSolverInput : SolverInputBase
     {
+        /// <summary>
+        /// Enable multithreading
+        /// </summary>
         public bool Multithreading { get; set; }
-        public long TimeLimit { get; set; }
-        public string Solver { get; set; } = "SCIP";
-        public bool Integer { get; set; } = true;
-        public OptimizationObjective Objective { get; set; } = OptimizationObjective.MaximizeProfit;
 
+        /// <summary>
+        /// Time limit in miliseconds
+        /// </summary>
+        public long TimeLimit { get; set; }
+
+        /// <summary>
+        /// Internal solver. SCIP or CP-SAT are available
+        /// </summary>
+        public string Solver { get; set; } = "SCIP";
+
+        /// <summary>
+        /// Require integeral solution. Default is true.
+        /// </summary>
+        public bool Integer { get; set; } = true;
+
+        /// <summary>
+        /// Objective function
+        /// </summary>
+        public OptimizationObjective Objective { get; set; } = OptimizationObjective.MaximizeProfit;
+        
+        /// <summary>
+        /// Initialize 
+        /// </summary>
         public MIPSolverInput() { }
+
+        /// <summary>
+        /// Initialize EvolutionarySolverInput base on SolverInputBase instance
+        /// </summary>
+        /// <param name="solverInputBase">Instance</param>
         public MIPSolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
     }
+
+    /// <summary>
+    /// Mixed integer programming solver
+    /// </summary>
     public class MIPSolver : ISolver
     {
         private Solver _solver;
       
+        /// <summary>
+        /// Initialize
+        /// </summary>
         public MIPSolver()
         {
         }
 
+        /// <summary>
+        /// Run mixed integer programming solver
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         ISolverOutput ISolver.Run(ISolverInput input)
         {
             return Run((MIPSolverInput)input);
         }
 
+        /// <summary>
+        /// Run mixed integer programming solver
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public MIPSolverOutput Run(MIPSolverInput input)
         {
             Time currentTime = input.Time;

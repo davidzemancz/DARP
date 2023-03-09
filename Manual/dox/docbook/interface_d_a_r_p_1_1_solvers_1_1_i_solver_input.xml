@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input" xml:lang="en-US">
+<title>DARP.Solvers.ISolverInput Interface Reference</title>
+<indexterm><primary>DARP.Solvers.ISolverInput</primary></indexterm>
+<para>
+
+<para>Solver input. </para>
+ 
+</para>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1abef147abdad41bcd215e5e4a5cb9bfe2">Time</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a6f344c8b4d7e0038708cc10fef7c0fcd">Plan</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> &gt; <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a3d969adeae7b5df96ac5b21350fd4a30">Vehicles</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of vehicles. </para>
+</listitem>
+            <listitem><para>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a779370f89d4867c31dd1110239fe13b6">Orders</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of orders. </para>
+</listitem>
+            <listitem><para>MetricFunc <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a84c4d6610947e6359318a4fa214148d7">Metric</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Metric. </para>
+</listitem>
+            <listitem><para>double <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a555be27de293fe9d4b2e21e7447f2d76">VehicleChargePerTick</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Vehicle charge per tick. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Solver input. </para>
+</section>
+<section>
+<title>Property Documentation</title>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a84c4d6610947e6359318a4fa214148d7"/><section>
+    <title>Metric</title>
+<indexterm><primary>Metric</primary><secondary>DARP.Solvers.ISolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolverInput</primary><secondary>Metric</secondary></indexterm>
+<para><computeroutput>MetricFunc DARP.Solvers.ISolverInput.Metric<computeroutput>[get]</computeroutput>, <computeroutput>[set]</computeroutput></computeroutput></para><para>
+
+<para>Metric. </para>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a9c4d1e05a4957131ce6d65c2cc78606d">DARP.Solvers.SolverInputBase</link>.</para>
+</section>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a779370f89d4867c31dd1110239fe13b6"/><section>
+    <title>Orders</title>
+<indexterm><primary>Orders</primary><secondary>DARP.Solvers.ISolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolverInput</primary><secondary>Orders</secondary></indexterm>
+<para><computeroutput>IEnumerable&lt;<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link>&gt; DARP.Solvers.ISolverInput.Orders<computeroutput>[get]</computeroutput>, <computeroutput>[set]</computeroutput></computeroutput></para><para>
+
+<para>Collection of orders. </para>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a9c45185ce300ecb1d6459e4c147b2fb6">DARP.Solvers.SolverInputBase</link>.</para>
+</section>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a6f344c8b4d7e0038708cc10fef7c0fcd"/><section>
+    <title>Plan</title>
+<indexterm><primary>Plan</primary><secondary>DARP.Solvers.ISolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolverInput</primary><secondary>Plan</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> DARP.Solvers.ISolverInput.Plan<computeroutput>[get]</computeroutput>, <computeroutput>[set]</computeroutput></computeroutput></para><para>
+
+<para>Plan. </para>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1afcd77f9f138ec8e554d050ed1ffebfb1">DARP.Solvers.SolverInputBase</link>.</para>
+</section>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1abef147abdad41bcd215e5e4a5cb9bfe2"/><section>
+    <title>Time</title>
+<indexterm><primary>Time</primary><secondary>DARP.Solvers.ISolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolverInput</primary><secondary>Time</secondary></indexterm>
+<para><computeroutput><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> DARP.Solvers.ISolverInput.Time<computeroutput>[get]</computeroutput>, <computeroutput>[set]</computeroutput></computeroutput></para><para>
+
+<para>Time. </para>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1abe3672f27097e06ca1b5bd67305f5add">DARP.Solvers.SolverInputBase</link>.</para>
+</section>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a555be27de293fe9d4b2e21e7447f2d76"/><section>
+    <title>VehicleChargePerTick</title>
+<indexterm><primary>VehicleChargePerTick</primary><secondary>DARP.Solvers.ISolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolverInput</primary><secondary>VehicleChargePerTick</secondary></indexterm>
+<para><computeroutput>double DARP.Solvers.ISolverInput.VehicleChargePerTick<computeroutput>[get]</computeroutput>, <computeroutput>[set]</computeroutput></computeroutput></para><para>
+
+<para>Vehicle charge per tick. </para>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a2a39bf8935f17460b0b97f3aa40f5927">DARP.Solvers.SolverInputBase</link>.</para>
+</section>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input_1a3d969adeae7b5df96ac5b21350fd4a30"/><section>
+    <title>Vehicles</title>
+<indexterm><primary>Vehicles</primary><secondary>DARP.Solvers.ISolverInput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolverInput</primary><secondary>Vehicles</secondary></indexterm>
+<para><computeroutput>IEnumerable&lt;<link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link>&gt; DARP.Solvers.ISolverInput.Vehicles<computeroutput>[get]</computeroutput>, <computeroutput>[set]</computeroutput></computeroutput></para><para>
+
+<para>Collection of vehicles. </para>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base_1a8f94fa563177380860a7975ac4350c3c">DARP.Solvers.SolverInputBase</link>.</para>
+</section>
+<para>
+The documentation for this interface was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/ISolver.cs</section>
+</section>

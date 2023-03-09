@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output" xml:lang="en-US">
+<title>DARP.Solvers.ISolverOutput Interface Reference</title>
+<indexterm><primary>DARP.Solvers.ISolverOutput</primary></indexterm>
+<para>
+
+<para>Solver output. </para>
+ 
+</para>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1ab608951b5156044ff441a74b5de15b06">Plan</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1af88c347defa152373f3728d3031d43e8">Status</link><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Status. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Solver output. </para>
+</section>
+<section>
+<title>Property Documentation</title>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1ab608951b5156044ff441a74b5de15b06"/><section>
+    <title>Plan</title>
+<indexterm><primary>Plan</primary><secondary>DARP.Solvers.ISolverOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolverOutput</primary><secondary>Plan</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> DARP.Solvers.ISolverOutput.Plan<computeroutput>[get]</computeroutput></computeroutput></para><para>
+
+<para>Plan. </para>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output_1a9dfcc3425dd2a8816cad179334b7b120">DARP.Solvers.AntColonySolverOutput</link>, <link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_output_1a92b362fb8b8c6f7abe0a567003e1279e">DARP.Solvers.EvolutionarySolverOutput</link>, <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1a43152564a3cc82e159aefb84afd969d7">DARP.Solvers.InsertionHeuristicsOutput</link>, and <link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1a5b1559f7ba75ecdf38da08c8582ecf4c">DARP.Solvers.MIPSolverOutput</link>.</para>
+</section>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output_1af88c347defa152373f3728d3031d43e8"/><section>
+    <title>Status</title>
+<indexterm><primary>Status</primary><secondary>DARP.Solvers.ISolverOutput</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolverOutput</primary><secondary>Status</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_utils_1_1_status">Status</link> DARP.Solvers.ISolverOutput.Status<computeroutput>[get]</computeroutput></computeroutput></para><para>
+
+<para>Status. </para>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output_1a029b0b6fa84a94893476df154ba23615">DARP.Solvers.AntColonySolverOutput</link>, <link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_output_1abaee287ff1f798b31c260c838eadf775">DARP.Solvers.EvolutionarySolverOutput</link>, <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output_1a1f2f435ce6ed49d64afd509b73564a8e">DARP.Solvers.InsertionHeuristicsOutput</link>, and <link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output_1abf738fe9735b3adf0385cc58ceb972af">DARP.Solvers.MIPSolverOutput</link>.</para>
+</section>
+<para>
+The documentation for this interface was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/ISolver.cs</section>
+</section>

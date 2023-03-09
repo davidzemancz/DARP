@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point" xml:lang="en-US">
+<title>DARP.Models.OrderPickupRoutePoint Class Reference</title>
+<indexterm><primary>DARP.Models.OrderPickupRoutePoint</primary></indexterm>
+<para>
+
+<para>Order pickup route point. It is always followed by delivery point. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point_1aa9912a5af053d51fee43d29010b2fb6d">OrderPickupRoutePoint</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</para>
+
+<para>Initialize the OrderPickupRoutePoint. </para>
+</listitem>
+            <listitem><para>override <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> <link linkend="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point_1af206f3eb308aecf26b03b0b3e27f9eb4">Clone</link> ()</para>
+
+<para>Clone the OrderPickupRoutePoint. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Public Member Functions inherited from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">DARP.Models.RoutePoint</link>        <itemizedlist>
+            <listitem><para>virtual <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point_1a12bf601c8ab1ea07559a2c2b70f7c01b">Clone</link> ()</para>
+
+<para>Clone the point. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a6580e08d35c8918705bd780de9ab96a9"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point_1a9b3dca0d0c6062496c63301e3fb75535"/><link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> <emphasis role="strong">Order</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>The order to be picked up. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point_1a1c33856f1d9656d0fe15c427396f1660"/>override <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Location</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Pickup location. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">DARP.Models.RoutePoint</link>        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1ad2384c0ebfd76b8f91d764086e74af14"/>virtual <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">Time</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time of arrival. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a8554943dc360eed2edd73cc0fd6473ae"/>virtual <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Location</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Location in metric space. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Order pickup route point. It is always followed by delivery point. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point_1aa9912a5af053d51fee43d29010b2fb6d"/><section>
+    <title>OrderPickupRoutePoint()</title>
+<indexterm><primary>OrderPickupRoutePoint</primary><secondary>DARP.Models.OrderPickupRoutePoint</secondary></indexterm>
+<indexterm><primary>DARP.Models.OrderPickupRoutePoint</primary><secondary>OrderPickupRoutePoint</secondary></indexterm>
+<para><computeroutput>DARP.Models.OrderPickupRoutePoint.OrderPickupRoutePoint (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</computeroutput></para><para>
+
+<para>Initialize the OrderPickupRoutePoint. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>order</entry><entry>
+<para>An order</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point_1af206f3eb308aecf26b03b0b3e27f9eb4"/><section>
+    <title>Clone()</title>
+<indexterm><primary>Clone</primary><secondary>DARP.Models.OrderPickupRoutePoint</secondary></indexterm>
+<indexterm><primary>DARP.Models.OrderPickupRoutePoint</primary><secondary>Clone</secondary></indexterm>
+<para><computeroutput>override <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> DARP.Models.OrderPickupRoutePoint.Clone ( )<computeroutput>[virtual]</computeroutput></computeroutput></para><para>
+
+<para>Clone the OrderPickupRoutePoint. </para>
+</para>
+<para>
+Reimplemented from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point_1a12bf601c8ab1ea07559a2c2b70f7c01b">DARP.Models.RoutePoint</link>.</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/RoutePoint.cs</section>
+</section>

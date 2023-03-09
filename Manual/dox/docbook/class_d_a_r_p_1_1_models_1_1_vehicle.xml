@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle" xml:lang="en-US">
+<title>DARP.Models.Vehicle Class Reference</title>
+<indexterm><primary>DARP.Models.Vehicle</primary></indexterm>
+<para>
+
+<para>Vehicle delivers orders between pickups and deliveries points. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_1ac2f61f6777825017fcb2255433dc82a7"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+
+<para>Returns user-friendly formated string. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_1a6e1ff23b56606e99d68596338cacb5c4"/><link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> <emphasis role="strong">Clone</emphasis> ()</para>
+
+<para>Clone the vehicle. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_1ab5a45118357ae9aceb403fe04483b64b"/>int <emphasis role="strong">Id</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Unique identifier. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_1ac9eca74ec231524dbac1807dd1061021"/>string <emphasis role="strong">Name</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Optional description. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_1a77df454fee41649785a220465d51ccb1"/><link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Location</emphasis> = new(0, 0)<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Current location. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Vehicle delivers orders between pickups and deliveries points. </para>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/Vehicle.cs</section>
+</section>

@@ -8,9 +8,6 @@
             <summary>
             Interaction logic for App.xaml
             </summary>
-            <summary>
-            App
-            </summary>
         </member>
         <member name="M:DARP.App.InitializeComponent">
             <summary>
@@ -452,7 +449,7 @@
         </member>
         <member name="P:DARP.Models.Vehicle.Location">
             <summary>
-            Current vehicles location
+            Current location
             </summary>
         </member>
         <member name="M:DARP.Models.Vehicle.ToString">
@@ -464,6 +461,479 @@
             <summary>
             Clone the vehicle
             </summary>
+        </member>
+        <member name="T:DARP.Solvers.AntColonySolverOutput">
+            <summary>
+            Ant colony solver output
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.AntColonySolverOutput.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.AntColonySolverOutput.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.AntColonySolverOutput.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="T:DARP.Solvers.AntColonySolverInput">
+            <summary>
+            Ant colony solver output
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.AntColonySolverInput.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.AntColonySolverInput.#ctor(DARP.Solvers.SolverInputBase)">
+            <summary>
+            Initialize AntColonySolverInput base on SolverInputBase instance
+            </summary>
+            <param name="solverInputBase">Instance</param>
+        </member>
+        <member name="T:DARP.Solvers.AntColonySolver">
+            <summary>
+            Ant colony solver
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.AntColonySolver.Run(DARP.Solvers.ISolverInput)">
+            <summary>
+            Run ant colony solver
+            </summary>
+            <param name="input">Input</param>
+        </member>
+        <member name="M:DARP.Solvers.AntColonySolver.Run(DARP.Solvers.AntColonySolverInput)">
+            <summary>
+            Run ant colony solver
+            </summary>
+            <param name="input">Input</param>
+        </member>
+        <member name="T:DARP.Solvers.FitnessLogFunc">
+            <summary>
+            Function for logging evolution fitness in real-time
+            </summary>
+            <param name="generation">Number of generation</param>
+            <param name="fitness">Fitness value</param>
+        </member>
+        <member name="T:DARP.Solvers.EvolutionarySolverOutput">
+            <summary>
+            Evolutionary solver output
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverOutput.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverOutput.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolverOutput.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolverOutput.#ctor(DARP.Models.Plan,DARP.Utils.Status)">
+            <summary>
+            Initialize
+            </summary>
+            <param name="plan">Plan</param>
+            <param name="status">Status</param>
+        </member>
+        <member name="T:DARP.Solvers.EvolutionarySolverInput">
+            <summary>
+             Evolutionary solver input
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.RandomInstance">
+            <summary>
+            Instance of random generator. If null, new instance is created.
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.Generations">
+            <summary>
+            Number of generations
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.PopulationSize">
+            <summary>
+            Population size
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.RandomOrderRemoveMutProb">
+            <summary>
+            Probability of removing order in insertion mutations
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.RandomOrderInsertMutProb">
+            <summary>
+            Probability of trying to randomly insert order into random route
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.BestfitOrderInsertMutProb">
+            <summary>
+            Probability of inserting order into random route in best possible place
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.PlanCrossoverProb">
+            <summary>
+            Probability of crossing over two plans
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.RouteCrossoverProb">
+            <summary>
+            Probability of crossing over two routes in the same plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.FitnessLog">
+            <summary>
+            Function for logging fitness
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.AdaptiveMutation">
+            <summary>
+            Use adaptive mutation. Decreases mutations probability over generations.
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.EnviromentalSelection">
+            <summary>
+            Enviromental selection
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.CrossoverInsertionHeuristic">
+            <summary>
+            Heuristic that is used after crossover to insert remained orders
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolverInput.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolverInput.#ctor(DARP.Solvers.SolverInputBase)">
+            <summary>
+            Initialize EvolutionarySolverInput base on SolverInputBase instance
+            </summary>
+            <param name="solverInputBase">Instance</param>
+        </member>
+        <member name="T:DARP.Solvers.EvolutionarySolver">
+            <summary>
+            Evolutionary solver
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolver.DARP#Solvers#ISolver#Run(DARP.Solvers.ISolverInput)">
+            <summary>
+            Run evolutionary solver
+            </summary>
+            <param name="input">Input</param>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolver.Run(DARP.Solvers.EvolutionarySolverInput)">
+            <summary>
+            Run evolutionary solver
+            </summary>
+            <param name="input">Input</param>
+        </member>
+        <member name="T:DARP.Solvers.EvolutionarySolver.Individual">
+            <summary>
+            Individual representation
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolver.Individual.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolver.Individual.RemaningOrders">
+            <summary>
+            Orders that are not in the plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolver.Individual.Fitness">
+            <summary>
+            Fitness. Recomputed each generation.
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolver.Individual.Clone">
+            <summary>
+            Clone individual
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:DARP.Solvers.InsertionHeuristicFunc">
+            <summary>
+            Insertion heurstic function
+            </summary>
+            <param name="input">Input</param>
+            <returns></returns>
+        </member>
+        <member name="T:DARP.Solvers.InsertionHeuristicsOutput">
+            <summary>
+            Insertion heuristics solver output
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.InsertionHeuristicsOutput.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.InsertionHeuristicsOutput.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.InsertionHeuristicsOutput.RemainingOrders">
+            <summary>
+            Not inserted orders
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.InsertionHeuristicsOutput.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.InsertionHeuristicsOutput.#ctor(DARP.Models.Plan,DARP.Utils.Status,System.Collections.Generic.List{DARP.Models.Order})">
+            <summary>
+            Initialize
+            </summary>
+            <param name="plan">Plan</param>
+            <param name="status">Status</param>
+            <param name="remainingOrders">Remaining orders</param>
+        </member>
+        <member name="T:DARP.Solvers.InsertionHeuristicsInput">
+            <summary>
+            Insertion heurstics input
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.InsertionHeuristicsInput.Mode">
+            <summary>
+            Insertion mode
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.InsertionHeuristicsInput.Epsilon">
+            <summary>
+            Probability of inserting order to random place in randomized mode
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.InsertionHeuristicsInput.Runs">
+            <summary>
+            Total runs in randomized mode, the best one is returned
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.InsertionHeuristicsInput.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.InsertionHeuristicsInput.#ctor(DARP.Solvers.SolverInputBase)">
+            <summary>
+            Initialize InsertionHeuristicsInput base on SolverInputBase instance
+            </summary>
+            <param name="solverInputBase">Instance</param>
+        </member>
+        <member name="T:DARP.Solvers.InsertionHeuristics">
+            <summary>
+            Insertion heurstics solver
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.InsertionHeuristics.DARP#Solvers#ISolver#Run(DARP.Solvers.ISolverInput)">
+            <summary>
+            Run insertion heurstics
+            </summary>
+            <param name="input">Input</param>
+        </member>
+        <member name="M:DARP.Solvers.InsertionHeuristics.Run(DARP.Solvers.InsertionHeuristicsInput)">
+            <summary>
+            Run insertion heurstics
+            </summary>
+            <param name="input">Input</param>
+        </member>
+        <member name="M:DARP.Solvers.InsertionHeuristics.RunFirstFit(DARP.Solvers.InsertionHeuristicsInput)">
+            <summary>
+            Run first fit insertion heurstics. It inserts every order to first possible place.
+            </summary>
+            <param name="input">Input</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:DARP.Solvers.InsertionHeuristics.RunLocalBestFit(DARP.Solvers.InsertionHeuristicsInput)" -->
+        <!-- Badly formed XML comment ignored for member "M:DARP.Solvers.InsertionHeuristics.RunGlobalBestFit(DARP.Solvers.InsertionHeuristicsInput)" -->
+        <!-- Badly formed XML comment ignored for member "M:DARP.Solvers.InsertionHeuristics.RunRandomizedGlobalBestFit(DARP.Solvers.InsertionHeuristicsInput)" -->
+        <member name="T:DARP.Solvers.ISolverInput">
+            <summary>
+            Solver input
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.ISolverInput.Time">
+            <summary>
+            Time
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.ISolverInput.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.ISolverInput.Vehicles">
+            <summary>
+            Collection of vehicles
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.ISolverInput.Orders">
+            <summary>
+            Collection of orders
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.ISolverInput.Metric">
+            <summary>
+            Metric
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.ISolverInput.VehicleChargePerTick">
+            <summary>
+            Vehicle charge per tick
+            </summary>
+        </member>
+        <member name="T:DARP.Solvers.SolverInputBase">
+            <summary>
+            Default basic implementation of ISolverInput
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.SolverInputBase.#ctor(DARP.Solvers.SolverInputBase)">
+            <summary>
+            Initialize SolverInputBase based on another instance
+            </summary>
+            <param name="solverInputBase">Instance</param>
+        </member>
+        <member name="T:DARP.Solvers.ISolverOutput">
+            <summary>
+            Solver output
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.ISolverOutput.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.ISolverOutput.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="T:DARP.Solvers.ISolver">
+            <summary>
+            Solver
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.ISolver.Run(DARP.Solvers.ISolverInput)">
+            <summary>
+            Run solver
+            </summary>
+            <param name="input">Input</param>
+            <returns></returns>
+        </member>
+        <member name="T:DARP.Solvers.MIPSolverOutput">
+            <summary>
+            Mixed integer programming solver output
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.MIPSolverOutput.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.MIPSolverOutput.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.MIPSolverOutput.ObjetiveValue">
+            <summary>
+            Objective value
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.MIPSolverOutput.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.MIPSolverOutput.#ctor(DARP.Models.Plan,DARP.Utils.Status,System.Double)">
+            <summary>
+            Initialize
+            </summary>
+            <param name="plan">Plan</param>
+            <param name="status">Status</param>
+        </member>
+        <member name="T:DARP.Solvers.MIPSolverInput">
+            <summary>
+            Mixed integer programming solver input
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.MIPSolverInput.Multithreading">
+            <summary>
+            Enable multithreading
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.MIPSolverInput.TimeLimit">
+            <summary>
+            Time limit in miliseconds
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.MIPSolverInput.Solver">
+            <summary>
+            Internal solver. SCIP or CP-SAT are available
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.MIPSolverInput.Integer">
+            <summary>
+            Require integeral solution. Default is true.
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.MIPSolverInput.Objective">
+            <summary>
+            Objective function
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.MIPSolverInput.#ctor">
+            <summary>
+            Initialize 
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.MIPSolverInput.#ctor(DARP.Solvers.SolverInputBase)">
+            <summary>
+            Initialize EvolutionarySolverInput base on SolverInputBase instance
+            </summary>
+            <param name="solverInputBase">Instance</param>
+        </member>
+        <member name="T:DARP.Solvers.MIPSolver">
+            <summary>
+            Mixed integer programming solver
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.MIPSolver.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.MIPSolver.DARP#Solvers#ISolver#Run(DARP.Solvers.ISolverInput)">
+            <summary>
+            Run mixed integer programming solver
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DARP.Solvers.MIPSolver.Run(DARP.Solvers.MIPSolverInput)">
+            <summary>
+            Run mixed integer programming solver
+            </summary>
+            <param name="input"></param>
+            <returns></returns>
         </member>
         <member name="F:DARP.Utils.InsertionHeuristicsMode.FirstFit">
             <summary>
@@ -500,6 +970,38 @@
             Maximizes profit. Not all orders must be handled for optimality.
             </summary>
         </member>
+        <member name="T:DARP.Utils.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.Status.Success">
+            <summary>
+            Success status
+            </summary>
+        </member>
+        <member name="F:DARP.Utils.Status.Failed">
+            <summary>
+            Fail status
+            </summary>
+        </member>
+        <member name="P:DARP.Utils.Status.Code">
+            <summary>
+            Status code
+            </summary>
+        </member>
+        <member name="P:DARP.Utils.Status.Message">
+            <summary>
+            Status message
+            </summary>
+        </member>
+        <member name="M:DARP.Utils.Status.#ctor(DARP.Utils.StatusCode,System.String)">
+            <summary>
+            Initialize new status
+            </summary>
+            <param name="code">Code</param>
+            <param name="message">Message</param>
+        </member>
         <member name="T:DARP.Windows.MainWindow">
             <summary>
             Interaction logic for MainWindow.xaml
@@ -514,13 +1016,40 @@
             <summary>
             Interaction logic for TextBoxWindow.xaml
             </summary>
-            <summary>
-            TextBoxWindow
-            </summary>
         </member>
         <member name="M:DARP.Windows.TextBoxWindow.InitializeComponent">
             <summary>
             InitializeComponent
+            </summary>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
             </summary>
         </member>
     </members>

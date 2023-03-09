@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_models_1_1_plan" xml:lang="en-US">
+<title>DARP.Models.Plan Class Reference</title>
+<indexterm><primary>DARP.Models.Plan</primary></indexterm>
+<para>
+
+<para>Plan is a collection of routes for fixed set of vehicles. For each vehicle there exists exactly one route. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para>double <link linkend="_class_d_a_r_p_1_1_models_1_1_plan_1a9731fbc7a4f01f18f5c2512bdb771465">GetTotalProfit</link> (MetricFunc metric, double vehicleChargePerTick)</para>
+
+<para>Returns sum of total profits of all routes. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_plan_1a7d0c93fc20dca320727902fb390b732e"/>double List&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; removedOrders <emphasis role="strong">UpdateVehiclesLocation</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> time, MetricFunc metric, double vehicleChargePerTick)</para>
+</listitem>
+            <listitem><para>bool <link linkend="_class_d_a_r_p_1_1_models_1_1_plan_1aa7ea4f899ccb813ecfc888901d1dd89e">Contains</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</para>
+
+<para>Check whether the plan contains an order. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_plan_1a41077a5bc6be1ec82692817ee4c3026e"/><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <emphasis role="strong">Clone</emphasis> ()</para>
+
+<para>Clone the plane and all its routes. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para>double <link linkend="_class_d_a_r_p_1_1_models_1_1_plan_1a2108ff3604ddbd0bae9b3e886105cd4b">profit</link></para>
+
+<para>Update vehicles location for each route. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_plan_1a3c80de394f5bbfb985120f0760ea1344"/>List&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_route">Route</link> &gt; <emphasis role="strong">Routes</emphasis> = new()<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of routes. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_plan_1a9c4b218db6d10d6a40a112f7d30f17c2"/>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <emphasis role="strong">Orders</emphasis><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Collection of order that are scheduled on routes. Iterates over Routes and yields orders. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Plan is a collection of routes for fixed set of vehicles. For each vehicle there exists exactly one route. </para>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_plan_1aa7ea4f899ccb813ecfc888901d1dd89e"/><section>
+    <title>Contains()</title>
+<indexterm><primary>Contains</primary><secondary>DARP.Models.Plan</secondary></indexterm>
+<indexterm><primary>DARP.Models.Plan</primary><secondary>Contains</secondary></indexterm>
+<para><computeroutput>bool DARP.Models.Plan.Contains (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</computeroutput></para><para>
+
+<para>Check whether the plan contains an order. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>order</entry><entry>
+<para>The order</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_plan_1a9731fbc7a4f01f18f5c2512bdb771465"/><section>
+    <title>GetTotalProfit()</title>
+<indexterm><primary>GetTotalProfit</primary><secondary>DARP.Models.Plan</secondary></indexterm>
+<indexterm><primary>DARP.Models.Plan</primary><secondary>GetTotalProfit</secondary></indexterm>
+<para><computeroutput>double DARP.Models.Plan.GetTotalProfit (MetricFunc metric, double vehicleChargePerTick)</computeroutput></para><para>
+
+<para>Returns sum of total profits of all routes. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>metric</entry><entry>
+<para>Metric</para>
+</entry>
+                            </row>
+                            <row>
+<entry>vehicleChargePerTick</entry><entry>
+<para>Vehicle&apos;s charge per tick</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+</section>
+<section>
+<title>Member Data Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_plan_1a2108ff3604ddbd0bae9b3e886105cd4b"/><section>
+    <title>profit</title>
+<indexterm><primary>profit</primary><secondary>DARP.Models.Plan</secondary></indexterm>
+<indexterm><primary>DARP.Models.Plan</primary><secondary>profit</secondary></indexterm>
+<para><computeroutput>double DARP.Models.Plan.profit</computeroutput></para><para>
+
+<para>Update vehicles location for each route. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>time</entry><entry>
+<para>Current time</para>
+</entry>
+                            </row>
+                            <row>
+<entry>metric</entry><entry>
+<para>Metric</para>
+</entry>
+                            </row>
+                            <row>
+<entry>vehicleChargePerTick</entry><entry>
+<para>Vehicle&apos;s charge per tick</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/Plan.cs</section>
+</section>

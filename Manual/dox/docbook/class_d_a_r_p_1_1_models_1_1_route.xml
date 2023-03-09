@@ -1,0 +1,351 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_models_1_1_route" xml:lang="en-US">
+<title>DARP.Models.Route Class Reference</title>
+<indexterm><primary>DARP.Models.Route</primary></indexterm>
+<para>
+
+<para>Route is collection of RoutePoints for one vehicle. There exists three types of point, pickups, deliveries and vehicle location. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_route_1a14ce02840ab35c94b5d70c54e2aa6ad2">Route</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> vehicle, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> time)</para>
+
+<para>Initialize new route for the vehicle in the time. </para>
+</listitem>
+            <listitem><para>double <link linkend="_class_d_a_r_p_1_1_models_1_1_route_1a37efde9a84c58129ed6e346a1f00b1ec">GetTotalProfit</link> (MetricFunc metric, double vehicleChargePerTick)</para>
+
+<para>Returns the sum of all delivered orders profit and subtracts vehicle charges. </para>
+</listitem>
+            <listitem><para>bool <link linkend="_class_d_a_r_p_1_1_models_1_1_route_1ad1a4bea713ec8799bf84ba6bb02add80">Contains</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</para>
+
+<para>Check whether the route contains an order. </para>
+</listitem>
+            <listitem><para>bool <link linkend="_class_d_a_r_p_1_1_models_1_1_route_1a5b85bfdabad2942cdbfd6ae70e70aac6">CanInsertOrder</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> newOrder, int index, MetricFunc metric)</para>
+
+<para>Check whether an order can be inserted into the route at specific index. </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_d_a_r_p_1_1_models_1_1_route_1aa1b972fdef1966c87f240ac281d40a89">InsertOrder</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> newOrder, int index, MetricFunc metric)</para>
+
+<para>Inserts an order into the route at specific inde. </para>
+</listitem>
+            <listitem><para>void <link linkend="_class_d_a_r_p_1_1_models_1_1_route_1a8714acbabacc8eca12db37fbf244c105">RemoveOrder</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</para>
+
+<para>Removes an order from route. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1ab9869f40767874783d9b5b281e5d0304"/>double List&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; removedOrders <emphasis role="strong">UpdateVehiclesLocation</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> time, MetricFunc metric, double vehicleChargePerTick)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a5c3336079d8c853f7998689fbe51949a"/><link linkend="_class_d_a_r_p_1_1_models_1_1_route">Route</link> <emphasis role="strong">Clone</emphasis> ()</para>
+
+<para>Clone the route. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a843d62e3053e1ab1992b2f059657aae2"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+
+<para>Returns user-friendly formated string. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Public Attributes    </title>
+        <itemizedlist>
+            <listitem><para>double <link linkend="_class_d_a_r_p_1_1_models_1_1_route_1a6fe9d155637659639db60240c6281e5e">profit</link></para>
+
+<para>Updates vehicle location with respect to a time. All point that were passed before the time are thrown away. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a436d078afa27d213c7d81d13d8d45f66"/><link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> <emphasis role="strong">Vehicle</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>The vehicle. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1af792c4d34e57a7e658ecb8831ec63c5d"/>List&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> &gt; <emphasis role="strong">Points</emphasis> = new()<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Collection of points. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a47db845757327aa1ff3de56b9e6008cd"/>IEnumerable&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <emphasis role="strong">Orders</emphasis><computeroutput> [get]</computeroutput>
+</para>
+
+<para>Collection of order that are scheduled on the route. Iterates over Points and yields orders. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Route is collection of RoutePoints for one vehicle. There exists three types of point, pickups, deliveries and vehicle location. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a14ce02840ab35c94b5d70c54e2aa6ad2"/><section>
+    <title>Route()</title>
+<indexterm><primary>Route</primary><secondary>DARP.Models.Route</secondary></indexterm>
+<indexterm><primary>DARP.Models.Route</primary><secondary>Route</secondary></indexterm>
+<para><computeroutput>DARP.Models.Route.Route (<link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> vehicle, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> time)</computeroutput></para><para>
+
+<para>Initialize new route for the vehicle in the time. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>vehicle</entry><entry></entry>
+                            </row>
+                            <row>
+<entry>time</entry><entry></entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a5b85bfdabad2942cdbfd6ae70e70aac6"/><section>
+    <title>CanInsertOrder()</title>
+<indexterm><primary>CanInsertOrder</primary><secondary>DARP.Models.Route</secondary></indexterm>
+<indexterm><primary>DARP.Models.Route</primary><secondary>CanInsertOrder</secondary></indexterm>
+<para><computeroutput>bool DARP.Models.Route.CanInsertOrder (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> newOrder, int index, MetricFunc metric)</computeroutput></para><para>
+
+<para>Check whether an order can be inserted into the route at specific index. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>newOrder</entry><entry>
+<para>The order</para>
+</entry>
+                            </row>
+                            <row>
+<entry>index</entry><entry>
+<para>The index</para>
+</entry>
+                            </row>
+                            <row>
+<entry>metric</entry><entry>
+<para>Metric</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1ad1a4bea713ec8799bf84ba6bb02add80"/><section>
+    <title>Contains()</title>
+<indexterm><primary>Contains</primary><secondary>DARP.Models.Route</secondary></indexterm>
+<indexterm><primary>DARP.Models.Route</primary><secondary>Contains</secondary></indexterm>
+<para><computeroutput>bool DARP.Models.Route.Contains (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</computeroutput></para><para>
+
+<para>Check whether the route contains an order. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>order</entry><entry>
+<para>The order</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a37efde9a84c58129ed6e346a1f00b1ec"/><section>
+    <title>GetTotalProfit()</title>
+<indexterm><primary>GetTotalProfit</primary><secondary>DARP.Models.Route</secondary></indexterm>
+<indexterm><primary>DARP.Models.Route</primary><secondary>GetTotalProfit</secondary></indexterm>
+<para><computeroutput>double DARP.Models.Route.GetTotalProfit (MetricFunc metric, double vehicleChargePerTick)</computeroutput></para><para>
+
+<para>Returns the sum of all delivered orders profit and subtracts vehicle charges. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>metric</entry><entry>
+<para>Metric</para>
+</entry>
+                            </row>
+                            <row>
+<entry>vehicleChargePerTick</entry><entry>
+<para>Vehicle&apos;s charge per tick</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1aa1b972fdef1966c87f240ac281d40a89"/><section>
+    <title>InsertOrder()</title>
+<indexterm><primary>InsertOrder</primary><secondary>DARP.Models.Route</secondary></indexterm>
+<indexterm><primary>DARP.Models.Route</primary><secondary>InsertOrder</secondary></indexterm>
+<para><computeroutput>void DARP.Models.Route.InsertOrder (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> newOrder, int index, MetricFunc metric)</computeroutput></para><para>
+
+<para>Inserts an order into the route at specific inde. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>newOrder</entry><entry>
+<para>The order</para>
+</entry>
+                            </row>
+                            <row>
+<entry>index</entry><entry>
+<para>The index</para>
+</entry>
+                            </row>
+                            <row>
+<entry>metric</entry><entry>
+<para>Metric</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a8714acbabacc8eca12db37fbf244c105"/><section>
+    <title>RemoveOrder()</title>
+<indexterm><primary>RemoveOrder</primary><secondary>DARP.Models.Route</secondary></indexterm>
+<indexterm><primary>DARP.Models.Route</primary><secondary>RemoveOrder</secondary></indexterm>
+<para><computeroutput>void DARP.Models.Route.RemoveOrder (<link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> order)</computeroutput></para><para>
+
+<para>Removes an order from route. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>order</entry><entry>
+<para>The order</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+</section>
+<section>
+<title>Member Data Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_1a6fe9d155637659639db60240c6281e5e"/><section>
+    <title>profit</title>
+<indexterm><primary>profit</primary><secondary>DARP.Models.Route</secondary></indexterm>
+<indexterm><primary>DARP.Models.Route</primary><secondary>profit</secondary></indexterm>
+<para><computeroutput>double DARP.Models.Route.profit</computeroutput></para><para>
+
+<para>Updates vehicle location with respect to a time. All point that were passed before the time are thrown away. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>time</entry><entry>
+<para>The time</para>
+</entry>
+                            </row>
+                            <row>
+<entry>metric</entry><entry>
+<para>Metric</para>
+</entry>
+                            </row>
+                            <row>
+<entry>vehicleChargePerTick</entry><entry>
+<para>Vehicle charge per tick</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <formalpara><title>Returns</title>
+
+<para>Gained profit and removed orders that were handled</para>
+</formalpara>
+</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/Route.cs</section>
+</section>

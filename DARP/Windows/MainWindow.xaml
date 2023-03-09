@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:local="clr-namespace:DARP.Windows"
-        xmlns:vr="clr-namespace:DARP.Windows.ValidationRules" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:map="clr-namespace:MapControl;assembly=MapControl.WPF"
         xmlns:ad="https://github.com/Dirkster99/AvalonDock"
         mc:Ignorable="d"

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual" xml:lang="en-US">
+<title>DARP.Solvers.EvolutionarySolver.Individual Class Reference</title>
+<indexterm><primary>DARP.Solvers.EvolutionarySolver.Individual</primary></indexterm>
+<para>
+
+<para>Individual representation. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual">Individual</link> <link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual_1a722d4fc74638930c67984e08cf89932b">Clone</link> ()</para>
+
+<para>Clone individual. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual_1a41ca0e9ac591f6459a58b19906f05bcb"/><link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link> <emphasis role="strong">Plan</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Plan. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual_1a89a99e78454156b51f6b0dcf52d36da7"/>List&lt; <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link> &gt; <emphasis role="strong">RemaningOrders</emphasis> = new()<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Orders that are not in the plan. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual_1a4ecfb86af0352befe451bef984954533"/>double <emphasis role="strong">Fitness</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Fitness. Recomputed each generation. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Individual representation. </para>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual_1a722d4fc74638930c67984e08cf89932b"/><section>
+    <title>Clone()</title>
+<indexterm><primary>Clone</primary><secondary>DARP.Solvers.EvolutionarySolver.Individual</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.EvolutionarySolver.Individual</primary><secondary>Clone</secondary></indexterm>
+<para><computeroutput><link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_1_1_individual">Individual</link> DARP.Solvers.EvolutionarySolver.Individual.Clone ( )</computeroutput></para><para>
+
+<para>Clone individual. </para>
+</para>
+
+<para><formalpara><title>Returns</title>
+
+<para></para>
+</formalpara>
+</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/EvolutionarySolver.cs</section>
+</section>

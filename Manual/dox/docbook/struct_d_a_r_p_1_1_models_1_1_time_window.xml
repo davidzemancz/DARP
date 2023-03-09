@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_struct_d_a_r_p_1_1_models_1_1_time_window" xml:lang="en-US">
+<title>DARP.Models.TimeWindow Struct Reference</title>
+<indexterm><primary>DARP.Models.TimeWindow</primary></indexterm>
+<para>
+
+<para>Time window structure. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_window_1abb8ed66ba385909587cf3ac6a30f84e3"/><emphasis role="strong">TimeWindow</emphasis> (<link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> from, <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> to)</para>
+
+<para>Initialize TimeWindow. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_window_1aba48d5ba22af39e483d2c83f36310436"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+
+<para>Returns user-friendly formated string. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_window_1a9cec726978cd044f62d9d9fee8240d9f"/><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">From</emphasis> = <link linkend="_struct_d_a_r_p_1_1_models_1_1_time_1a0858b2692e6bf9e4db1d8e07e508bb1f">Time.Zero</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time from. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_struct_d_a_r_p_1_1_models_1_1_time_window_1a99d18f2f1f49afd704bb8138856cff0a"/><link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">To</emphasis> = <link linkend="_struct_d_a_r_p_1_1_models_1_1_time_1a0858b2692e6bf9e4db1d8e07e508bb1f">Time.Zero</link><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time to. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Time window structure. </para>
+<para>
+The documentation for this struct was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/TimeWindow.cs</section>
+</section>

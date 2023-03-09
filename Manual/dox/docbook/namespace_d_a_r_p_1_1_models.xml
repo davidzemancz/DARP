@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_d_a_r_p_1_1_models" xml:lang="en-US">
+<title>DARP.Models Namespace Reference</title>
+<indexterm><primary>DARP.Models</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>struct <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link></para>
+
+<para>Coordinates structure in 2 dimensional space. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_models_1_1_order">Order</link></para>
+
+<para>Order represents a request for transportation from one place to another. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_models_1_1_order_delivery_route_point">OrderDeliveryRoutePoint</link></para>
+
+<para>Order delivery route point. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_models_1_1_order_pickup_route_point">OrderPickupRoutePoint</link></para>
+
+<para>Order pickup route point. It is always followed by delivery point. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_models_1_1_plan">Plan</link></para>
+
+<para>Plan is a collection of routes for fixed set of vehicles. For each vehicle there exists exactly one route. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_models_1_1_route">Route</link></para>
+
+<para>Route is collection of RoutePoints for one vehicle. There exists three types of point, pickups, deliveries and vehicle location. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link></para>
+
+<para>Point at a route. </para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link></para>
+
+<para>Time structure using Ticks as default units. </para>
+</listitem>
+            <listitem><para>class <emphasis role="strong">TimeExtensions</emphasis></para>
+</listitem>
+            <listitem><para>struct <link linkend="_struct_d_a_r_p_1_1_models_1_1_time_window">TimeWindow</link></para>
+
+<para>Time window structure. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link></para>
+
+<para>Vehicle delivers orders between pickups and deliveries points. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point">VehicleRoutePoint</link></para>
+
+<para>Vehicle location point, always the first point on a route and the route contains exactly the one. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Enumerations    </title>
+        <itemizedlist>
+            <listitem><para>enum <link linkend="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6">OrderState</link> { <link linkend="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6a0eceeb45861f9585dd7a97a3e36f85c6">Created</link> = 0
+, <link linkend="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6a382ab522931673c11e398ead1b7b1678">Accepted</link> = 1
+, <link linkend="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6ad37b1f6c0512e2118cee17fea015b699">Rejected</link> = 2
+, <link linkend="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6a827211270de454ea3e0df8f57995efed">Handled</link> = 3
+ }</para>
+
+<para>Order state enum. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Enumeration Type Documentation</title>
+<anchor xml:id="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6"/><section>
+    <title>OrderState</title>
+<indexterm><primary>OrderState</primary><secondary>DARP.Models</secondary></indexterm>
+<indexterm><primary>DARP.Models</primary><secondary>OrderState</secondary></indexterm>
+<para><computeroutput>enum <link linkend="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6">DARP.Models.OrderState</link></computeroutput></para><para>
+
+<para>Order state enum. </para>
+</para>
+<informaltable frame="all">
+<title>Enumerator</title>
+    <tgroup cols="2" align="left" colsep="1" rowsep="1">
+      <colspec colname='c1'/>
+      <colspec colname='c2'/>
+<tbody>
+<row><entry><indexterm><primary>Created</primary><secondary>DARP.Models</secondary></indexterm>
+<indexterm><primary>DARP.Models</primary><secondary>Created</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6a0eceeb45861f9585dd7a97a3e36f85c6"/>Created</entry><entry>
+<para>New order, has not been scheduled yet. </para>
+</entry></row><row><entry><indexterm><primary>Accepted</primary><secondary>DARP.Models</secondary></indexterm>
+<indexterm><primary>DARP.Models</primary><secondary>Accepted</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6a382ab522931673c11e398ead1b7b1678"/>Accepted</entry><entry>
+<para>Allready scheduled order, has not been handled yet. </para>
+</entry></row><row><entry><indexterm><primary>Rejected</primary><secondary>DARP.Models</secondary></indexterm>
+<indexterm><primary>DARP.Models</primary><secondary>Rejected</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6ad37b1f6c0512e2118cee17fea015b699"/>Rejected</entry><entry>
+<para>Rejected order. </para>
+</entry></row><row><entry><indexterm><primary>Handled</primary><secondary>DARP.Models</secondary></indexterm>
+<indexterm><primary>DARP.Models</primary><secondary>Handled</secondary></indexterm>
+<anchor xml:id="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6a827211270de454ea3e0df8f57995efed"/>Handled</entry><entry>
+<para>Handled order. </para>
+</entry></row>    </tbody>
+    </tgroup>
+</informaltable>
+</section>
+</section>
+</section>

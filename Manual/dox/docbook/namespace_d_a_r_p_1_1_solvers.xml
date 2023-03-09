@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_namespace_d_a_r_p_1_1_solvers" xml:lang="en-US">
+<title>DARP.Solvers Namespace Reference</title>
+<indexterm><primary>DARP.Solvers</primary></indexterm>
+<simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver">AntColonySolver</link></para>
+
+<para>Ant colony solver. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_input">AntColonySolverInput</link></para>
+
+<para>Ant colony solver output. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_output">AntColonySolverOutput</link></para>
+
+<para>Ant colony solver output. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver">EvolutionarySolver</link></para>
+
+<para>Evolutionary solver. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_input">EvolutionarySolverInput</link></para>
+
+<para>Evolutionary solver input. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_evolutionary_solver_output">EvolutionarySolverOutput</link></para>
+
+<para>Evolutionary solver output. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics">InsertionHeuristics</link></para>
+
+<para>Insertion heurstics solver. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link></para>
+
+<para>Insertion heurstics input. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link></para>
+
+<para>Insertion heuristics solver output. </para>
+</listitem>
+            <listitem><para>interface <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver">ISolver</link></para>
+
+<para>Solver. </para>
+</listitem>
+            <listitem><para>interface <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">ISolverInput</link></para>
+
+<para>Solver input. </para>
+</listitem>
+            <listitem><para>interface <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">ISolverOutput</link></para>
+
+<para>Solver output. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver">MIPSolver</link></para>
+
+<para>Mixed integer programming solver. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_input">MIPSolverInput</link></para>
+
+<para>Mixed integer programming solver input. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_m_i_p_solver_output">MIPSolverOutput</link></para>
+
+<para>Mixed integer programming solver output. </para>
+</listitem>
+            <listitem><para>class <link linkend="_class_d_a_r_p_1_1_solvers_1_1_solver_input_base">SolverInputBase</link></para>
+
+<para>Default basic implementation of ISolverInput. </para>
+</listitem>
+            <listitem><para>struct <emphasis role="strong">TimeVarKey</emphasis></para>
+</listitem>
+            <listitem><para>struct <emphasis role="strong">TravelVarKey</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Functions    </title>
+        <itemizedlist>
+            <listitem><para>delegate void <link linkend="_namespace_d_a_r_p_1_1_solvers_1a9ff6efa9f67375e49799db1bd97ec16e">FitnessLogFunc</link> (int generation, double[] fitness)</para>
+
+<para>Function for logging evolution fitness in real-time. </para>
+</listitem>
+            <listitem><para>delegate <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> <link linkend="_namespace_d_a_r_p_1_1_solvers_1ad7d7d24b2a2f09182d8fdd3149c0345a">InsertionHeuristicFunc</link> (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</para>
+
+<para>Insertion heurstic function. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Function Documentation</title>
+<anchor xml:id="_namespace_d_a_r_p_1_1_solvers_1a9ff6efa9f67375e49799db1bd97ec16e"/><section>
+    <title>FitnessLogFunc()</title>
+<indexterm><primary>FitnessLogFunc</primary><secondary>DARP.Solvers</secondary></indexterm>
+<indexterm><primary>DARP.Solvers</primary><secondary>FitnessLogFunc</secondary></indexterm>
+<para><computeroutput>delegate void DARP.Solvers.FitnessLogFunc (int generation, double[] fitness)</computeroutput></para><para>
+
+<para>Function for logging evolution fitness in real-time. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>generation</entry><entry>
+<para>Number of generation</para>
+</entry>
+                            </row>
+                            <row>
+<entry>fitness</entry><entry>
+<para>Fitness value</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+<anchor xml:id="_namespace_d_a_r_p_1_1_solvers_1ad7d7d24b2a2f09182d8fdd3149c0345a"/><section>
+    <title>InsertionHeuristicFunc()</title>
+<indexterm><primary>InsertionHeuristicFunc</primary><secondary>DARP.Solvers</secondary></indexterm>
+<indexterm><primary>DARP.Solvers</primary><secondary>InsertionHeuristicFunc</secondary></indexterm>
+<para><computeroutput>delegate <link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_output">InsertionHeuristicsOutput</link> DARP.Solvers.InsertionHeuristicFunc (<link linkend="_class_d_a_r_p_1_1_solvers_1_1_insertion_heuristics_input">InsertionHeuristicsInput</link> input)</computeroutput></para><para>
+
+<para>Insertion heurstic function. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>input</entry><entry>
+<para>Input</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <formalpara><title>Returns</title>
+
+<para></para>
+</formalpara>
+</para>
+</section>
+</section>
+</section>

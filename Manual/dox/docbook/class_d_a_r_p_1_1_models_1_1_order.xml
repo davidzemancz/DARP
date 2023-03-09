@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_models_1_1_order" xml:lang="en-US">
+<title>DARP.Models.Order Class Reference</title>
+<indexterm><primary>DARP.Models.Order</primary></indexterm>
+<para>
+
+<para>Order represents a request for transportation from one place to another. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1a2f93d922029e76843f73566d4233f6a0"/>void <emphasis role="strong">Reject</emphasis> ()</para>
+
+<para>Set State to Rejected. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1a0bb2a2afc542207b686c5dfda5f2f373"/>void <emphasis role="strong">Handle</emphasis> ()</para>
+
+<para>Set State to Handled. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1aad29506dccdf2032a0b3dfa720854d6b"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+
+<para>Returns user-friendly formated string. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1a5064a63b715a6593aaeefc1ebacb0cf7"/>int <emphasis role="strong">Id</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Unique identifier. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1ae19ed5bb33c341ec0d3c7f3ebd24350d"/>string <emphasis role="strong">Name</emphasis> = string.Empty<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Optional description. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1acf901e22dc6599a8fe4fa303201c22de"/><link linkend="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6">OrderState</link> <emphasis role="strong">State</emphasis> = <link linkend="_namespace_d_a_r_p_1_1_models_1a937ecb78e8f388932c0b1684120f8dc6a0eceeb45861f9585dd7a97a3e36f85c6">OrderState.Created</link><computeroutput> [get, protected set]</computeroutput>
+</para>
+
+<para>Current state. Can be changed via method SetState(...) </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1a8f22e10c6e0336b540e761a26af7dd95"/><link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">PickupLocation</emphasis> = new(0, 0)<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Pickup location in 2D metric space. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1a1070446fd949e3982b5d8b46ae2704d3"/><link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">DeliveryLocation</emphasis> = new(0, 0)<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Delivery location in 2D metric space. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1a9a7c3f3e9c26b0c32f4d5e1c4e98032d"/><link linkend="_struct_d_a_r_p_1_1_models_1_1_time_window">TimeWindow</link> <emphasis role="strong">DeliveryTime</emphasis> = new <link linkend="_struct_d_a_r_p_1_1_models_1_1_time_window">TimeWindow</link>()<computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Delivery time window determining when order must be delivered to delivery location. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_order_1ac24b1df9a6ced81a8bb5ae3867c5c890"/>double <emphasis role="strong">TotalProfit</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Amount of money recieved if the order is successfuly delivered. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Order represents a request for transportation from one place to another. </para>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/Order.cs</section>
+</section>

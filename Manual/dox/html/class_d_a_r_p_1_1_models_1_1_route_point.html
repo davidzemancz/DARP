@@ -50,11 +50,14 @@ $(function() {
   <div class="headertitle"><div class="title">DARP.Models.RoutePoint Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Point at a route.  
+ <a href="class_d_a_r_p_1_1_models_1_1_route_point.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a12bf601c8ab1ea07559a2c2b70f7c01b"><td class="memItemLeft" align="right" valign="top"><a id="a12bf601c8ab1ea07559a2c2b70f7c01b" name="a12bf601c8ab1ea07559a2c2b70f7c01b"></a>
-virtual <a class="el" href="class_d_a_r_p_1_1_models_1_1_route_point.html">RoutePoint</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Clone</b> ()</td></tr>
+<tr class="memitem:a12bf601c8ab1ea07559a2c2b70f7c01b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_d_a_r_p_1_1_models_1_1_route_point.html">RoutePoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_a_r_p_1_1_models_1_1_route_point.html#a12bf601c8ab1ea07559a2c2b70f7c01b">Clone</a> ()</td></tr>
+<tr class="memdesc:a12bf601c8ab1ea07559a2c2b70f7c01b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the point.  <br /></td></tr>
 <tr class="separator:a12bf601c8ab1ea07559a2c2b70f7c01b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6580e08d35c8918705bd780de9ab96a9"><td class="memItemLeft" align="right" valign="top"><a id="a6580e08d35c8918705bd780de9ab96a9" name="a6580e08d35c8918705bd780de9ab96a9"></a>
 override string&#160;</td><td class="memItemRight" valign="bottom"><b>ToString</b> ()</td></tr>
@@ -64,11 +67,46 @@ override string&#160;</td><td class="memItemRight" valign="bottom"><b>ToString</
 Properties</h2></td></tr>
 <tr class="memitem:ad2384c0ebfd76b8f91d764086e74af14"><td class="memItemLeft" align="right" valign="top"><a id="ad2384c0ebfd76b8f91d764086e74af14" name="ad2384c0ebfd76b8f91d764086e74af14"></a>
 virtual <a class="el" href="struct_d_a_r_p_1_1_models_1_1_time.html">Time</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Time</b><code> [get, set]</code></td></tr>
+<tr class="memdesc:ad2384c0ebfd76b8f91d764086e74af14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Time of arrival. <br /></td></tr>
 <tr class="separator:ad2384c0ebfd76b8f91d764086e74af14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8554943dc360eed2edd73cc0fd6473ae"><td class="memItemLeft" align="right" valign="top"><a id="a8554943dc360eed2edd73cc0fd6473ae" name="a8554943dc360eed2edd73cc0fd6473ae"></a>
 virtual <a class="el" href="struct_d_a_r_p_1_1_models_1_1_cords2_d.html">Cords2D</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Location</b><code> [get, set]</code></td></tr>
+<tr class="memdesc:a8554943dc360eed2edd73cc0fd6473ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Location in metric space. <br /></td></tr>
 <tr class="separator:a8554943dc360eed2edd73cc0fd6473ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Point at a route. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a12bf601c8ab1ea07559a2c2b70f7c01b" name="a12bf601c8ab1ea07559a2c2b70f7c01b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12bf601c8ab1ea07559a2c2b70f7c01b">&#9670;&#160;</a></span>Clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="class_d_a_r_p_1_1_models_1_1_route_point.html">RoutePoint</a> DARP.Models.RoutePoint.Clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the point. </p>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
+
+<p>Reimplemented in <a class="el" href="class_d_a_r_p_1_1_models_1_1_vehicle_route_point.html#a7c8f7074196b3d44b7ca593a7df80168">DARP.Models.VehicleRoutePoint</a>, <a class="el" href="class_d_a_r_p_1_1_models_1_1_order_pickup_route_point.html#af206f3eb308aecf26b03b0b3e27f9eb4">DARP.Models.OrderPickupRoutePoint</a>, and <a class="el" href="class_d_a_r_p_1_1_models_1_1_order_delivery_route_point.html#ab5825b599b71ebd990f3c8fafeb760c3">DARP.Models.OrderDeliveryRoutePoint</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>C:/MFFUK/DARP/DARP/Models/RoutePoint.cs</li>
 </ul>

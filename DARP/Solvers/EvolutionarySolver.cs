@@ -13,22 +13,40 @@ using Order = DARP.Models.Order;
 
 namespace DARP.Solvers
 {
+    /// <summary>
+    /// Function for logging evolution fitness in real-time
+    /// </summary>
+    /// <param name="generation">Number of generation</param>
+    /// <param name="fitness">Fitness value</param>
     public delegate void FitnessLogFunc(int generation, double[] fitness);
 
+    /// <summary>
+    /// Evolutionary solver output
+    /// </summary>
     public class EvolutionarySolverOutput : ISolverOutput
     {
+        /// <summary>
+        /// Plan
+        /// </summary>
         public Plan Plan { get; }
+
+        /// <summary>
+        /// Status
+        /// </summary>
         public Status Status { get; }
-        
+
+        /// <summary>
+        /// Initialize
+        /// </summary>
         public EvolutionarySolverOutput()
         {
         }
 
-        public EvolutionarySolverOutput(Status status)
-        {
-            Status = status;
-        }
-
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        /// <param name="plan">Plan</param>
+        /// <param name="status">Status</param>
         public EvolutionarySolverOutput(Plan plan, Status status)
         {
             Plan = plan;
@@ -37,37 +55,106 @@ namespace DARP.Solvers
 
     }
 
+    /// <summary>
+    ///  Evolutionary solver input
+    /// </summary>
     public class EvolutionarySolverInput : SolverInputBase
     {
+        /// <summary>
+        /// Instance of random generator. If null, new instance is created.
+        /// </summary>
         public Random RandomInstance { get; set; } = null;
+
+        /// <summary>
+        /// Number of generations
+        /// </summary>
         public int Generations { get; set; } = 100;
+
+        /// <summary>
+        /// Population size
+        /// </summary>
         public int PopulationSize { get; set; } = 100;
+
+        /// <summary>
+        /// Probability of removing order in insertion mutations
+        /// </summary>
         public double RandomOrderRemoveMutProb { get; set; } = 0.4;
+
+        /// <summary>
+        /// Probability of trying to randomly insert order into random route
+        /// </summary>
         public double RandomOrderInsertMutProb { get; set; } = 0.5;
+
+        /// <summary>
+        /// Probability of inserting order into random route in best possible place
+        /// </summary>
         public double BestfitOrderInsertMutProb { get; set; } = 0.5;
+
+        /// <summary>
+        /// Probability of crossing over two plans
+        /// </summary>
         public double PlanCrossoverProb {  get; set; } = 0.3;
+
+        /// <summary>
+        /// Probability of crossing over two routes in the same plan
+        /// </summary>
         public double RouteCrossoverProb { get; set; } = 0.3;
+
+        /// <summary>
+        /// Function for logging fitness
+        /// </summary>
         public FitnessLogFunc FitnessLog { get; set; }
+
+        /// <summary>
+        /// Use adaptive mutation. Decreases mutations probability over generations.
+        /// </summary>
         public bool AdaptiveMutation { get; set; }
+
+        /// <summary>
+        /// Enviromental selection
+        /// </summary>
         public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
+
+        /// <summary>
+        /// Heuristic that is used after crossover to insert remained orders
+        /// </summary>
         public InsertionHeuristicFunc CrossoverInsertionHeuristic { get; set; } = null;
 
+        /// <summary>
+        /// Initialize
+        /// </summary>
         public EvolutionarySolverInput() { }
+
+        /// <summary>
+        /// Initialize EvolutionarySolverInput base on SolverInputBase instance
+        /// </summary>
+        /// <param name="solverInputBase">Instance</param>
         public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
 
        
     }
 
+    /// <summary>
+    /// Evolutionary solver
+    /// </summary>
     public class EvolutionarySolver : ISolver
     {
         private Random _random;
         private EvolutionarySolverInput _input;
 
+        /// <summary>
+        /// Run evolutionary solver
+        /// </summary>
+        /// <param name="input">Input</param>
         ISolverOutput ISolver.Run(ISolverInput input)
         {
             return Run((EvolutionarySolverInput)input);
         }
 
+        /// <summary>
+        /// Run evolutionary solver
+        /// </summary>
+        /// <param name="input">Input</param>
         public EvolutionarySolverOutput Run(EvolutionarySolverInput input) 
         {
             if (input.CrossoverInsertionHeuristic == null) input.CrossoverInsertionHeuristic = new InsertionHeuristics().RunGlobalBestFit;
@@ -349,12 +436,30 @@ namespace DARP.Solvers
             }
         }
 
+        /// <summary>
+        /// Individual representation
+        /// </summary>
         protected class Individual
         {
+            /// <summary>
+            /// Plan
+            /// </summary>
             public Plan Plan {  get; set; }
+            
+            /// <summary>
+            /// Orders that are not in the plan
+            /// </summary>
             public List<Order> RemaningOrders { get; set; } = new();
+
+            /// <summary>
+            /// Fitness. Recomputed each generation.
+            /// </summary>
             public double Fitness { get; set; }
 
+            /// <summary>
+            /// Clone individual
+            /// </summary>
+            /// <returns></returns>
             public Individual Clone()
             {
                 return new Individual()

@@ -12,23 +12,47 @@ using System.Threading.Tasks;
 
 namespace DARP.Solvers
 {
+    /// <summary>
+    /// Insertion heurstic function
+    /// </summary>
+    /// <param name="input">Input</param>
+    /// <returns></returns>
     public delegate InsertionHeuristicsOutput InsertionHeuristicFunc(InsertionHeuristicsInput input);
 
+    /// <summary>
+    /// Insertion heuristics solver output
+    /// </summary>
     public class InsertionHeuristicsOutput : ISolverOutput
     {
+      
+        /// <summary>
+        /// Plan
+        /// </summary>
         public Plan Plan { get; }
+
+        /// <summary>
+        /// Status
+        /// </summary>
         public Status Status { get; }
+
+        /// <summary>
+        /// Not inserted orders
+        /// </summary>
         public List<Order> RemainingOrders { get; }
 
+        /// <summary>
+        /// Initialize
+        /// </summary>
         public InsertionHeuristicsOutput()
         {
         }
-
-        public InsertionHeuristicsOutput(Status status)
-        {
-            Status = status;
-        }
-
+    
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        /// <param name="plan">Plan</param>
+        /// <param name="status">Status</param>
+        /// <param name="remainingOrders">Remaining orders</param>
         public InsertionHeuristicsOutput(Plan plan, Status status, List<Order> remainingOrders)
         {
             Plan = plan;
@@ -36,26 +60,59 @@ namespace DARP.Solvers
             RemainingOrders = remainingOrders;  
         }
     }
+
+    /// <summary>
+    /// Insertion heurstics input
+    /// </summary>
     public class InsertionHeuristicsInput : SolverInputBase
     {
+        /// <summary>
+        /// Insertion mode
+        /// </summary>
         public InsertionHeuristicsMode Mode { get; set; }
+
+        /// <summary>
+        /// Probability of inserting order to random place in randomized mode
+        /// </summary>
         public double Epsilon { get; set; } = 0.1;
+
+        /// <summary>
+        /// Total runs in randomized mode, the best one is returned
+        /// </summary>
         public int Runs { get; set; } = 1;
 
+        /// <summary>
+        /// Initialize
+        /// </summary>
         public InsertionHeuristicsInput() { }
+
+
+        /// <summary>
+        /// Initialize InsertionHeuristicsInput base on SolverInputBase instance
+        /// </summary>
+        /// <param name="solverInputBase">Instance</param>
         public InsertionHeuristicsInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
     }
+
+    /// <summary>
+    /// Insertion heurstics solver
+    /// </summary>
     public class InsertionHeuristics : ISolver
     {
-        public InsertionHeuristics() 
-        {
-        }
 
+        /// <summary>
+        /// Run insertion heurstics
+        /// </summary>
+        /// <param name="input">Input</param>
         ISolverOutput ISolver.Run(ISolverInput input)
         {
             return Run((InsertionHeuristicsInput)input);
         }
 
+        /// <summary>
+        /// Run insertion heurstics
+        /// </summary>
+        /// <param name="input">Input</param>
         public InsertionHeuristicsOutput Run(InsertionHeuristicsInput input)
         {
             switch (input.Mode)
@@ -84,6 +141,10 @@ namespace DARP.Solvers
             }
         }
 
+        /// <summary>
+        /// Run first fit insertion heurstics. It inserts every order to first possible place.
+        /// </summary>
+        /// <param name="input">Input</param>
         public InsertionHeuristicsOutput RunFirstFit(InsertionHeuristicsInput input)
         {
             Plan plan = input.Plan.Clone();
@@ -111,6 +172,9 @@ namespace DARP.Solvers
             return new InsertionHeuristicsOutput(plan, Status.Success, remainingOrders);
         }
 
+        /// <summary>
+        /// Run local best fit insertion heurstics. It iterates over orders and each is inserted to best possible place.
+        /// <param name="input">Input</param>
         public InsertionHeuristicsOutput RunLocalBestFit(InsertionHeuristicsInput input)
         {
             Plan plan = input.Plan.Clone();
@@ -157,6 +221,9 @@ namespace DARP.Solvers
             return new InsertionHeuristicsOutput(plan, Status.Success, remainingOrders);
         }
 
+        /// <summary>
+        /// Run global best fit insertion heurstics. It iterates over orders and each iteration it inserts only the order that increases total profit the most. It iterates unitl no insertion is possible.
+        /// <param name="input">Input</param>
         public InsertionHeuristicsOutput RunGlobalBestFit(InsertionHeuristicsInput input)
         {
             Plan plan = input.Plan.Clone();
@@ -206,6 +273,9 @@ namespace DARP.Solvers
             return new InsertionHeuristicsOutput(plan, Status.Success, remainingOrders);
         }
 
+        /// <summary>
+        /// Run global best fit several times and with epsilon probability it inserts order randomly instead of to the best place. The it returns the best run.
+        /// <param name="input">Input</param>
         public InsertionHeuristicsOutput RunRandomizedGlobalBestFit(InsertionHeuristicsInput input)
         {
             Random random = new();

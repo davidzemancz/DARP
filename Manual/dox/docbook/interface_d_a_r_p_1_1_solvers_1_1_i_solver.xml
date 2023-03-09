@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver" xml:lang="en-US">
+<title>DARP.Solvers.ISolver Interface Reference</title>
+<indexterm><primary>DARP.Solvers.ISolver</primary></indexterm>
+<para>
+
+<para>Solver. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">ISolverOutput</link> <link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_1aacf3059b2cee20d5a3acb7f487351981">Run</link> (<link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">ISolverInput</link> input)</para>
+
+<para>Run solver. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+
+<para>Solver. </para>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_1aacf3059b2cee20d5a3acb7f487351981"/><section>
+    <title>Run()</title>
+<indexterm><primary>Run</primary><secondary>DARP.Solvers.ISolver</secondary></indexterm>
+<indexterm><primary>DARP.Solvers.ISolver</primary><secondary>Run</secondary></indexterm>
+<para><computeroutput><link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_output">ISolverOutput</link> DARP.Solvers.ISolver.Run (<link linkend="_interface_d_a_r_p_1_1_solvers_1_1_i_solver_input">ISolverInput</link> input)</computeroutput></para><para>
+
+<para>Run solver. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>input</entry><entry>
+<para>Input</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                <formalpara><title>Returns</title>
+
+<para></para>
+</formalpara>
+</para>
+<para>
+Implemented in <link linkend="_class_d_a_r_p_1_1_solvers_1_1_ant_colony_solver_1aca35ba08c2f399fd71fc4d6f65860dfa">DARP.Solvers.AntColonySolver</link>.</para>
+</section>
+<para>
+The documentation for this interface was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Solvers/ISolver.cs</section>
+</section>

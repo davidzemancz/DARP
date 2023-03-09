@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point" xml:lang="en-US">
+<title>DARP.Models.VehicleRoutePoint Class Reference</title>
+<indexterm><primary>DARP.Models.VehicleRoutePoint</primary></indexterm>
+<para>
+
+<para>Vehicle location point, always the first point on a route and the route contains exactly the one. </para>
+ 
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point_1a5e628f0517ad41f07e47a16ac9cbe48a">VehicleRoutePoint</link> (<link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> vehicle)</para>
+
+<para>Initialize the VehicleRoutePoint. </para>
+</listitem>
+            <listitem><para>override <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> <link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point_1a7c8f7074196b3d44b7ca593a7df80168">Clone</link> ()</para>
+
+<para>Clone the VehicleRoutePoint. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Public Member Functions inherited from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">DARP.Models.RoutePoint</link>        <itemizedlist>
+            <listitem><para>virtual <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point_1a12bf601c8ab1ea07559a2c2b70f7c01b">Clone</link> ()</para>
+
+<para>Clone the point. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a6580e08d35c8918705bd780de9ab96a9"/>override string <emphasis role="strong">ToString</emphasis> ()</para>
+</listitem>
+        </itemizedlist>
+<simplesect>
+    <title>Properties    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point_1af0d7cad4b95882d28cea8154c8e3fe27"/><link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> <emphasis role="strong">Vehicle</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>The vehicle. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point_1a5722776bf524bc4bd0a52986254c09ab"/>override <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Location</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Vehicle&apos;s location. </para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+Properties inherited from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">DARP.Models.RoutePoint</link>        <itemizedlist>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1ad2384c0ebfd76b8f91d764086e74af14"/>virtual <link linkend="_struct_d_a_r_p_1_1_models_1_1_time">Time</link> <emphasis role="strong">Time</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Time of arrival. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_class_d_a_r_p_1_1_models_1_1_route_point_1a8554943dc360eed2edd73cc0fd6473ae"/>virtual <link linkend="_struct_d_a_r_p_1_1_models_1_1_cords2_d">Cords2D</link> <emphasis role="strong">Location</emphasis><computeroutput> [get, set]</computeroutput>
+</para>
+
+<para>Location in metric space. </para>
+</listitem>
+        </itemizedlist>
+<section>
+<title>Detailed Description</title>
+
+<para>Vehicle location point, always the first point on a route and the route contains exactly the one. </para>
+</section>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point_1a5e628f0517ad41f07e47a16ac9cbe48a"/><section>
+    <title>VehicleRoutePoint()</title>
+<indexterm><primary>VehicleRoutePoint</primary><secondary>DARP.Models.VehicleRoutePoint</secondary></indexterm>
+<indexterm><primary>DARP.Models.VehicleRoutePoint</primary><secondary>VehicleRoutePoint</secondary></indexterm>
+<para><computeroutput>DARP.Models.VehicleRoutePoint.VehicleRoutePoint (<link linkend="_class_d_a_r_p_1_1_models_1_1_vehicle">Vehicle</link> vehicle)</computeroutput></para><para>
+
+<para>Initialize the VehicleRoutePoint. </para>
+</para>
+
+<para>
+                <formalpara>
+                    <title>
+Parameters</title>
+                    <para>
+                    <table frame="all">
+                        <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="4*"/>
+                        <tbody>
+                            <row>
+<entry>vehicle</entry><entry>
+<para>A vehicle</para>
+</entry>
+                            </row>
+                        </tbody>
+                        </tgroup>
+                    </table>
+                    </para>
+                </formalpara>
+                </para>
+</section>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_d_a_r_p_1_1_models_1_1_vehicle_route_point_1a7c8f7074196b3d44b7ca593a7df80168"/><section>
+    <title>Clone()</title>
+<indexterm><primary>Clone</primary><secondary>DARP.Models.VehicleRoutePoint</secondary></indexterm>
+<indexterm><primary>DARP.Models.VehicleRoutePoint</primary><secondary>Clone</secondary></indexterm>
+<para><computeroutput>override <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point">RoutePoint</link> DARP.Models.VehicleRoutePoint.Clone ( )<computeroutput>[virtual]</computeroutput></computeroutput></para><para>
+
+<para>Clone the VehicleRoutePoint. </para>
+</para>
+<para>
+Reimplemented from <link linkend="_class_d_a_r_p_1_1_models_1_1_route_point_1a12bf601c8ab1ea07559a2c2b70f7c01b">DARP.Models.RoutePoint</link>.</para>
+</section>
+<para>
+The documentation for this class was generated from the following file:</para>
+C:/MFFUK/DARP/DARP/Models/RoutePoint.cs</section>
+</section>
