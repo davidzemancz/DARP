@@ -145,8 +145,8 @@ namespace DARPConsole
 
             sw.Restart();
             EvolutionarySolverInput esInput = new(input);
-            esInput.Generations = 100;
-            esInput.PopulationSize = 100;
+            esInput.Generations = 200;
+            esInput.PopulationSize = 200;
             esInput.BestfitOrderInsertMutProb = 0.7;
             esInput.RandomOrderInsertMutProb = 0.4;
             esInput.RandomOrderRemoveMutProb = 0.45;
@@ -161,15 +161,14 @@ namespace DARPConsole
 
             sw.Restart();
             EvolutionarySolverInput esInput2 = new(input);
-            esInput2.Generations = 500;
-            esInput2.PopulationSize = 300;
-            esInput2.BestfitOrderInsertMutProb = 1;
-            esInput2.RandomOrderInsertMutProb = 1;
+            esInput2.Generations = 200;
+            esInput2.PopulationSize = 200;
+            esInput2.BestfitOrderInsertMutProb = 0.7;
+            esInput2.RandomOrderInsertMutProb = 0.4;
             esInput2.RandomOrderRemoveMutProb = 0.45;
-            esInput2.RouteCrossoverProb = 0.2;
-            esInput2.PlanCrossoverProb = 0.2;
-            esInput2.AdaptiveMutation = true;   
-            esInput2.EnviromentalSelection = EnviromentalSelection.Tournament;
+            esInput2.RouteCrossoverProb = 0.3;
+            esInput2.PlanCrossoverProb = 0.3;
+            esInput2.EnviromentalSelection = EnviromentalSelection.Elitism;
             esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
             //esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";", f)}]"); };
             EvolutionarySolver es2 = new();

@@ -352,10 +352,10 @@ namespace DARP.Solvers
                 }
                 else if (input.EnviromentalSelection == EnviromentalSelection.Elitism)
                 {
-                    population = newPopulation
-                        .OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
-                        .Take(input.PopulationSize)
-                        .ToList();
+                    population = newPopulation;
+                        //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
+                        //.Take(input.PopulationSize)
+                        //.ToList();
                 }
 
             }
