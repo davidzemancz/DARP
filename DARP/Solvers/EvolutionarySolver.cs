@@ -180,7 +180,7 @@ namespace DARP.Solvers
             {
                 Individual individual = new() { Plan = input.Plan.Clone(), RemaningOrders = new(input.Orders) };
 
-                for (int j = 0; j < individual.RemaningOrders.Count * 1; j++)
+                for (int j = 0; j < individual.RemaningOrders.Count * 2; j++)
                 {
                     MutateInsertOrderRandomly(individual, false);
                 }
@@ -292,7 +292,7 @@ namespace DARP.Solvers
                                 j -= 2;
                             }
                         }
-
+                        
                         RunInsertionWithOffspring(offspring1);
                         RunInsertionWithOffspring(offspring2);
 
@@ -337,8 +337,8 @@ namespace DARP.Solvers
 
                         double firstProfit = newPopulation[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                         double secondProfit = newPopulation[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                        double thirdProfit = newPopulation[third].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                        double fourthProfit = newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double thirdProfit = 0; //newPopulation[third].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double fourthProfit = 0; // newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
                         if (firstProfit > secondProfit && firstProfit > thirdProfit && firstProfit > fourthProfit && _random.Next() < 0.8)
                             population.Add(newPopulation[first]);
@@ -365,12 +365,15 @@ namespace DARP.Solvers
 
         private void RunInsertionWithOffspring(Individual offspring)
         {
-            InsertionHeuristicsInput insHInput = new(_input);
-            insHInput.Plan = offspring.Plan;
-            insHInput.Orders = offspring.RemaningOrders;
-            InsertionHeuristicsOutput insHOutput = _input.CrossoverInsertionHeuristic(insHInput);
-            offspring.Plan = insHOutput.Plan;
-            offspring.RemaningOrders = insHOutput.RemainingOrders;
+            if (_input.CrossoverInsertionHeuristic != null)
+            {
+                InsertionHeuristicsInput insHInput = new(_input);
+                insHInput.Plan = offspring.Plan;
+                insHInput.Orders = offspring.RemaningOrders;
+                InsertionHeuristicsOutput insHOutput = _input.CrossoverInsertionHeuristic(insHInput);
+                offspring.Plan = insHOutput.Plan;
+                offspring.RemaningOrders = insHOutput.RemainingOrders;
+            }
         }
 
         private void AddRouteIntoOffspring(Individual offspring, Route parentRoute)

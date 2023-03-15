@@ -46,7 +46,7 @@ namespace DARPConsole
             List<Order> orders = new();
             const int MAP_SIZE = 20;
             const int PROFIT_PM = 5;
-            const int ORDERS = 60;
+            const int ORDERS = 30;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords2D pickup = new Cords2D(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
@@ -146,7 +146,7 @@ namespace DARPConsole
             sw.Restart();
             EvolutionarySolverInput esInput = new(input);
             esInput.Generations = 200;
-            esInput.PopulationSize = 200;
+            esInput.PopulationSize = 100;
             esInput.BestfitOrderInsertMutProb = 0.7;
             esInput.RandomOrderInsertMutProb = 0.4;
             esInput.RandomOrderRemoveMutProb = 0.45;
@@ -161,41 +161,50 @@ namespace DARPConsole
 
             sw.Restart();
             EvolutionarySolverInput esInput2 = new(input);
-            esInput2.Generations = 200;
-            esInput2.PopulationSize = 200;
-            esInput2.BestfitOrderInsertMutProb = 0.7;
-            esInput2.RandomOrderInsertMutProb = 0.4;
-            esInput2.RandomOrderRemoveMutProb = 0.45;
-            esInput2.RouteCrossoverProb = 0.3;
-            esInput2.PlanCrossoverProb = 0.3;
-            esInput2.EnviromentalSelection = EnviromentalSelection.Elitism;
+            esInput2.Generations = 500;
+            esInput2.PopulationSize = 100;
+            esInput2.BestfitOrderInsertMutProb = 0.2;
+            esInput2.RandomOrderInsertMutProb = 0.1;
+            esInput2.RandomOrderRemoveMutProb = 0.4;
+            //esInput2.RouteCrossoverProb = 0.3;
+            esInput2.PlanCrossoverProb = 0.7;
+            esInput2.EnviromentalSelection = EnviromentalSelection.Tournament;
             esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
-            //esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";", f)}]"); };
+            esInput2.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";", f)}]"); };
             EvolutionarySolver es2 = new();
             EvolutionarySolverOutput output2 = es2.Run(esInput2);
             double eProfit2 = output2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
             //Console.WriteLine($"Evolution {eProfit}, time {sw.Elapsed}");
 
-            Console.WriteLine(
-                $"{iProfitFF,6:N0} ({iProfitFF / iProfit3GBF,3:N2})|" +
-                $"{iProfit2LBF,6:N0} ({iProfitFF / iProfit3GBF,3:N2})|" +
-                $"{iProfit3GBF,6:N0} ({iProfit3GBF / iProfit3GBF,3:N2})|" +
-                $"{iProfit4Max,6:N0} ({iProfit4Max / iProfit3GBF,3:N2})|" +
-                $"{iProfit5Max,6:N0} ({iProfit5Max / iProfit3GBF,3:N2})|" +
-                $"{iProfit6Max,6:N0} ({iProfit6Max / iProfit3GBF,3:N2})|" +
-                $"{eProfit,6:N0} ({eProfit / iProfit3GBF,3:N2})|" +
-                $"{eProfit2,6:N0} ({eProfit2 / iProfit3GBF,3:N2})|");
-
+            sw.Restart();
+            MIPSolverInput mipInput = new(input);
+            mipInput.Solver = "SCIP";
+            //mipInput.TimeLimit = 30_000;
+            mipInput.Integer = false;
+            MIPSolver ms = new();
+            MIPSolverOutput mipOutput = ms.Run(mipInput);
+            double mProfit = mipOutput.ObjetiveValue;
 
             //sw.Restart();
-            //MIPSolverInput mipInput = new(input);
-            //mipInput.Solver = "SCIP";
-            ////mipInput.TimeLimit = 30_000;
-            //mipInput.Integer = false;
-            //MIPSolver ms = new();
-            //MIPSolverOutput mipOutput = ms.Run(mipInput);
-            //double mProfit = mipOutput.ObjetiveValue;
-            //Console.WriteLine($"MIP {mipInput.Solver} {mProfit}, time {sw.Elapsed}");
+            //MIPSolverInput mipInputInt = new(input);
+            //mipInputInt.Solver = "SCIP";
+            //mipInputInt.TimeLimit = 30_000;
+            //mipInputInt.Integer = true;
+            //MIPSolver msInt = new();
+            //MIPSolverOutput mipOutputInt = msInt.Run(mipInputInt);
+            //double mProfitInt = mipOutputInt.ObjetiveValue;
+
+            Console.WriteLine(
+                $"{iProfitFF,6:N0} ({iProfitFF / mProfit,3:N2})|" +
+                $"{iProfit2LBF,6:N0} ({iProfit2LBF / mProfit,3:N2})|" +
+                $"{iProfit3GBF,6:N0} ({iProfit3GBF / mProfit,3:N2})|" +
+                $"{iProfit4Max,6:N0} ({iProfit4Max / mProfit,3:N2})|" +
+                $"{iProfit5Max,6:N0} ({iProfit5Max / mProfit,3:N2})|" +
+                $"{iProfit6Max,6:N0} ({iProfit6Max / mProfit,3:N2})|" +
+                $"{eProfit,6:N0} ({eProfit / mProfit,3:N2})|" +
+                $"{eProfit2,6:N0} ({eProfit2 / mProfit,3:N2})|" +
+                //$"{mProfitInt,6:N0} ({mProfitInt / mProfit,3:N2})|" +
+                $"{mProfit,6:N0} ({mProfit / mProfit,3:N2})|");
 
             //sw.Restart();
             //MIPSolverInput mipInput2 = new(input);
