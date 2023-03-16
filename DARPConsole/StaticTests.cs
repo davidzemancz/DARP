@@ -19,6 +19,9 @@ namespace DARPConsole
 
         public static void Run()
         {
+            RunACO();
+            return;
+
             const int RUNS = 20;
             for (int i = 0; i < RUNS; i++)
             {
@@ -26,12 +29,16 @@ namespace DARPConsole
             }
         }
 
-        private static void BuildGraph()
+        private static void RunACO()
         {
+            var input = GetInput();
 
+            var acoInput = new AntColonySolverInput(input);
+            var solver = new AntColonySolver();
+            var output = solver.Run(acoInput);
         }
 
-        public static void RunOnce()
+        private static SolverInputBase GetInput()
         {
             Time time = Time.Zero;
 
@@ -80,6 +87,13 @@ namespace DARPConsole
                 input.Plan.Routes.Add(new Route(vehicle, time));
             }
             input.Vehicles = vehicles;
+
+            return input;
+        }
+
+        public static void RunOnce()
+        {
+            var input = GetInput();
 
             Stopwatch sw = new();
 
