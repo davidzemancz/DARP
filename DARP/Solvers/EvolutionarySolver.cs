@@ -221,6 +221,7 @@ namespace DARP.Solvers
                 for (int i = 0; newPopulation.Count < input.PopulationSize; i++)
                 {
                     // Select parents
+                    // TODO: select parents by tournament
                     Individual parent1 = XMath.RandomElementByWeight(population, (i) => i.Fitness);
                     Individual parent2 = XMath.RandomElementByWeight(population, (i) => i.Fitness);
 
@@ -337,8 +338,8 @@ namespace DARP.Solvers
 
                         double firstProfit = newPopulation[first].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
                         double secondProfit = newPopulation[second].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                        double thirdProfit = 0; //newPopulation[third].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                        double fourthProfit = 0; // newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double thirdProfit = newPopulation[third].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                        double fourthProfit = newPopulation[fourth].Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
 
                         if (firstProfit > secondProfit && firstProfit > thirdProfit && firstProfit > fourthProfit && _random.Next() < 0.8)
                             population.Add(newPopulation[first]);
