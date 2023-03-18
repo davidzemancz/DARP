@@ -36,10 +36,15 @@ namespace DARP.Solvers
     /// </summary>
     public class AntColonySolverInput : SolverInputBase
     {
-        public int Ants { get; set; } = 50;
+        public int Ants { get; set; } = 100;
 
-        public int Runs { get; set; } = 100;
+        public int Runs { get; set; } = 1000;
 
+        public double Alpha { get; set; } = 1;
+
+        public double Beta { get; set; } = 1;
+
+        public double EvaporationCoeficient { get; set; } = 0.2;
 
         /// <summary>
         /// Initialize
@@ -82,9 +87,11 @@ namespace DARP.Solvers
             Order[] orders = _input.Orders.OrderBy(o => o.DeliveryTime.From).ToArray();
 
             double[][] vehiclesPheromoneG = new double[vehicles.Length][];
+            double[][] vehiclesAttractivnessG = new double[vehicles.Length][];
             Order[][] vehiclesSuccessorsG = new Order[vehicles.Length][];
 
             double[][] ordersPheromoneG = new double[orders.Length][];
+            double[][] ordersAttractivnessG = new double[orders.Length][];
             Order[][] ordersSuccessorsG = new Order[orders.Length][];
 
             // Initialize successors and pheromone for vehicles
@@ -92,6 +99,7 @@ namespace DARP.Solvers
             {
                 VehicleRoutePoint vrp = (VehicleRoutePoint)emptyRoutes[i].Points[0];
                 vehiclesPheromoneG[i] = new double[orders.Length];
+                vehiclesAttractivnessG[i] = new double[orders.Length];
                 vehiclesSuccessorsG[i] = new Order[0];
                 for (int j = 0; j < orders.Length; j++)
                 {
@@ -102,8 +110,9 @@ namespace DARP.Solvers
                     if (o1DeliveryTime <= o1.DeliveryTime.To)
                     {
                         vehiclesSuccessorsG[i] = vehiclesSuccessorsG[i].Append(o1).ToArray();
-                        double vo2Distance = _input.Metric(vrp.Location, o1.PickupLocation).ToDouble();
-                        vehiclesPheromoneG[i][j] = 1;
+                        Time finalTime = vrp.Time + _input.Metric(vrp.Location, o1.PickupLocation) + _input.Metric(o1.PickupLocation, o1.DeliveryLocation);
+                        vehiclesAttractivnessG[i][j] = 1 / finalTime.ToDouble();
+                        vehiclesPheromoneG[i][j] = 1;//vehiclesAttractivnessG[i][j];
                     }
                 }
             }
@@ -113,6 +122,7 @@ namespace DARP.Solvers
             {
                 Order o1 = orders[i];
                 ordersPheromoneG[i] = new double[orders.Length];
+                ordersAttractivnessG[i] = new double[orders.Length];
                 ordersSuccessorsG[i] = new Order[0];
                 for (int j = 0; j < orders.Length; j++)
                 {
@@ -123,8 +133,10 @@ namespace DARP.Solvers
                     if (o2LeastDeliveryTime <= o2.DeliveryTime.To)
                     {
                         ordersSuccessorsG[i] = ordersSuccessorsG[i].Append(o2).ToArray();
-                        double o1o2Distance = _input.Metric(o1.DeliveryLocation, o2.PickupLocation).ToDouble();
-                        ordersPheromoneG[i][j] = 1;
+                        Time finalTime = o1.DeliveryTime.To + _input.Metric(o1.DeliveryLocation, o2.PickupLocation) + _input.Metric(o2.PickupLocation, o2.DeliveryLocation);
+                        ordersAttractivnessG[i][j] = 1 / finalTime.ToDouble();
+                        ordersPheromoneG[i][j] = 1;// ordersAttractivnessG[i][j];
+                        
                     }
                 }
             }
@@ -138,19 +150,19 @@ namespace DARP.Solvers
                 for (int ant = 0; ant < _input.Ants; ant++)
                 {
                     // Copy weights arrays
-                    double[][] vehiclesPheromone = new double[vehiclesPheromoneG.Length][];
-                    for (int i = 0; i < vehiclesPheromone.Length; i++)
+                    double[][] vehiclesWeights = new double[vehiclesPheromoneG.Length][];
+                    for (int i = 0; i < vehiclesWeights.Length; i++)
                     {
-                        vehiclesPheromone[i] = new double[vehiclesPheromoneG[i].Length];
-                        for (int j = 0; j < vehiclesPheromone[i].Length; j++)
-                            vehiclesPheromone[i][j] = vehiclesPheromoneG[i][j];
+                        vehiclesWeights[i] = new double[vehiclesPheromoneG[i].Length];
+                        for (int j = 0; j < vehiclesWeights[i].Length; j++)
+                            vehiclesWeights[i][j] = Math.Pow(vehiclesPheromoneG[i][j], _input.Alpha) * Math.Pow(vehiclesAttractivnessG[i][j], _input.Beta);
                     }
-                    double[][] ordersPheromone = new double[ordersPheromoneG.Length][];
-                    for (int i = 0; i < ordersPheromone.Length; i++)
+                    double[][] ordersWeights = new double[ordersPheromoneG.Length][];
+                    for (int i = 0; i < ordersWeights.Length; i++)
                     {
-                        ordersPheromone[i] = new double[ordersPheromoneG[i].Length];
-                        for (int j = 0; j < ordersPheromone[i].Length; j++)
-                            ordersPheromone[i][j] = ordersPheromoneG[i][j];
+                        ordersWeights[i] = new double[ordersPheromoneG[i].Length];
+                        for (int j = 0; j < ordersWeights[i].Length; j++)
+                            ordersWeights[i][j] = Math.Pow(ordersPheromoneG[i][j], _input.Alpha) * Math.Pow(ordersAttractivnessG[i][j], _input.Beta);;
                     }
 
 
@@ -163,16 +175,16 @@ namespace DARP.Solvers
                         routesOrdersIndicies[r] = new();
 
                         // Select first order
-                        int orderIndex = XMath.RandomIndexByWeight(vehiclesSuccessorsG[r], vehiclesPheromone[r]);
+                        int orderIndex = XMath.RandomIndexByWeight(vehiclesSuccessorsG[r], vehiclesWeights[r]);
                         if (orderIndex < 0) continue;
                         Order order = orders[orderIndex];
                         routesOrdersIndicies[r].Add(orderIndex);
 
                         // Set pheromone on edge to the order to 0 so it will not be selected twice
-                        for (int i = 0; i < vehiclesPheromone.Length; i++)
-                            vehiclesPheromone[i][orderIndex] = 0;
-                        for (int i = 0; i < ordersPheromone.Length; i++)
-                            ordersPheromone[i][orderIndex] = 0;
+                        for (int i = 0; i < vehiclesWeights.Length; i++)
+                            vehiclesWeights[i][orderIndex] = 0;
+                        for (int i = 0; i < ordersWeights.Length; i++)
+                            ordersWeights[i][orderIndex] = 0;
 
                         // Add order to route
                         Time pickupTime = route.Points[0].Time;
@@ -185,16 +197,16 @@ namespace DARP.Solvers
                         // Select following orders
                         while (ordersSuccessorsG[orderIndex].Length > 0)
                         {
-                            orderIndex = XMath.RandomIndexByWeight(ordersSuccessorsG[orderIndex], ordersPheromone[orderIndex]);
+                            orderIndex = XMath.RandomIndexByWeight(ordersSuccessorsG[orderIndex], ordersWeights[orderIndex]);
                             if (orderIndex < 0) break;
                             order = orders[orderIndex];
                             routesOrdersIndicies[r].Add(orderIndex);
 
                             // Set pheromone on edge to the order to 0 so it will not be selected twice
-                            for (int i = 0; i < vehiclesPheromone.Length; i++)
-                                vehiclesPheromone[i][orderIndex] = 0;
-                            for (int i = 0; i < ordersPheromone.Length; i++)
-                                ordersPheromone[i][orderIndex] = 0; 
+                            for (int i = 0; i < vehiclesWeights.Length; i++)
+                                vehiclesWeights[i][orderIndex] = 0;
+                            for (int i = 0; i < ordersWeights.Length; i++)
+                                ordersWeights[i][orderIndex] = 0; 
 
                             // Add order to route
                             int routePointsCount = route.Points.Count;
@@ -207,17 +219,6 @@ namespace DARP.Solvers
                         }
                     }
 
-                    // HACK - check whether there aro no duplicite orders
-                    HashSet<Order> checkSet = new();
-                    foreach (var route in routes)
-                    {
-                        foreach (var order in route.Orders)
-                        {
-                            bool result = checkSet.Add(order);
-                            if (!result) throw new Exception();
-                        }
-                    }
-
                     // Store plan & indicies
                     plans[ant] = new Plan() { Routes = routes.ToList() };
                     plansOrdersIndicies[ant] = routesOrdersIndicies;
@@ -227,11 +228,11 @@ namespace DARP.Solvers
                 // Vaporize pheromone
                 for (int i = 0; i < vehiclesPheromoneG.Length; i++)
                     for (int j = 0; j < vehiclesPheromoneG[i].Length; j++)
-                        vehiclesPheromoneG[i][j] *= 0.8;
+                        vehiclesPheromoneG[i][j] *= (1 - _input.EvaporationCoeficient);
 
                 for (int i = 0; i < ordersPheromoneG.Length; i++)
                     for (int j = 0; j < ordersPheromoneG[i].Length; j++)
-                        ordersPheromoneG[i][j] *= 0.8;
+                        ordersPheromoneG[i][j] *= (1 - _input.EvaporationCoeficient);
 
                 // Update pheromone in global matrices
                 double maxProfit = totalProfits.Max();
@@ -240,8 +241,8 @@ namespace DARP.Solvers
                 {
                     Plan plan = plans[p];
                     List<int>[] routesOrdersIndicies = plansOrdersIndicies[p];
-                    double pheromoneAmount = relativeProfits[p];
-                    if (pheromoneAmount < 1) continue; // HACK - update best path only
+                    double relativeProfit = relativeProfits[p];
+                    if (relativeProfit < 1) continue; // HACK - update best path only
 
                     for (int r = 0; r < routesOrdersIndicies.Length; r++)
                     {
@@ -250,7 +251,10 @@ namespace DARP.Solvers
                         // Vehicle - order edge
                         if (routeOrdersIndicies.Count > 0)
                         {
-                            vehiclesPheromoneG[r][routeOrdersIndicies[0]] += pheromoneAmount;
+                            int o = routeOrdersIndicies[0];
+                            vehiclesPheromoneG[r][o] += relativeProfit * vehiclesAttractivnessG[r][o];
+                            
+                            //vehiclesPheromoneG[r][o] = Math.Min(vehiclesPheromoneG[r][o], 5);
                         }
 
                         // Orders
@@ -258,11 +262,16 @@ namespace DARP.Solvers
                         {
                             int o1 = routeOrdersIndicies[i];
                             int o2 = routeOrdersIndicies[i + 1];
-                            ordersPheromoneG[o1][o2] += pheromoneAmount;
+                            ordersPheromoneG[o1][o2] += relativeProfit * ordersAttractivnessG[o1][o2];
+
+                            //ordersPheromoneG[o1][o2] = Math.Min(ordersPheromoneG[o1][o2], 5);
                         }
                     }
 
-                    Console.WriteLine($"Run {run}, plan {p}: total profit {totalProfits[p]}");
+                    if (run % 10 == 0)
+                    {
+                        Console.WriteLine($"Run {run}, plan {p}: total profit {totalProfits[p]}");
+                    }
                     break;
                 }
 

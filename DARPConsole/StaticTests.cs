@@ -33,16 +33,24 @@ namespace DARPConsole
         {
             var input = GetInput();
 
+            var acoInput = new AntColonySolverInput(input);
+            var solver = new AntColonySolver();
+            var output = solver.Run(acoInput);
+
+
             InsertionHeuristicsInput insHInput3 = new(input);
             InsertionHeuristics insH3 = new();
             InsertionHeuristicsOutput insHOutput3 = insH3.RunGlobalBestFit(insHInput3);
             double iProfit3GBF = insHOutput3.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            Console.WriteLine($"{iProfit3GBF}");
+            Console.WriteLine($"Global best fit: {iProfit3GBF}");
 
-
-            var acoInput = new AntColonySolverInput(input);
-            var solver = new AntColonySolver();
-            var output = solver.Run(acoInput);
+            MIPSolverInput mipInput = new(input);
+            mipInput.Solver = "SCIP";
+            mipInput.Integer = false;
+            MIPSolver ms = new();
+            MIPSolverOutput mipOutput = ms.Run(mipInput);
+            double mProfit = mipOutput.ObjetiveValue;
+            Console.WriteLine($"Linear relaxation: {mProfit}");
         }
 
         private static SolverInputBase GetInput()
@@ -58,9 +66,9 @@ namespace DARPConsole
             };
 
             List<Order> orders = new();
-            const int MAP_SIZE = 10;
+            const int MAP_SIZE = 20;
             const int PROFIT_PM = 5;
-            const int ORDERS = 10;
+            const int ORDERS = 50;
             for (int o = 1; o <= ORDERS; o++)
             {
                 Cords2D pickup = new Cords2D(_random.Next(0, MAP_SIZE), _random.Next(0, (int)MAP_SIZE));
