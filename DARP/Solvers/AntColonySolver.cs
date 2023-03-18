@@ -36,15 +36,19 @@ namespace DARP.Solvers
     /// </summary>
     public class AntColonySolverInput : SolverInputBase
     {
-        public int Ants { get; set; } = 100;
+        public int Ants { get; set; } = 500;
 
-        public int Runs { get; set; } = 1000;
+        public int Runs { get; set; } = 200;
 
         public double Alpha { get; set; } = 1;
 
         public double Beta { get; set; } = 1;
 
         public double EvaporationCoeficient { get; set; } = 0.2;
+
+        //public double Q { get; set; } = 0.01;
+
+        public double EllityQuotient { get; set; } = 0.05;
 
         /// <summary>
         /// Initialize
@@ -242,7 +246,7 @@ namespace DARP.Solvers
                     Plan plan = plans[p];
                     List<int>[] routesOrdersIndicies = plansOrdersIndicies[p];
                     double relativeProfit = relativeProfits[p];
-                    if (relativeProfit < 1) continue; // HACK - update best path only
+                    if (relativeProfit < 0.95) continue;
 
                     for (int r = 0; r < routesOrdersIndicies.Length; r++)
                     {
@@ -252,7 +256,7 @@ namespace DARP.Solvers
                         if (routeOrdersIndicies.Count > 0)
                         {
                             int o = routeOrdersIndicies[0];
-                            vehiclesPheromoneG[r][o] += relativeProfit * vehiclesAttractivnessG[r][o];
+                            vehiclesPheromoneG[r][o] += (10.0 / _input.Ants) * relativeProfit; // * vehiclesAttractivnessG[r][o];
                             
                             //vehiclesPheromoneG[r][o] = Math.Min(vehiclesPheromoneG[r][o], 5);
                         }
@@ -262,7 +266,7 @@ namespace DARP.Solvers
                         {
                             int o1 = routeOrdersIndicies[i];
                             int o2 = routeOrdersIndicies[i + 1];
-                            ordersPheromoneG[o1][o2] += relativeProfit * ordersAttractivnessG[o1][o2];
+                            ordersPheromoneG[o1][o2] += (10.0 / _input.Ants) * relativeProfit; // * ordersAttractivnessG[o1][o2];
 
                             //ordersPheromoneG[o1][o2] = Math.Min(ordersPheromoneG[o1][o2], 5);
                         }
@@ -272,7 +276,7 @@ namespace DARP.Solvers
                     {
                         Console.WriteLine($"Run {run}, plan {p}: total profit {totalProfits[p]}");
                     }
-                    break;
+                    //break;
                 }
 
             }
