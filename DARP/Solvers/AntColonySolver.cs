@@ -1,11 +1,10 @@
 ﻿using DARP.Models;
 using DARP.Utils;
-using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace DARP.Solvers
 {
@@ -37,9 +36,9 @@ namespace DARP.Solvers
     /// </summary>
     public class AntColonySolverInput : SolverInputBase
     {
-        public int Ants { get; set; } = 10;
+        public int Ants { get; set; } = 50;
 
-        public int Runs { get; set; } = 10;
+        public int Runs { get; set; } = 100;
 
 
         /// <summary>
@@ -78,14 +77,43 @@ namespace DARP.Solvers
         {
             _input = input;
 
-            Order[] orders = _input.Plan.Orders.OrderBy(o => o.DeliveryTime.From).ToArray();
-            double[,] pheromone = new double[orders.Length, orders.Length];
-            Order[][] successors = new Order[orders.Length][];
+            Route[] emptyRoutes = _input.Plan.Routes.ToArray();
+            Vehicle[] vehicles = emptyRoutes.Select(x => x.Vehicle).ToArray();
+            Order[] orders = _input.Orders.OrderBy(o => o.DeliveryTime.From).ToArray();
 
-            // Initialize successors and pheromone
+            double[][] vehiclesPheromoneG = new double[vehicles.Length][];
+            Order[][] vehiclesSuccessorsG = new Order[vehicles.Length][];
+
+            double[][] ordersPheromoneG = new double[orders.Length][];
+            Order[][] ordersSuccessorsG = new Order[orders.Length][];
+
+            // Initialize successors and pheromone for vehicles
+            for (int i = 0; i < emptyRoutes.Length; i++)
+            {
+                VehicleRoutePoint vrp = (VehicleRoutePoint)emptyRoutes[i].Points[0];
+                vehiclesPheromoneG[i] = new double[orders.Length];
+                vehiclesSuccessorsG[i] = new Order[0];
+                for (int j = 0; j < orders.Length; j++)
+                {
+                    Order o1 = orders[j];
+                    Time o1DeliveryTime = vrp.Time + _input.Metric(vrp.Location, o1.PickupLocation) + _input.Metric(o1.PickupLocation, o1.DeliveryLocation);
+
+                    // Can deliver
+                    if (o1DeliveryTime <= o1.DeliveryTime.To)
+                    {
+                        vehiclesSuccessorsG[i] = vehiclesSuccessorsG[i].Append(o1).ToArray();
+                        double vo2Distance = _input.Metric(vrp.Location, o1.PickupLocation).ToDouble();
+                        vehiclesPheromoneG[i][j] = 1;
+                    }
+                }
+            }
+
+            // Initialize successors and pheromone for orders
             for (int i = 0; i < orders.Length; i++)
             {
                 Order o1 = orders[i];
+                ordersPheromoneG[i] = new double[orders.Length];
+                ordersSuccessorsG[i] = new Order[0];
                 for (int j = 0; j < orders.Length; j++)
                 {
                     Order o2 = orders[j];
@@ -94,34 +122,151 @@ namespace DARP.Solvers
                     // Can deliver
                     if (o2LeastDeliveryTime <= o2.DeliveryTime.To)
                     {
-                        successors[i] = successors[i].Append(o2).ToArray();
-
-                        pheromone[i, j] = 1 / _input.Metric(o1.DeliveryLocation, o2.PickupLocation).ToDouble();
+                        ordersSuccessorsG[i] = ordersSuccessorsG[i].Append(o2).ToArray();
+                        double o1o2Distance = _input.Metric(o1.DeliveryLocation, o2.PickupLocation).ToDouble();
+                        ordersPheromoneG[i][j] = 1;
                     }
                 }
             }
-            
+
             // Run
             for (int run = 0; run < _input.Runs; run++)
             {
+                Plan[] plans = new Plan[_input.Ants];
+                List<int>[][] plansOrdersIndicies = new List<int>[plans.Length][];
+                double[] totalProfits = new double[plans.Length];
                 for (int ant = 0; ant < _input.Ants; ant++)
                 {
-                    // Build routes sequentially like DFS
-                    Order[][] routes = new Order[_input.Plan.Routes.Count][];
-                    for (int r = 0; r < routes.Length; r++)
+                    // Copy weights arrays
+                    double[][] vehiclesPheromone = new double[vehiclesPheromoneG.Length][];
+                    for (int i = 0; i < vehiclesPheromone.Length; i++)
                     {
-                        List<Order> route = new();
-
-                        // TODO create route
-
-                        routes[r] = route.ToArray();
+                        vehiclesPheromone[i] = new double[vehiclesPheromoneG[i].Length];
+                        for (int j = 0; j < vehiclesPheromone[i].Length; j++)
+                            vehiclesPheromone[i][j] = vehiclesPheromoneG[i][j];
                     }
+                    double[][] ordersPheromone = new double[ordersPheromoneG.Length][];
+                    for (int i = 0; i < ordersPheromone.Length; i++)
+                    {
+                        ordersPheromone[i] = new double[ordersPheromoneG[i].Length];
+                        for (int j = 0; j < ordersPheromone[i].Length; j++)
+                            ordersPheromone[i][j] = ordersPheromoneG[i][j];
+                    }
+
+
+                    // Build routes sequentially like DFS
+                    Route[] routes = emptyRoutes.Select(er => er.Clone()).ToArray();
+                    List<int>[] routesOrdersIndicies = new List<int>[routes.Length];
+                    for (int r = 0; r < routes.Length; r++) // An index of the route coresponds to an index of its vehicle
+                    {
+                        Route route = routes[r];
+                        routesOrdersIndicies[r] = new();
+
+                        // Select first order
+                        int orderIndex = XMath.RandomIndexByWeight(vehiclesSuccessorsG[r], vehiclesPheromone[r]);
+                        if (orderIndex < 0) continue;
+                        Order order = orders[orderIndex];
+                        routesOrdersIndicies[r].Add(orderIndex);
+
+                        // Set pheromone on edge to the order to 0 so it will not be selected twice
+                        for (int i = 0; i < vehiclesPheromone.Length; i++)
+                            vehiclesPheromone[i][orderIndex] = 0;
+                        for (int i = 0; i < ordersPheromone.Length; i++)
+                            ordersPheromone[i][orderIndex] = 0;
+
+                        // Add order to route
+                        Time pickupTime = route.Points[0].Time;
+                        Time deliveryTime = pickupTime + _input.Metric(order.PickupLocation, order.DeliveryLocation);
+                        deliveryTime = XMath.Max(deliveryTime, order.DeliveryTime.From);
+
+                        route.Points.Add(new OrderPickupRoutePoint(order) { Time = pickupTime });
+                        route.Points.Add(new OrderDeliveryRoutePoint(order) { Time = deliveryTime });
+
+                        // Select following orders
+                        while (ordersSuccessorsG[orderIndex].Length > 0)
+                        {
+                            orderIndex = XMath.RandomIndexByWeight(ordersSuccessorsG[orderIndex], ordersPheromone[orderIndex]);
+                            if (orderIndex < 0) break;
+                            order = orders[orderIndex];
+                            routesOrdersIndicies[r].Add(orderIndex);
+
+                            // Set pheromone on edge to the order to 0 so it will not be selected twice
+                            for (int i = 0; i < vehiclesPheromone.Length; i++)
+                                vehiclesPheromone[i][orderIndex] = 0;
+                            for (int i = 0; i < ordersPheromone.Length; i++)
+                                ordersPheromone[i][orderIndex] = 0; 
+
+                            // Add order to route
+                            int routePointsCount = route.Points.Count;
+                            pickupTime = route.Points[routePointsCount - 1].Time +  _input.Metric(route.Points[routePointsCount - 1].Location, order.PickupLocation);
+                            deliveryTime = pickupTime + _input.Metric(order.PickupLocation, order.DeliveryLocation);
+                            deliveryTime = XMath.Max(deliveryTime, order.DeliveryTime.From);
+
+                            route.Points.Add(new OrderPickupRoutePoint(order) { Time = pickupTime });
+                            route.Points.Add(new OrderDeliveryRoutePoint(order) { Time = deliveryTime });
+                        }
+                    }
+
+                    // HACK - check whether there aro no duplicite orders
+                    HashSet<Order> checkSet = new();
+                    foreach (var route in routes)
+                    {
+                        foreach (var order in route.Orders)
+                        {
+                            bool result = checkSet.Add(order);
+                            if (!result) throw new Exception();
+                        }
+                    }
+
+                    // Store plan & indicies
+                    plans[ant] = new Plan() { Routes = routes.ToList() };
+                    plansOrdersIndicies[ant] = routesOrdersIndicies;
+                    totalProfits[ant] = plans[ant].GetTotalProfit(_input.Metric, _input.VehicleChargePerTick);
                 }
 
-                // TODO update pheromone
-            }
-            
+                // Vaporize pheromone
+                for (int i = 0; i < vehiclesPheromoneG.Length; i++)
+                    for (int j = 0; j < vehiclesPheromoneG[i].Length; j++)
+                        vehiclesPheromoneG[i][j] *= 0.8;
 
+                for (int i = 0; i < ordersPheromoneG.Length; i++)
+                    for (int j = 0; j < ordersPheromoneG[i].Length; j++)
+                        ordersPheromoneG[i][j] *= 0.8;
+
+                // Update pheromone in global matrices
+                double maxProfit = totalProfits.Max();
+                double[] relativeProfits = totalProfits.Select(tp => tp / maxProfit).ToArray();
+                for (int p = 0; p < plans.Length; p++)
+                {
+                    Plan plan = plans[p];
+                    List<int>[] routesOrdersIndicies = plansOrdersIndicies[p];
+                    double pheromoneAmount = relativeProfits[p];
+                    if (pheromoneAmount < 1) continue; // HACK - update best path only
+
+                    for (int r = 0; r < routesOrdersIndicies.Length; r++)
+                    {
+                        List<int> routeOrdersIndicies = routesOrdersIndicies[r];
+
+                        // Vehicle - order edge
+                        if (routeOrdersIndicies.Count > 0)
+                        {
+                            vehiclesPheromoneG[r][routeOrdersIndicies[0]] += pheromoneAmount;
+                        }
+
+                        // Orders
+                        for (int i = 0; i < routeOrdersIndicies.Count - 1; i++)
+                        {
+                            int o1 = routeOrdersIndicies[i];
+                            int o2 = routeOrdersIndicies[i + 1];
+                            ordersPheromoneG[o1][o2] += pheromoneAmount;
+                        }
+                    }
+
+                    Console.WriteLine($"Run {run}, plan {p}: total profit {totalProfits[p]}");
+                    break;
+                }
+
+            }
             return new AntColonySolverOutput();
         }
     }

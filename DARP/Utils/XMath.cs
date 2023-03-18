@@ -45,6 +45,28 @@ namespace DARP.Utils
             }
         }
 
+        public static int RandomIndexByWeight<T>(T[] sequence, double[] weights)
+        {
+            Random random = new();
+
+            double totalWeight = weights.Sum();
+            if (totalWeight == 0) return -1;
+
+            // The weight we are after...
+            double itemWeightIndex = (double)random.NextDouble() * totalWeight;
+            double currentWeightIndex = 0;
+
+            for (int i = 0; i < weights.Length; i++)
+            {
+                currentWeightIndex += weights[i];
+
+                if (currentWeightIndex >= itemWeightIndex)
+                    return i;
+            }
+
+            throw new NotImplementedException();
+        }
+
         public static T RandomElementByWeight<T>(IEnumerable<T> sequence, Func<T, double> weightSelector)
         {
             Random random = new();
@@ -65,7 +87,6 @@ namespace DARP.Utils
             }
 
             throw new NotImplementedException();
-
         }
     }
 
