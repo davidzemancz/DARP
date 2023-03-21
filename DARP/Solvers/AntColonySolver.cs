@@ -36,7 +36,7 @@ namespace DARP.Solvers
     /// </summary>
     public class AntColonySolverInput : SolverInputBase
     {
-        public int Ants { get; set; } = 500;
+        public int Ants { get; set; } = 50;
 
         public int Runs { get; set; } = 200;
 
@@ -114,8 +114,8 @@ namespace DARP.Solvers
                     if (o1DeliveryTime <= o1.DeliveryTime.To)
                     {
                         vehiclesSuccessorsG[i] = vehiclesSuccessorsG[i].Append(o1).ToArray();
-                        Time finalTime = vrp.Time + _input.Metric(vrp.Location, o1.PickupLocation) + _input.Metric(o1.PickupLocation, o1.DeliveryLocation);
-                        vehiclesAttractivnessG[i][j] = 1 / finalTime.ToDouble();
+                        double finalTime = Math.Abs(((vrp.Time + _input.Metric(vrp.Location, o1.PickupLocation) + _input.Metric(o1.PickupLocation, o1.DeliveryLocation))).ToDouble());
+                        vehiclesAttractivnessG[i][j] = 1 / finalTime;
                         vehiclesPheromoneG[i][j] = 1;//vehiclesAttractivnessG[i][j];
                     }
                 }
@@ -137,8 +137,8 @@ namespace DARP.Solvers
                     if (o2LeastDeliveryTime <= o2.DeliveryTime.To)
                     {
                         ordersSuccessorsG[i] = ordersSuccessorsG[i].Append(o2).ToArray();
-                        Time finalTime = o1.DeliveryTime.To + _input.Metric(o1.DeliveryLocation, o2.PickupLocation) + _input.Metric(o2.PickupLocation, o2.DeliveryLocation);
-                        ordersAttractivnessG[i][j] = 1 / finalTime.ToDouble();
+                        double finalTime = Math.Abs(((o1.DeliveryTime.From + _input.Metric(o1.DeliveryLocation, o2.PickupLocation) + _input.Metric(o2.PickupLocation, o2.DeliveryLocation))).ToDouble());
+                        ordersAttractivnessG[i][j] = 1 / finalTime;
                         ordersPheromoneG[i][j] = 1;// ordersAttractivnessG[i][j];
                         
                     }
@@ -247,6 +247,7 @@ namespace DARP.Solvers
                     List<int>[] routesOrdersIndicies = plansOrdersIndicies[p];
                     double relativeProfit = relativeProfits[p];
                     if (relativeProfit < 0.95) continue;
+                    relativeProfit = Math.Pow(relativeProfit, 2);
 
                     for (int r = 0; r < routesOrdersIndicies.Length; r++)
                     {
@@ -256,7 +257,7 @@ namespace DARP.Solvers
                         if (routeOrdersIndicies.Count > 0)
                         {
                             int o = routeOrdersIndicies[0];
-                            vehiclesPheromoneG[r][o] += (10.0 / _input.Ants) * relativeProfit; // * vehiclesAttractivnessG[r][o];
+                            vehiclesPheromoneG[r][o] += (1.0 / _input.Ants) * relativeProfit; // * vehiclesAttractivnessG[r][o];
                             
                             //vehiclesPheromoneG[r][o] = Math.Min(vehiclesPheromoneG[r][o], 5);
                         }
@@ -266,7 +267,7 @@ namespace DARP.Solvers
                         {
                             int o1 = routeOrdersIndicies[i];
                             int o2 = routeOrdersIndicies[i + 1];
-                            ordersPheromoneG[o1][o2] += (10.0 / _input.Ants) * relativeProfit; // * ordersAttractivnessG[o1][o2];
+                            ordersPheromoneG[o1][o2] += (1.0 / _input.Ants) * relativeProfit; // * ordersAttractivnessG[o1][o2];
 
                             //ordersPheromoneG[o1][o2] = Math.Min(ordersPheromoneG[o1][o2], 5);
                         }
