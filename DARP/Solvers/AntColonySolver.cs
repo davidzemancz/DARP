@@ -36,17 +36,15 @@ namespace DARP.Solvers
     /// </summary>
     public class AntColonySolverInput : SolverInputBase
     {
-        public int Ants { get; set; } = 500;
+        public int Ants { get; set; } = 1000;
 
-        public int Runs { get; set; } = 100;
+        public int Runs { get; set; } = 1000;
 
         public double Alpha { get; set; } = 1;
 
         public double Beta { get; set; } = 1;
 
         public double EvaporationCoeficient { get; set; } = 0.3;
-
-        
 
         /// <summary>
         /// Initialize
@@ -259,8 +257,8 @@ namespace DARP.Solvers
                     //Plan plan = plans[p];
                     List<int>[] routesOrdersIndicies = plansOrdersIndicies[p];
                     double relativeProfit = relativeProfits[p];
-                    if (relativeProfit < 0.8) continue;
-                    relativeProfit = Math.Pow(relativeProfit, 2);
+                    if (relativeProfit < 0.7) continue;
+                    relativeProfit = Math.Pow(relativeProfit, 3);
 
                     for (int r = 0; r < routesOrdersIndicies.Length; r++)
                     {
@@ -288,7 +286,7 @@ namespace DARP.Solvers
 
                     if (run % 10 == 0)
                     {
-                        //Console.WriteLine($"Run {run}, plan {p}: total profit {totalProfits[p]}");
+                        Console.WriteLine($"Run {run}, plan {p}: total profit {maxProfitG}");
                     }
                     //break;
                 }
