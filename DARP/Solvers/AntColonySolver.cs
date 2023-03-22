@@ -151,6 +151,8 @@ namespace DARP.Solvers
                 Route[][] plans = new Route[_input.Ants][];
                 List<int>[][] plansOrdersIndicies = new List<int>[plans.Length][];
                 double[] totalProfits = new double[plans.Length];
+
+                // Ants
                 for (int ant = 0; ant < _input.Ants; ant++)
                 {
                     // Copy weights arrays
