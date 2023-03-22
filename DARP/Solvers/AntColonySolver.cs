@@ -198,7 +198,7 @@ namespace DARP.Solvers
                         route.Points.Add(new OrderPickupRoutePoint(order) { Time = pickupTime });
                         route.Points.Add(new OrderDeliveryRoutePoint(order) { Time = deliveryTime });
 
-                        // Select following orders
+                        // Select following orde
                         while (ordersSuccessorsG[orderIndex].Length > 0)
                         {
                             int prevOrderIndex = orderIndex;
