@@ -201,6 +201,8 @@ namespace DARP.Solvers
                         // Select following orders
                         while (ordersSuccessorsG[orderIndex].Length > 0)
                         {
+                            // TODO check whether it is able to contione to the successor
+
                             orderIndex = XMath.RandomIndexByWeight(ordersSuccessorsG[orderIndex], ordersWeights[orderIndex]);
                             if (orderIndex < 0) break;
                             order = orders[orderIndex];
