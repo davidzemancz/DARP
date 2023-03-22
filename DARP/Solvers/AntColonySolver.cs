@@ -36,7 +36,7 @@ namespace DARP.Solvers
     /// </summary>
     public class AntColonySolverInput : SolverInputBase
     {
-        public int Ants { get; set; } = 50;
+        public int Ants { get; set; } = 500;
 
         public int Runs { get; set; } = 200;
 
@@ -131,15 +131,15 @@ namespace DARP.Solvers
                 for (int j = 0; j < orders.Length; j++)
                 {
                     Order o2 = orders[j];
-                    Time o2LeastDeliveryTime = o1.DeliveryTime.To + _input.Metric(o1.DeliveryLocation, o2.PickupLocation) + _input.Metric(o2.PickupLocation, o2.DeliveryLocation);
+                    Time o2LeastDeliveryTime = o1.DeliveryTime.From + _input.Metric(o1.DeliveryLocation, o2.PickupLocation) + _input.Metric(o2.PickupLocation, o2.DeliveryLocation);
 
-                    // Can deliver
+                    // Can deliver - need to be checked since we assume that previous order was delivered at o1.DeliveryTime.From
                     if (o2LeastDeliveryTime <= o2.DeliveryTime.To)
                     {
                         ordersSuccessorsG[i] = ordersSuccessorsG[i].Append(o2).ToArray();
                         double finalTime = Math.Abs(((o1.DeliveryTime.From + _input.Metric(o1.DeliveryLocation, o2.PickupLocation) + _input.Metric(o2.PickupLocation, o2.DeliveryLocation))).ToDouble());
                         ordersAttractivnessG[i][j] = 1 / finalTime;
-                        ordersPheromoneG[i][j] = 1;// ordersAttractivnessG[i][j];
+                        ordersPheromoneG[i][j] = 1; // ordersAttractivnessG[i][j];
                         
                     }
                 }
@@ -201,11 +201,24 @@ namespace DARP.Solvers
                         // Select following orders
                         while (ordersSuccessorsG[orderIndex].Length > 0)
                         {
-                            // TODO check whether it is able to contione to the successor
+                            int prevOrderIndex = orderIndex;
 
                             orderIndex = XMath.RandomIndexByWeight(ordersSuccessorsG[orderIndex], ordersWeights[orderIndex]);
                             if (orderIndex < 0) break;
                             order = orders[orderIndex];
+
+                            // Check whether the order can be delivered
+                            int routePointsCount = route.Points.Count;
+                            pickupTime = route.Points[routePointsCount - 1].Time + _input.Metric(route.Points[routePointsCount - 1].Location, order.PickupLocation);
+                            deliveryTime = pickupTime + _input.Metric(order.PickupLocation, order.DeliveryLocation);
+                            deliveryTime = XMath.Max(deliveryTime, order.DeliveryTime.From);
+                            if (deliveryTime > order.DeliveryTime.To) // Cannot be delivered
+                            {
+                                ordersWeights[prevOrderIndex][orderIndex] = 0;
+                                continue;
+                            }
+
+                            // Add index
                             routesOrdersIndicies[r].Add(orderIndex);
 
                             // Set pheromone on edge to the order to 0 so it will not be selected twice
@@ -215,11 +228,6 @@ namespace DARP.Solvers
                                 ordersWeights[i][orderIndex] = 0; 
 
                             // Add order to route
-                            int routePointsCount = route.Points.Count;
-                            pickupTime = route.Points[routePointsCount - 1].Time +  _input.Metric(route.Points[routePointsCount - 1].Location, order.PickupLocation);
-                            deliveryTime = pickupTime + _input.Metric(order.PickupLocation, order.DeliveryLocation);
-                            deliveryTime = XMath.Max(deliveryTime, order.DeliveryTime.From);
-
                             route.Points.Add(new OrderPickupRoutePoint(order) { Time = pickupTime });
                             route.Points.Add(new OrderDeliveryRoutePoint(order) { Time = deliveryTime });
                         }
@@ -248,8 +256,8 @@ namespace DARP.Solvers
                     Plan plan = plans[p];
                     List<int>[] routesOrdersIndicies = plansOrdersIndicies[p];
                     double relativeProfit = relativeProfits[p];
-                    if (relativeProfit < 0.95) continue;
-                    relativeProfit = Math.Pow(relativeProfit, 2);
+                    if (relativeProfit < 0.9) continue;
+                    //relativeProfit = Math.Pow(relativeProfit, 2);
 
                     for (int r = 0; r < routesOrdersIndicies.Length; r++)
                     {
