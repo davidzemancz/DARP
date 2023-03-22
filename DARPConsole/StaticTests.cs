@@ -14,18 +14,16 @@ namespace DARPConsole
 {
     internal class StaticTests
     {
-        static Random _random = new();
+        static Random _random = new(0);
 
 
         public static void Run()
         {
-            RunACO();
-            return;
-
-            const int RUNS = 20;
+            const int RUNS = 10;
             for (int i = 0; i < RUNS; i++)
             {
-                RunOnce();
+                RunACO();
+                global::System.Console.WriteLine("-----------------------------");
             }
         }
 
@@ -37,12 +35,32 @@ namespace DARPConsole
             var solver = new AntColonySolver();
             var output = solver.Run(acoInput);
 
+            EvolutionarySolverInput esInput2 = new(input);
+            esInput2.Generations = 200;
+            esInput2.PopulationSize = 100;
+            esInput2.BestfitOrderInsertMutProb = 0.3;
+            esInput2.RandomOrderInsertMutProb = 0.2;
+            esInput2.RandomOrderRemoveMutProb = 0.3;
+            esInput2.RouteCrossoverProb = 0.2;
+            esInput2.PlanCrossoverProb = 0.7;
+            esInput2.EnviromentalSelection = EnviromentalSelection.Tournament;
+            esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
+            EvolutionarySolver es2 = new();
+            EvolutionarySolverOutput output2 = es2.Run(esInput2);
+            double eProfit2 = output2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"Evolution: {eProfit2}");
 
-            InsertionHeuristicsInput insHInput3 = new(input);
-            InsertionHeuristics insH3 = new();
-            InsertionHeuristicsOutput insHOutput3 = insH3.RunGlobalBestFit(insHInput3);
-            double iProfit3GBF = insHOutput3.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            Console.WriteLine($"Global best fit: {iProfit3GBF}");
+            InsertionHeuristicsInput insHInput4 = new(input);
+            InsertionHeuristics insH4 = new();
+            insHInput4.Epsilon = 0.2;
+            double iProfit4Max = double.MinValue;
+            for (int i = 0; i < 20; i++)
+            {
+                InsertionHeuristicsOutput insHOutput4 = insH4.RunRandomizedGlobalBestFit(insHInput4);
+                double iProfit4 = insHOutput4.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                if (iProfit4 > iProfit4Max) iProfit4Max = iProfit4;
+            }
+            Console.WriteLine($"Randomized insertion: {iProfit4Max}");
 
             MIPSolverInput mipInput = new(input);
             mipInput.Solver = "SCIP";

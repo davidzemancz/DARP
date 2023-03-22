@@ -38,7 +38,7 @@ namespace DARP.Solvers
     {
         public int Ants { get; set; } = 500;
 
-        public int Runs { get; set; } = 500;
+        public int Runs { get; set; } = 100;
 
         public double Alpha { get; set; } = 1;
 
@@ -95,6 +95,8 @@ namespace DARP.Solvers
             double[][] ordersPheromoneG = new double[orders.Length][];
             double[][] ordersAttractivnessG = new double[orders.Length][];
             Order[][] ordersSuccessorsG = new Order[orders.Length][];
+
+            double maxProfitG = double.MinValue;
 
             // Initialize successors and pheromone for vehicles
             for (int i = 0; i < emptyRoutes.Length; i++)
@@ -248,14 +250,15 @@ namespace DARP.Solvers
 
                 // Update pheromone in global matrices
                 double maxProfit = totalProfits.Max();
+                if( maxProfit > maxProfitG) maxProfitG = maxProfit;
                 double[] relativeProfits = totalProfits.Select(tp => tp / maxProfit).ToArray();
                 for (int p = 0; p < plans.Length; p++)
                 {
                     //Plan plan = plans[p];
                     List<int>[] routesOrdersIndicies = plansOrdersIndicies[p];
                     double relativeProfit = relativeProfits[p];
-                    if (relativeProfit < 0.9) continue;
-                    //relativeProfit = Math.Pow(relativeProfit, 2);
+                    if (relativeProfit < 0.8) continue;
+                    relativeProfit = Math.Pow(relativeProfit, 2);
 
                     for (int r = 0; r < routesOrdersIndicies.Length; r++)
                     {
@@ -283,12 +286,13 @@ namespace DARP.Solvers
 
                     if (run % 10 == 0)
                     {
-                        Console.WriteLine($"Run {run}, plan {p}: total profit {totalProfits[p]}");
+                        //Console.WriteLine($"Run {run}, plan {p}: total profit {totalProfits[p]}");
                     }
                     //break;
                 }
-
             }
+
+            Console.WriteLine($"ACO: {maxProfitG}");
             return new AntColonySolverOutput();
         }
     }
