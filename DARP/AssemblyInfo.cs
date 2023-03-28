@@ -11,3 +11,4 @@ using System.Windows;
 )]
 
 [assembly: InternalsVisibleTo("DARPConsole")]
+[assembly: InternalsVisibleTo("DARPExperiments")]

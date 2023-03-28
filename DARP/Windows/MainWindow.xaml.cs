@@ -765,6 +765,8 @@ namespace DARP.Windows
                 double totalCurrentProfit = 0;
                 int orderId = 0;
 
+                Stopwatch swRuntime = new();
+                swRuntime.Start();
                 for (; model.CurrentTime <= end; model.CurrentTime = model.CurrentTime.AddTicks(1))
                 {
                     // New orders
@@ -886,7 +888,19 @@ namespace DARP.Windows
                     }
                 }
 
-                _simulationTemplatesLog.Info($"{model.Params.SimTemplateName}{sep}{run}{sep}{totalCurrentProfit}");
+                int totalOrders = orders.Count();
+                int handledOrders = orders.Count(o => o.State == OrderState.Handled);
+                int rejectedOrders = orders.Count(o => o.State == OrderState.Rejected);
+                double runtime = swRuntime.Elapsed.TotalSeconds;
+
+                _simulationTemplatesLog.Info($"{model.Params.SimTemplateName}{sep}" +
+                    $"{run}{sep}" +
+                    $"{totalCurrentProfit}{sep}" +
+                    $"{totalOrders}{sep}" +
+                    $"{handledOrders}{sep}" +
+                    $"{rejectedOrders}{sep}" +
+                    $"{runtime}{sep}" +
+                    $"");
 
                 // Run optimum estimation just once for each run
                 bool runEstimation = false;
