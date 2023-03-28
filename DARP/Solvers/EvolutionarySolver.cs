@@ -218,12 +218,13 @@ namespace DARP.Solvers
 
                 List<Individual> newPopulation = new(input.PopulationSize);
                 // Crossover
-                for (int i = 0; newPopulation.Count < input.PopulationSize; i++)
+                for (int i = 0; newPopulation.Count < input.PopulationSize - 1; i += 2)
                 {
                     // Select parents
                     // TODO: select parents by tournament
-                    Individual parent1 = XMath.RandomElementByWeight(population, (i) => i.Fitness);
-                    Individual parent2 = XMath.RandomElementByWeight(population, (i) => i.Fitness);
+                    // TODO: select parent sequentialy
+                    Individual parent1 = population[i]; //XMath.RandomElementByWeight(population, (i) => i.Fitness);
+                    Individual parent2 = population[i+1]; //XMath.RandomElementByWeight(population, (i) => i.Fitness);
 
                     // Create offsprings
                     if (_random.NextDouble() < input.PlanCrossoverProb)

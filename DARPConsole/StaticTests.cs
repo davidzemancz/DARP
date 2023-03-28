@@ -43,28 +43,28 @@ namespace DARPConsole
             }
             Console.WriteLine($"Randomized insertion: {iProfit4Max}");
 
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
 
-            var acoInput = new AntColonySolverInput(input);
-            var solver = new AntColonySolver();
-            var output = solver.Run(acoInput);
+            //var acoInput = new AntColonySolverInput(input);
+            //var solver = new AntColonySolver();
+            //var output = solver.Run(acoInput);
 
-            //EvolutionarySolverInput esInput2 = new(input);
-            //esInput2.Generations = 200;
-            //esInput2.PopulationSize = 100;
-            //esInput2.BestfitOrderInsertMutProb = 0.3;
-            //esInput2.RandomOrderInsertMutProb = 0.2;
-            //esInput2.RandomOrderRemoveMutProb = 0.3;
-            //esInput2.RouteCrossoverProb = 0.2;
-            //esInput2.PlanCrossoverProb = 0.7;
-            //esInput2.EnviromentalSelection = EnviromentalSelection.Tournament;
-            //esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
-            //EvolutionarySolver es2 = new();
-            //EvolutionarySolverOutput output2 = es2.Run(esInput2);
-            //double eProfit2 = output2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            //Console.WriteLine($"Evolution: {eProfit2}");
+            EvolutionarySolverInput esInput2 = new(input);
+            esInput2.Generations = 500;
+            esInput2.PopulationSize = 300;
+            esInput2.BestfitOrderInsertMutProb = 0.3;
+            esInput2.RandomOrderInsertMutProb = 0.2;
+            esInput2.RandomOrderRemoveMutProb = 0.3;
+            esInput2.RouteCrossoverProb = 0.2;
+            esInput2.PlanCrossoverProb = 0.6;
+            esInput2.EnviromentalSelection = EnviromentalSelection.Tournament;
+            esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
+            EvolutionarySolver es2 = new();
+            EvolutionarySolverOutput output2 = es2.Run(esInput2);
+            double eProfit2 = output2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"Evolution: {eProfit2}");
 
-         
+
 
             //MIPSolverInput mipInput = new(input);
             //mipInput.Solver = "SCIP";
