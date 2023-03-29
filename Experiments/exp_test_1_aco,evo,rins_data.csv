@@ -1,0 +1,21 @@
+Name;Run;Objective;TotalOrders;HandledOrders;RejectedOrders;Runtime;
+Randomized insertion;1;2871;63;24;31;2,7573731;
+OptimumEstimation;1;3779
+Randomized insertion;2;2659;63;24;36;2,7629991;
+OptimumEstimation;2;3231,749944
+Randomized insertion;3;2321;63;21;37;3,2052199;
+OptimumEstimation;3;2779,999976
+Randomized insertion;4;2469;59;27;25;3,3901024;
+OptimumEstimation;4;2841
+Randomized insertion;5;2416;76;27;41;3,8283209;
+OptimumEstimation;5;3684,6
+Evolution;1;3298;63;35;2;40,7929781;
+ACO;1;3282;63;41;2;46,0812133;
+Evolution;2;2507;63;26;0;40,3116905;
+ACO;2;2420;63;32;0;45,9840684;
+Evolution;3;2443;63;31;3;38,8895666;
+ACO;3;2275;63;37;2;46,2350567;
+Evolution;4;2475;59;34;5;31,4124299;
+ACO;4;2498;59;39;3;36,8117008;
+Evolution;5;2690;76;39;12;57,9838241;
+ACO;5;2709;76;43;11;55,4851394;

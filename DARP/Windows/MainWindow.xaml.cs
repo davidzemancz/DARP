@@ -726,7 +726,7 @@ namespace DARP.Windows
             StreamWriter sw = new(ms);
             _simulationTemplatesLog.TextWriters.Add(sw);
             _simulationTemplatesLog.DisplayLineNumbers = false;
-            _simulationTemplatesLog.Info("Name;Run;Objective");
+            _simulationTemplatesLog.Info("Name;Run;Objective;TotalOrders;HandledOrders;RejectedOrders;Runtime;");
 
             List<Task> tasks = new();
             //for (int run = 0; run < WindowModel.Params.TemplateTotalRuns; run++)
@@ -883,6 +883,7 @@ namespace DARP.Windows
                                 plan = output.Plan;
                             }
                         }
+                        // ACO
                         else if (model.Params.OptimizationMethod == OptimizationMethod.AntColony)
                         {
                             var ordesToSchedule = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted);
@@ -935,6 +936,7 @@ namespace DARP.Windows
                                 plan = output.Plan;
                             }
                         }
+                        
 
                         totalCurrentProfit = totalProfit + plan.GetTotalProfit(metric, vehicleCharge);
                         LoggerBase.Instance.Debug($"Time {model.CurrentTime}, " +
@@ -961,11 +963,11 @@ namespace DARP.Windows
                     $"");
 
                 // Run optimum estimation just once for each run
-                bool runEstimation = false;
+                bool runEstimation = true;
                 lock (_simulationTemplateEstimationRunFlag)
                 {
-                    runEstimation = _simulationTemplateEstimationRunFlag.ContainsKey(run);
-                    if (!runEstimation) _simulationTemplateEstimationRunFlag.Add(run, true);    
+                    runEstimation = !_simulationTemplateEstimationRunFlag.ContainsKey(run);
+                    if (runEstimation) _simulationTemplateEstimationRunFlag.Add(run, true);    
                 }
 
                 if (runEstimation)
@@ -1603,7 +1605,7 @@ namespace DARP.Windows
         [Category("Order generation")]
         [DisplayName("Time window ticks")]
         [Description("")]
-        public double OrderTimeWindowTicks { get; set; } = 3;
+        public double OrderTimeWindowTicks { get; set; } = 10;
 
         [Category("Order generation")]
         [DisplayName("Profit")]

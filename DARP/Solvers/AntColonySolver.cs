@@ -94,7 +94,8 @@ namespace DARP.Solvers
         {
             _input = input;
 
-            Route[] emptyRoutes = _input.Plan.Routes.ToArray();
+            Route[] emptyRoutes = _input.Plan.Routes.Select(r => r.Clone()).ToArray();
+            Array.ForEach(emptyRoutes, r => r.Points.RemoveAll(rp => rp is not VehicleRoutePoint));
             Vehicle[] vehicles = emptyRoutes.Select(x => x.Vehicle).ToArray();
             Order[] orders = _input.Orders.OrderBy(o => o.DeliveryTime.From).ToArray();
 
@@ -125,7 +126,7 @@ namespace DARP.Solvers
                     {
                         vehiclesSuccessorsG[i] = vehiclesSuccessorsG[i].Append(o1).ToArray();
                         double finalTime = Math.Abs(((vrp.Time + _input.Metric(vrp.Location, o1.PickupLocation) + _input.Metric(o1.PickupLocation, o1.DeliveryLocation))).ToDouble());
-                        vehiclesAttractivnessG[i][j] = 1; // 1 / finalTime;
+                        vehiclesAttractivnessG[i][j] =  1 / finalTime;
                         vehiclesPheromoneG[i][j] = 1;//vehiclesAttractivnessG[i][j];
                     }
                 }
@@ -148,7 +149,7 @@ namespace DARP.Solvers
                     {
                         ordersSuccessorsG[i] = ordersSuccessorsG[i].Append(o2).ToArray();
                         double finalTime = Math.Abs(((o1.DeliveryTime.From + _input.Metric(o1.DeliveryLocation, o2.PickupLocation) + _input.Metric(o2.PickupLocation, o2.DeliveryLocation))).ToDouble());
-                        ordersAttractivnessG[i][j] = 1; // 1 / finalTime;
+                        ordersAttractivnessG[i][j] = 1 / finalTime;
                         ordersPheromoneG[i][j] = 1; // ordersAttractivnessG[i][j];
                         
                     }
@@ -234,11 +235,18 @@ namespace DARP.Solvers
                             // Add index
                             routesOrdersIndicies[r].Add(orderIndex);
 
+                            // Check
+                            if (routes.Any(r => r.Contains(order)))
+                            {
+
+                            }
+
                             // Set pheromone on edge to the order to 0 so it will not be selected twice
                             for (int i = 0; i < vehiclesWeights.Length; i++)
                                 vehiclesWeights[i][orderIndex] = 0;
                             for (int i = 0; i < ordersWeights.Length; i++)
                                 ordersWeights[i][orderIndex] = 0; 
+
 
                             // Add order to route
                             route.Points.Add(new OrderPickupRoutePoint(order) { Time = pickupTime });

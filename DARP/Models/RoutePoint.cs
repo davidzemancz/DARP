@@ -67,6 +67,11 @@ namespace DARP.Models
         {
             return new VehicleRoutePoint(Vehicle) { Location = Location, Time = Time };
         }
+
+        public override string ToString()
+        {
+            return $"Vehicle {Vehicle.Id}";
+        }
     }
 
     /// <summary>
@@ -99,6 +104,11 @@ namespace DARP.Models
         public override RoutePoint Clone()
         {
             return new OrderPickupRoutePoint(Order) { Location = Location, Time = Time };
+        }
+
+        public override string ToString()
+        {
+            return $"Pickup {Order.Id}";
         }
     }
 
@@ -149,6 +159,11 @@ namespace DARP.Models
         public override RoutePoint Clone()
         {
             return new OrderDeliveryRoutePoint(Order) { Location = Location, Time = Time };
+        }
+
+        public override string ToString()
+        {
+            return $"Deliver {Order.Id}";
         }
     }
 }
