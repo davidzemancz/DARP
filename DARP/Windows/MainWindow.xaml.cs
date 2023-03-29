@@ -836,7 +836,7 @@ namespace DARP.Windows
                             {
                                 Mode = model.Params.InsertionMode,
                                 Epsilon = model.Params.InsertionEpsilon,
-                                Runs = model.Params.InsertionRuns,
+                                Runs = model.Params.InsertionRuns,  
                                 Metric = metric,
                                 Orders = orders.Where(o => o.State == OrderState.Created),
                                 Vehicles = vehicles,
@@ -1572,7 +1572,9 @@ namespace DARP.Windows
     [AddINotifyPropertyChangedInterface]
     internal class MainWindowStats
     {
-        public int TotalOrders { get; set; } = 1;
+        private int totalOrders = 1;
+        
+        public int TotalOrders { get => totalOrders == 0 ? 1 : totalOrders; set => totalOrders = value; }
         public int HandledOrders { get; set; }
         public int AcceptedOrders { get; set; }
         public int RejectedOrders { get; set; }
