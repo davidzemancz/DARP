@@ -334,14 +334,41 @@ namespace DARP.Windows
             InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
             {
                 Mode = WindowModel.Params.InsertionMode,
-                Epsilon = WindowModel.Params.Epsilon,
-                Runs = WindowModel.Params.Runs,
+                Epsilon = WindowModel.Params.InsertionEpsilon,
+                Runs = WindowModel.Params.InsertionRuns,
                 Metric = XMath.GetMetric(WindowModel.Params.Metric),
                 Orders = GetOrdersToInsert(),
                 Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetVehicle()),
                 Time = WindowModel.CurrentTime,
                 Plan = _planDataService.GetPlan(),
                 VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
+            });
+
+            LoggerBase.Instance.StopwatchStop();
+
+            _planDataService.SetPlan(output.Plan);
+            return output;
+        }
+
+        private AntColonySolverOutput RunAntColonySolver()
+        {
+            LoggerBase.Instance.Debug($"Run ACO");
+            LoggerBase.Instance.StopwatchStart();
+
+            AntColonySolver solver = new();
+            AntColonySolverOutput output = solver.Run(new AntColonySolverInput()
+            {
+                Metric = XMath.GetMetric(WindowModel.Params.Metric),
+                Orders = GetOrdersToSchedule(),
+                Vehicles = _vehicleService.GetVehicleViews().Select(vv => vv.GetVehicle()),
+                Time = WindowModel.CurrentTime,
+                Plan = _planDataService.GetPlan(),
+                VehicleChargePerTick = WindowModel.Params.VehicleChargePerTick,
+                Ants = WindowModel.Params.ACOAnts,
+                Runs = WindowModel.Params.ACORuns,
+                Alpha = WindowModel.Params.ACOAlpha,
+                Beta = WindowModel.Params.ACOBeta,
+                EvaporationCoefficient = WindowModel.Params.ACOEvaporationCoefficient,
             });
 
             LoggerBase.Instance.StopwatchStop();
@@ -400,6 +427,7 @@ namespace DARP.Windows
                 RouteCrossoverProb = WindowModel.Params.RouteCrossoverProb,
                 PlanCrossoverProb = WindowModel.Params.PlanCrossoverProb,
                 EnviromentalSelection = WindowModel.Params.EnviromentalSelection,
+                ParentalSelection = WindowModel.Params.ParentalSelection,
                 FitnessLog = (gen, fittness) =>
                 {
                     _evolutionAvgFitnessSeries.Points.Add(new DataPoint(gen, fittness[0]));
@@ -429,7 +457,8 @@ namespace DARP.Windows
                     await RunEvolution();
                     break;
                 case OptimizationMethod.AntColony:
-                    throw new NotImplementedException();
+                    RunAntColonySolver();
+                    break;
             }
 
             // Reject old orders
@@ -806,8 +835,8 @@ namespace DARP.Windows
                             InsertionHeuristicsOutput output = insertion.Run(new InsertionHeuristicsInput()
                             {
                                 Mode = model.Params.InsertionMode,
-                                Epsilon = model.Params.Epsilon,
-                                Runs = model.Params.Runs,
+                                Epsilon = model.Params.InsertionEpsilon,
+                                Runs = model.Params.InsertionRuns,
                                 Metric = metric,
                                 Orders = orders.Where(o => o.State == OrderState.Created),
                                 Vehicles = vehicles,
@@ -843,6 +872,7 @@ namespace DARP.Windows
                                     RandomOrderRemoveMutProb = model.Params.RandomOrderRemoveMutProb,
                                     BestfitOrderInsertMutProb = model.Params.BestfitOrderInsertMutProb,
                                     EnviromentalSelection = model.Params.EnviromentalSelection,
+                                    ParentalSelection = model.Params.ParentalSelection,
                                     RouteCrossoverProb = model.Params.RouteCrossoverProb,
                                     PlanCrossoverProb = model.Params.PlanCrossoverProb,
                                 };
@@ -852,6 +882,34 @@ namespace DARP.Windows
                                 LoggerBase.Instance.StopwatchStop();
                                 plan = output.Plan;
                             }
+                        }
+                        else if (model.Params.OptimizationMethod == OptimizationMethod.AntColony)
+                        {
+                            var ordesToSchedule = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted);
+                            if (ordesToSchedule.Any())
+                            {
+                                AntColonySolver solver = new();
+                                AntColonySolverInput input = new()
+                                {
+                                    Metric = metric,
+                                    Orders = ordesToSchedule,
+                                    Vehicles = vehicles,
+                                    Time = model.CurrentTime,
+                                    Plan = plan,
+                                    VehicleChargePerTick = model.Params.VehicleChargePerTick,
+                                    Ants = model.Params.ACOAnts,
+                                    Runs = model.Params.ACORuns,
+                                    Alpha = model.Params.ACOAlpha,
+                                    Beta = model.Params.ACOBeta,
+                                    EvaporationCoefficient = model.Params.ACOEvaporationCoefficient,
+                                };
+                                LoggerBase.Instance.Debug("Running ant colony solver");
+                                LoggerBase.Instance.StopwatchStart();
+                                AntColonySolverOutput output = solver.Run(input);
+                                LoggerBase.Instance.StopwatchStop();
+                                plan = output.Plan;
+                            }
+
                         }
                         // MIP
                         else if (model.Params.OptimizationMethod == OptimizationMethod.MIP)
@@ -1351,6 +1409,12 @@ namespace DARP.Windows
             RenderPlan();
         }
 
+        private void btnRunAco_Click(object sender, RoutedEventArgs e)
+        {
+            RunAntColonySolver();
+            RenderPlan();
+        }
+
         private void btnRunEvo_Click(object sender, RoutedEventArgs e)
         {
             RunEvolution().ContinueWith(t =>
@@ -1433,6 +1497,8 @@ namespace DARP.Windows
         }
 
         #endregion
+
+      
     }
 
     #region CLASSES
@@ -1679,7 +1745,11 @@ namespace DARP.Windows
 
         [Category("Evolution")]
         [DisplayName("Enviromental selection")]
-        public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Tournament;
+        public EvolutionarySelection EnviromentalSelection { get; set; } = EvolutionarySelection.Tournament;
+
+        [Category("Evolution")]
+        [DisplayName("Parental selection")]
+        public EvolutionarySelection ParentalSelection { get; set; } = EvolutionarySelection.None;
 
         // ------------ Insertion heuristics ------------------
         [Category("Insertion heuristics")]
@@ -1690,12 +1760,39 @@ namespace DARP.Windows
         [Category("Insertion heuristics")]
         [DisplayName("Epsilon")]
         [Description("Probability of inserting order randomly instead of to the best place in RandomizedGlobalBestFit.")]
-        public double Epsilon { get; set; } = 0.1;
+        public double InsertionEpsilon { get; set; } = 0.1;
 
         [Category("Insertion heuristics")]
         [DisplayName("Randomized runs")]
-        [Description("Total runs of RandomizedGlobalBestFit, the best one is chosen.")]
-        public int Runs { get; set; } = 10;
+        [Description("Total runs of RandomizedGlobalBestFit, the best one is choosen.")]
+        public int InsertionRuns { get; set; } = 10;
+
+        // ------------ ACO ------------------
+        [Category("Ants")]
+        [DisplayName("Runs")]
+        [Description("Total runs of ACO")]
+        public int ACORuns { get; set; } = 300;
+
+        [Category("Ants")]
+        [DisplayName("Ants")]
+        [Description("Number of ants")]
+        public int ACOAnts { get; set; } = 100;
+
+        [Category("Ants")]
+        [DisplayName("Alpha")]
+        [Description("Pheromone importance.")]
+        public double ACOAlpha { get; set; } = 1;
+
+        [Category("Ants")]
+        [DisplayName("Beta")]
+        [Description("Attractivness importance.")]
+        public double ACOBeta { get; set; } = 1;
+
+        [Category("Ants")]
+        [DisplayName("Evaporation coefficient")]
+        [Description("Attractivness importance.")]
+        public double ACOEvaporationCoefficient { get; set; } = 0.3;
+
 
         public MainWindowParams Clone()
         {

@@ -57,7 +57,7 @@
                                     </GroupBox>
                                     <GroupBox Header="Run optimization">
                                         <StackPanel>
-                                            <Button Content="Ant colony" Margin="0,3"/>
+                                            <Button Content="Ant colony" Margin="0,3" Click="btnRunAco_Click"/>
                                             <Button Content="Evolution" Margin="0,3" Click="btnRunEvo_Click"/>
                                             <Button Content="Graph search" Margin="0,3"/>
                                             <Button Content="Insertion heuristics" Margin="0,3" Click="btnRunInsertion_Click"/>

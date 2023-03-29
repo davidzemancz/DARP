@@ -113,7 +113,12 @@ namespace DARP.Solvers
         /// <summary>
         /// Enviromental selection
         /// </summary>
-        public EnviromentalSelection EnviromentalSelection { get; set; } = EnviromentalSelection.Elitism;
+        public EvolutionarySelection EnviromentalSelection { get; set; } = EvolutionarySelection.Elitism;
+
+        /// <summary>
+        /// Parental selection
+        /// </summary>
+        public EvolutionarySelection ParentalSelection { get; set; } = EvolutionarySelection.Tournament;
 
         /// <summary>
         /// Heuristic that is used after crossover to insert remained orders
@@ -221,10 +226,18 @@ namespace DARP.Solvers
                 for (int i = 0; newPopulation.Count < input.PopulationSize - 1; i += 2)
                 {
                     // Select parents
-                    // TODO: select parents by tournament
-                    // TODO: select parent sequentialy
-                    Individual parent1 = population[i]; //XMath.RandomElementByWeight(population, (i) => i.Fitness);
-                    Individual parent2 = population[i+1]; //XMath.RandomElementByWeight(population, (i) => i.Fitness);
+                    Individual parent1 = null;
+                    Individual parent2 = null; 
+                    if(_input.ParentalSelection == EvolutionarySelection.None)
+                    {
+                        parent1 = population[i];
+                        parent2 = population[i+1];
+                    }
+                    else if (_input.ParentalSelection == EvolutionarySelection.Roulette)
+                    {
+                        parent1 = XMath.RandomElementByWeight(population, (i) => i.Fitness);
+                        parent2 = XMath.RandomElementByWeight(population, (i) => i.Fitness);
+                    }
 
                     // Create offsprings
                     if (_random.NextDouble() < input.PlanCrossoverProb)
@@ -327,7 +340,7 @@ namespace DARP.Solvers
                     }      
                 }
 
-                if (input.EnviromentalSelection == EnviromentalSelection.Tournament)
+                if (input.EnviromentalSelection == EvolutionarySelection.Tournament)
                 {
                     population.Clear();
                     for (int i = 0; i < input.PopulationSize; i++)
@@ -352,7 +365,7 @@ namespace DARP.Solvers
                             population.Add(newPopulation[fourth]);
                     }
                 }
-                else if (input.EnviromentalSelection == EnviromentalSelection.Elitism)
+                else if (input.EnviromentalSelection == EvolutionarySelection.Elitism)
                 {
                     population = newPopulation;
                         //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))

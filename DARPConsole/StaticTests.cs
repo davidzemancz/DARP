@@ -45,26 +45,29 @@ namespace DARPConsole
 
             //Thread.Sleep(1000);
 
-            //var acoInput = new AntColonySolverInput(input);
-            //var solver = new AntColonySolver();
-            //var output = solver.Run(acoInput);
+            var acoInput = new AntColonySolverInput(input);
+            var solver = new AntColonySolver();
+            var output = solver.Run(acoInput);
+            double acoProfit2 = output.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            Console.WriteLine($"Aco: {acoProfit2}");
 
             EvolutionarySolverInput esInput2 = new(input);
-            esInput2.Generations = 500;
-            esInput2.PopulationSize = 300;
+            esInput2.Generations = 200;
+            esInput2.PopulationSize = 100;
             esInput2.BestfitOrderInsertMutProb = 0.3;
             esInput2.RandomOrderInsertMutProb = 0.2;
             esInput2.RandomOrderRemoveMutProb = 0.3;
             esInput2.RouteCrossoverProb = 0.2;
             esInput2.PlanCrossoverProb = 0.6;
-            esInput2.EnviromentalSelection = EnviromentalSelection.Tournament;
+            esInput2.EnviromentalSelection = EvolutionarySelection.Tournament;
+            esInput2.ParentalSelection = EvolutionarySelection.None;
             esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
             EvolutionarySolver es2 = new();
             EvolutionarySolverOutput output2 = es2.Run(esInput2);
             double eProfit2 = output2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
             Console.WriteLine($"Evolution: {eProfit2}");
 
-
+           
 
             //MIPSolverInput mipInput = new(input);
             //mipInput.Solver = "SCIP";
@@ -203,7 +206,7 @@ namespace DARPConsole
             esInput.RandomOrderRemoveMutProb = 0.45;
             esInput.RouteCrossoverProb = 0.3;
             esInput.PlanCrossoverProb = 0.3;
-            esInput.EnviromentalSelection = EnviromentalSelection.Tournament;
+            esInput.EnviromentalSelection = EvolutionarySelection.Tournament;
             //esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";", f)}]"); };
             EvolutionarySolver es = new();
             EvolutionarySolverOutput output = es.Run(esInput);
@@ -219,7 +222,7 @@ namespace DARPConsole
             esInput2.RandomOrderRemoveMutProb = 0.3;
             esInput2.RouteCrossoverProb = 0.2;
             esInput2.PlanCrossoverProb = 0.7;
-            esInput2.EnviromentalSelection = EnviromentalSelection.Tournament;
+            esInput2.EnviromentalSelection = EvolutionarySelection.Tournament;
             esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
             //#esInput2.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";", f)}]"); };
             EvolutionarySolver es2 = new();

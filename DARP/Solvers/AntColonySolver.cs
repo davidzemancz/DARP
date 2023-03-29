@@ -29,6 +29,18 @@ namespace DARP.Solvers
         public AntColonySolverOutput()
         {
         }
+
+
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        /// <param name="plan">Plan</param>
+        /// <param name="status">Status</param>
+        public AntColonySolverOutput(Plan plan, Status status)
+        {
+            Plan = plan;
+            Status = status;
+        }
     }
 
     /// <summary>
@@ -36,15 +48,15 @@ namespace DARP.Solvers
     /// </summary>
     public class AntColonySolverInput : SolverInputBase
     {
-        public int Ants { get; set; } = 1000;
+        public int Ants { get; set; } = 300;
 
-        public int Runs { get; set; } = 1000;
+        public int Runs { get; set; } = 500;
 
         public double Alpha { get; set; } = 1;
 
         public double Beta { get; set; } = 1;
 
-        public double EvaporationCoeficient { get; set; } = 0.3;
+        public double EvaporationCoefficient { get; set; } = 0.3;
 
         /// <summary>
         /// Initialize
@@ -144,6 +156,7 @@ namespace DARP.Solvers
             }
 
             // Run
+            Plan bestPlan = null;
             for (int run = 0; run < _input.Runs; run++)
             {
                 Route[][] plans = new Route[_input.Ants][];
@@ -242,19 +255,25 @@ namespace DARP.Solvers
                 // Vaporize pheromone
                 for (int i = 0; i < vehiclesPheromoneG.Length; i++)
                     for (int j = 0; j < vehiclesPheromoneG[i].Length; j++)
-                        vehiclesPheromoneG[i][j] *= (1 - _input.EvaporationCoeficient);
+                        vehiclesPheromoneG[i][j] *= (1 - _input.EvaporationCoefficient);
 
                 for (int i = 0; i < ordersPheromoneG.Length; i++)
                     for (int j = 0; j < ordersPheromoneG[i].Length; j++)
-                        ordersPheromoneG[i][j] *= (1 - _input.EvaporationCoeficient);
+                        ordersPheromoneG[i][j] *= (1 - _input.EvaporationCoefficient);
 
                 // Update pheromone in global matrices
-                double maxProfit = totalProfits.Max();
+                int maxProfitIndex = 0;
+                for (int i = 0; i < totalProfits.Length; i++)
+                    if (totalProfits[i] > totalProfits[maxProfitIndex])
+                        maxProfitIndex = i;
+
+                double maxProfit = totalProfits[maxProfitIndex];
+                bestPlan = new Plan() { Routes = plans[maxProfitIndex].ToList() };
+
                 if( maxProfit > maxProfitG) maxProfitG = maxProfit;
                 double[] relativeProfits = totalProfits.Select(tp => tp / maxProfit).ToArray();
                 for (int p = 0; p < plans.Length; p++)
                 {
-                    //Plan plan = plans[p];
                     List<int>[] routesOrdersIndicies = plansOrdersIndicies[p];
                     double relativeProfit = relativeProfits[p];
                     if (relativeProfit < 0.7) continue;
@@ -284,16 +303,16 @@ namespace DARP.Solvers
                         }
                     }
 
-                    if (run % 10 == 0)
-                    {
-                        Console.WriteLine($"Run {run}, plan {p}: total profit {maxProfitG}");
-                    }
+                    //if (run % 10 == 0)
+                    //{
+                    //    Console.WriteLine($"Run {run}, plan {p}: total profit {maxProfitG}");
+                    //}
                     //break;
                 }
             }
 
-            Console.WriteLine($"ACO: {maxProfitG}");
-            return new AntColonySolverOutput();
+            //Console.WriteLine($"ACO: {maxProfitG}");
+            return new AntColonySolverOutput(bestPlan, Status.Success);
         }
     }
 }

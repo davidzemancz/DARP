@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace DARP.Utils
 {
-    public enum EnviromentalSelection
+    public enum EvolutionarySelection
     {
-        Elitism = 0,
-        Tournament = 1,
+        None = 0,
+        Elitism = 1,
+        Tournament = 2,
+        Roulette = 3,
     }
 
     public enum ParentalSelection
