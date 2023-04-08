@@ -2,6 +2,7 @@
 using DARP.Utils;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Presentation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,7 +113,62 @@ namespace DARP.Solvers
 
             }
 
+            // Generations
+            for (int g = 0; g < input.Generations; g++)
+            {
+                // Compute fitness
+                for (int i = 0; i < population.Length; i++)
+                {
+                    population[i].Fitness = Fitness(population[i]);
+                }
+
+                // Create offspring
+                Individual[] offspring = new Individual[input.PopulationSize];
+                for (int i = 0; i < offspring.Length; i += 2)
+                {
+                    // Selection
+                    Individual parent1 = SelectParent(population, i);
+                    Individual parent2 = SelectParent(population, i + 1);
+
+                    // Crossover
+                    (Individual offspring1, Individual offspring2) = Crossover(parent1, parent2);
+
+                    // Mutate
+                    Mutate(offspring1);
+                    Mutate(offspring2);
+
+                    // Repair
+                    Repair(offspring1);
+                    Repair(offspring2);
+                }
+            }
+
             return new EvolutionarySolverOutputV2(null, Status.Success);
+        }
+
+        private double Fitness(Individual individual)
+        {
+            return 0;
+        }
+
+        private Individual SelectParent(Individual[] population, int index)
+        {
+            return population[index];
+        }
+
+        private (Individual offspring1, Individual offspring2) Crossover(Individual parent1, Individual parent2)
+        {
+            return (parent1.Clone(), parent2.Clone());
+        }
+
+        private void Mutate(Individual individual)
+        {
+
+        }
+
+        private void Repair(Individual individual)
+        {
+
         }
 
         protected class Individual
