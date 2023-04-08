@@ -54,11 +54,6 @@ namespace DARP.Solvers
     public class EvolutionarySolverInputV2 : SolverInputBase
     {
         /// <summary>
-        /// Instance of random generator. If null, new instance is created.
-        /// </summary>
-        public Random RandomInstance { get; set; } = null;
-
-        /// <summary>
         /// Number of generations
         /// </summary>
         public int Generations { get; set; } = 100;
@@ -69,54 +64,9 @@ namespace DARP.Solvers
         public int PopulationSize { get; set; } = 100;
 
         /// <summary>
-        /// Probability of removing order in insertion mutations
+        /// Orders to schedule
         /// </summary>
-        public double RandomOrderRemoveMutProb { get; set; } = 0.4;
-
-        /// <summary>
-        /// Probability of trying to randomly insert order into random route
-        /// </summary>
-        public double RandomOrderInsertMutProb { get; set; } = 0.5;
-
-        /// <summary>
-        /// Probability of inserting order into random route in best possible place
-        /// </summary>
-        public double BestfitOrderInsertMutProb { get; set; } = 0.5;
-
-        /// <summary>
-        /// Probability of crossing over two plans
-        /// </summary>
-        public double PlanCrossoverProb {  get; set; } = 0.3;
-
-        /// <summary>
-        /// Probability of crossing over two routes in the same plan
-        /// </summary>
-        public double RouteCrossoverProb { get; set; } = 0.3;
-
-        /// <summary>
-        /// Function for logging fitness
-        /// </summary>
-        public FitnessLogFunc FitnessLog { get; set; }
-
-        /// <summary>
-        /// Use adaptive mutation. Decreases mutations probability over generations.
-        /// </summary>
-        public bool AdaptiveMutation { get; set; }
-
-        /// <summary>
-        /// Enviromental selection
-        /// </summary>
-        public EvolutionarySelection EnviromentalSelection { get; set; } = EvolutionarySelection.Elitism;
-
-        /// <summary>
-        /// Parental selection
-        /// </summary>
-        public EvolutionarySelection ParentalSelection { get; set; } = EvolutionarySelection.Tournament;
-
-        /// <summary>
-        /// Heuristic that is used after crossover to insert remained orders
-        /// </summary>
-        public InsertionHeuristicFunc CrossoverInsertionHeuristic { get; set; } = null;
+        public List<Order> Orders { get; set; }
 
         /// <summary>
         /// Initialize
@@ -155,9 +105,29 @@ namespace DARP.Solvers
         /// <param name="input">Input</param>
         public EvolutionarySolverOutputV2 Run(EvolutionarySolverInputV2 input) 
         {
-            
+            // Initialize population
+            Individual[] population = new Individual[input.PopulationSize];
+            for (int i = 0; i < input.PopulationSize; i++)
+            {
+
+            }
 
             return new EvolutionarySolverOutputV2(null, Status.Success);
+        }
+
+        protected class Individual
+        {
+            public int[] Chromosomes { get; set; }
+            public double Fitness { get; set; }
+
+            public Individual Clone()
+            {
+                Individual clone = new();
+                clone.Fitness = Fitness;
+                clone.Chromosomes = new int[Chromosomes.Length];
+                Array.Copy(Chromosomes, clone.Chromosomes, Chromosomes.Length);
+                return clone;
+            }
         }
     }
 
