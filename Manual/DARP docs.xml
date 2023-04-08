@@ -482,6 +482,13 @@
             Initialize
             </summary>
         </member>
+        <member name="M:DARP.Solvers.AntColonySolverOutput.#ctor(DARP.Models.Plan,DARP.Utils.Status)">
+            <summary>
+            Initialize
+            </summary>
+            <param name="plan">Plan</param>
+            <param name="status">Status</param>
+        </member>
         <member name="T:DARP.Solvers.AntColonySolverInput">
             <summary>
             Ant colony solver output
@@ -607,6 +614,11 @@
         <member name="P:DARP.Solvers.EvolutionarySolverInput.EnviromentalSelection">
             <summary>
             Enviromental selection
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.ParentalSelection">
+            <summary>
+            Parental selection
             </summary>
         </member>
         <member name="P:DARP.Solvers.EvolutionarySolverInput.CrossoverInsertionHeuristic">
@@ -858,6 +870,11 @@
             Objective value
             </summary>
         </member>
+        <member name="P:DARP.Solvers.MIPSolverOutput.SolverStatus">
+            <summary>
+            Solver status
+            </summary>
+        </member>
         <member name="M:DARP.Solvers.MIPSolverOutput.#ctor">
             <summary>
             Initialize
@@ -869,6 +886,7 @@
             </summary>
             <param name="plan">Plan</param>
             <param name="status">Status</param>
+            <param name="objectiveValue"></param>
         </member>
         <member name="T:DARP.Solvers.MIPSolverInput">
             <summary>

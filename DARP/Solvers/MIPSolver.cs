@@ -31,6 +31,11 @@ namespace DARP.Solvers
         public double ObjetiveValue { get; }
 
         /// <summary>
+        /// Solver status
+        /// </summary>
+        public string SolverStatus { get; internal set; }
+
+        /// <summary>
         /// Initialize
         /// </summary>
         public MIPSolverOutput()
@@ -42,11 +47,12 @@ namespace DARP.Solvers
         /// </summary>
         /// <param name="plan">Plan</param>
         /// <param name="status">Status</param>
-        public MIPSolverOutput(Plan plan, Status status, double objetiveValue)
+        /// <param name="objectiveValue"></param>
+        public MIPSolverOutput(Plan plan, Status status, double objectiveValue)
         {
             Plan = plan;
             Status = status;
-            ObjetiveValue = objetiveValue;
+            ObjetiveValue = objectiveValue;
         }
     }
 
@@ -246,7 +252,7 @@ namespace DARP.Solvers
             foreach (var order in input.Orders)
             {
                 Variable timeVar = timeVariables.First(kvp => kvp.Key.Id == order.Id).Value;
-                _solver.Add(timeVar <= order.DeliveryTime.From.ToDouble());
+                _solver.Add(timeVar >= order.DeliveryTime.From.ToDouble());
                 _solver.Add(timeVar <= order.DeliveryTime.To.ToDouble());
             }
 
@@ -361,11 +367,11 @@ namespace DARP.Solvers
                     plan.Routes.Add(route);
                 }
 
-                return new MIPSolverOutput(plan, Status.Success, _solver.Objective().Value());
+                return new MIPSolverOutput(plan, Status.Success, _solver.Objective().Value()) { SolverStatus = result.ToString() };
             }
             else
             {
-                return new MIPSolverOutput(input.Plan, Status.Failed, _solver.Objective().Value());
+                return new MIPSolverOutput(input.Plan, Status.Failed, _solver.Objective().Value()) { SolverStatus = result.ToString() };
             }
         }
 

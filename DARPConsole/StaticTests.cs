@@ -31,34 +31,34 @@ namespace DARPConsole
         {
             var input = GetInput();
 
-            InsertionHeuristicsInput insHInput4 = new(input);
-            InsertionHeuristics insH4 = new();
-            insHInput4.Epsilon = 0.2;
-            double iProfit4Max = double.MinValue;
-            for (int i = 0; i < 20; i++)
-            {
-                InsertionHeuristicsOutput insHOutput4 = insH4.RunRandomizedGlobalBestFit(insHInput4);
-                double iProfit4 = insHOutput4.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-                if (iProfit4 > iProfit4Max) iProfit4Max = iProfit4;
-            }
-            Console.WriteLine($"Randomized insertion: {iProfit4Max}");
+            //InsertionHeuristicsInput insHInput4 = new(input);
+            //InsertionHeuristics insH4 = new();
+            //insHInput4.Epsilon = 0.2;
+            //double iProfit4Max = double.MinValue;
+            //for (int i = 0; i < 20; i++)
+            //{
+            //    InsertionHeuristicsOutput insHOutput4 = insH4.RunRandomizedGlobalBestFit(insHInput4);
+            //    double iProfit4 = insHOutput4.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            //    if (iProfit4 > iProfit4Max) iProfit4Max = iProfit4;
+            //}
+            //Console.WriteLine($"Randomized insertion: {iProfit4Max}");
 
-            //Thread.Sleep(1000);
+            ////Thread.Sleep(1000);
 
-            var acoInput = new AntColonySolverInput(input);
-            var solver = new AntColonySolver();
-            var output = solver.Run(acoInput);
-            double acoProfit2 = output.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            Console.WriteLine($"Aco: {acoProfit2}");
+            //var acoInput = new AntColonySolverInput(input);
+            //var solver = new AntColonySolver();
+            //var output = solver.Run(acoInput);
+            //double acoProfit2 = output.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+            //Console.WriteLine($"Aco: {acoProfit2}");
 
             EvolutionarySolverInput esInput2 = new(input);
-            esInput2.Generations = 200;
-            esInput2.PopulationSize = 100;
+            esInput2.Generations = 300;
+            esInput2.PopulationSize = 200;
             esInput2.BestfitOrderInsertMutProb = 0.3;
             esInput2.RandomOrderInsertMutProb = 0.2;
             esInput2.RandomOrderRemoveMutProb = 0.3;
-            esInput2.RouteCrossoverProb = 0.2;
-            esInput2.PlanCrossoverProb = 0.6;
+            esInput2.RouteCrossoverProb = 0.4;
+            esInput2.PlanCrossoverProb = 0;
             esInput2.EnviromentalSelection = EvolutionarySelection.Tournament;
             esInput2.ParentalSelection = EvolutionarySelection.None;
             esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;

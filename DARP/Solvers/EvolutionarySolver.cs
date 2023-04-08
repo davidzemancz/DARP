@@ -181,9 +181,10 @@ namespace DARP.Solvers
             // TODO individual jako routa
 
             List<Individual> population = new(input.PopulationSize);
+            var remainingOrders = input.Orders.Where(o => !input.Plan.Contains(o));
             for (int i = 0; i < input.PopulationSize; i++)
             {
-                Individual individual = new() { Plan = input.Plan.Clone(), RemaningOrders = new(input.Orders) };
+                Individual individual = new() { Plan = input.Plan.Clone(), RemaningOrders = new(remainingOrders) };
 
                 for (int j = 0; j < individual.RemaningOrders.Count * 2; j++)
                 {
@@ -240,7 +241,7 @@ namespace DARP.Solvers
                     }
 
                     // Create offsprings
-                    if (_random.NextDouble() < input.PlanCrossoverProb)
+                    if (_random.NextDouble() < input.PlanCrossoverProb) // Plan xover
                     {
                         Individual offspring1 = new() { Plan = new() };
                         Individual offspring2 = new() { Plan = new() };
@@ -271,7 +272,7 @@ namespace DARP.Solvers
                         newPopulation.Add(offspring1);
                         newPopulation.Add(offspring2);
                     }
-                    else if (_random.NextDouble() < input.RouteCrossoverProb)
+                    else if (_random.NextDouble() < input.RouteCrossoverProb) // Route xover
                     {
                         Individual offspring1 = parent1.Clone();
                         Individual offspring2 = parent2.Clone();
@@ -296,7 +297,6 @@ namespace DARP.Solvers
                             }
                         }
 
-                        List<Order> route2Orders = new();
                         for (int j = 1; j < route2.Points.Count; j += 2) // Loop over pickups
                         {
                             if (route2.Points[j].Time > splitTime)

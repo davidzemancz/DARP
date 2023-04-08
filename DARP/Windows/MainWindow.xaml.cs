@@ -823,6 +823,11 @@ namespace DARP.Windows
                         if (order.State != OrderState.Handled && order.DeliveryTime.To < model.CurrentTime)
                             order.Reject();
 
+                    if(plan.Orders.Any(o => removedOrders.Contains(o)))
+                    {
+
+                    }
+
                     // Run optimization each n ticks
                     if (model.CurrentTime.Ticks % model.Params.UpdatePlanTicks == 0)
                     {
@@ -1000,7 +1005,7 @@ namespace DARP.Windows
                     LoggerBase.Instance.Debug($"Optimum estimation {mipOutput.ObjetiveValue}");
                     LoggerBase.Instance.Debug($"Optimality ratio {totalCurrentProfit / mipOutput.ObjetiveValue}");
 
-                    _simulationTemplatesLog.Info($"OptimumEstimation{sep}{run}{sep}{mipOutput.ObjetiveValue}");
+                    _simulationTemplatesLog.Info($"OptimumEstimation{sep}{run}{sep}{mipOutput.ObjetiveValue}{sep}{mipOutput.SolverStatus}");
                 }
                 
 
