@@ -70,6 +70,16 @@ namespace DARP.Solvers
         public List<Order> Orders { get; set; }
 
         /// <summary>
+        /// Plan
+        /// </summary>
+        public Plan Plan { get; set; }
+
+        /// <summary>
+        /// Metric
+        /// </summary>
+        public MetricFunc Metric { get; set; }
+
+        /// <summary>
         /// Initialize
         /// </summary>
         public EvolutionarySolverInputV2() { }
@@ -106,15 +116,25 @@ namespace DARP.Solvers
         /// <param name="input">Input</param>
         public EvolutionarySolverOutputV2 Run(EvolutionarySolverInputV2 input) 
         {
+            _input = input;
+            _random = new Random();
+
             // Initialize population
             Individual[] population = new Individual[input.PopulationSize];
             for (int i = 0; i < input.PopulationSize; i++)
             {
+                Individual individual = new();
+                foreach (Route route in _input.Plan.Routes)
+                {
+                    while (true)
+                    {
 
+                    }
+                }
             }
 
             // Generations
-            for (int g = 0; g < input.Generations; g++)
+            for (int g = 0; g < _input.Generations; g++)
             {
                 // Compute fitness
                 for (int i = 0; i < population.Length; i++)
@@ -123,7 +143,7 @@ namespace DARP.Solvers
                 }
 
                 // Create offspring
-                Individual[] offspring = new Individual[input.PopulationSize];
+                Individual[] offspring = new Individual[_input.PopulationSize];
                 for (int i = 0; i < offspring.Length; i += 2)
                 {
                     // Selection
@@ -144,6 +164,19 @@ namespace DARP.Solvers
             }
 
             return new EvolutionarySolverOutputV2(null, Status.Success);
+        }
+
+        private List<Order> GetSuccessors(Cords2D location, Time time)
+        {
+            List<Order> successors = new();
+            foreach (Order order in _input.Plan.Orders)
+            {
+                if (time + _input.Metric(location, order.PickupLocation) + _input.Metric(order.PickupLocation, order.DeliveryLocation) <= order.DeliveryTime.To)
+                {
+                    successors.Add(order);
+                }
+            }
+            return successors;
         }
 
         private double Fitness(Individual individual)
@@ -173,15 +206,14 @@ namespace DARP.Solvers
 
         protected class Individual
         {
-            public int[] Chromosomes { get; set; }
+            public List<int> Chromosomes { get; set; }
             public double Fitness { get; set; }
 
             public Individual Clone()
             {
                 Individual clone = new();
                 clone.Fitness = Fitness;
-                clone.Chromosomes = new int[Chromosomes.Length];
-                Array.Copy(Chromosomes, clone.Chromosomes, Chromosomes.Length);
+                clone.Chromosomes = new(Chromosomes);
                 return clone;
             }
         }

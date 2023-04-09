@@ -596,7 +596,7 @@
             Probability of crossing over two plans
             </summary>
         </member>
-        <member name="P:DARP.Solvers.EvolutionarySolverInput.RouteCrossoverProb">
+        <member name="P:DARP.Solvers.EvolutionarySolverInput.SwapRoutesMutProb">
             <summary>
             Probability of crossing over two routes in the same plan
             </summary>
@@ -604,11 +604,6 @@
         <member name="P:DARP.Solvers.EvolutionarySolverInput.FitnessLog">
             <summary>
             Function for logging fitness
-            </summary>
-        </member>
-        <member name="P:DARP.Solvers.EvolutionarySolverInput.AdaptiveMutation">
-            <summary>
-            Use adaptive mutation. Decreases mutations probability over generations.
             </summary>
         </member>
         <member name="P:DARP.Solvers.EvolutionarySolverInput.EnviromentalSelection">
@@ -679,6 +674,91 @@
             Clone individual
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:DARP.Solvers.EvolutionarySolverOutputV2">
+            <summary>
+            Evolutionary solver output
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverOutputV2.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverOutputV2.Status">
+            <summary>
+            Status
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolverOutputV2.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolverOutputV2.#ctor(DARP.Models.Plan,DARP.Utils.Status)">
+            <summary>
+            Initialize
+            </summary>
+            <param name="plan">Plan</param>
+            <param name="status">Status</param>
+        </member>
+        <member name="T:DARP.Solvers.EvolutionarySolverInputV2">
+            <summary>
+             Evolutionary solver input
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInputV2.Generations">
+            <summary>
+            Number of generations
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInputV2.PopulationSize">
+            <summary>
+            Population size
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInputV2.Orders">
+            <summary>
+            Orders to schedule
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInputV2.Plan">
+            <summary>
+            Plan
+            </summary>
+        </member>
+        <member name="P:DARP.Solvers.EvolutionarySolverInputV2.Metric">
+            <summary>
+            Metric
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolverInputV2.#ctor">
+            <summary>
+            Initialize
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolverInputV2.#ctor(DARP.Solvers.SolverInputBase)">
+            <summary>
+            Initialize EvolutionarySolverInput base on SolverInputBase instance
+            </summary>
+            <param name="solverInputBase">Instance</param>
+        </member>
+        <member name="T:DARP.Solvers.EvolutionarySolver2">
+            <summary>
+            Evolutionary solver
+            </summary>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolver2.DARP#Solvers#ISolver#Run(DARP.Solvers.ISolverInput)">
+            <summary>
+            Run evolutionary solver
+            </summary>
+            <param name="input">Input</param>
+        </member>
+        <member name="M:DARP.Solvers.EvolutionarySolver2.Run(DARP.Solvers.EvolutionarySolverInputV2)">
+            <summary>
+            Run evolutionary solver
+            </summary>
+            <param name="input">Input</param>
         </member>
         <member name="T:DARP.Solvers.InsertionHeuristicFunc">
             <summary>
@@ -1038,36 +1118,6 @@
         <member name="M:DARP.Windows.TextBoxWindow.InitializeComponent">
             <summary>
             InitializeComponent
-            </summary>
-        </member>
-        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
-            <summary>
-            GeneratedInternalTypeHelper
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
-            <summary>
-            CreateInstance
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            GetPropertyValue
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
-            <summary>
-            SetPropertyValue
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
-            <summary>
-            CreateDelegate
-            </summary>
-        </member>
-        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
-            <summary>
-            AddEventHandler
             </summary>
         </member>
     </members>

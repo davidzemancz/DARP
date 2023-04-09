@@ -281,7 +281,7 @@ namespace DARP.Solvers
             Random random = new();
             Plan plan = input.Plan.Clone();
 
-            List<Order> remainingOrders = new(input.Orders);
+            List<Order> remainingOrders = new(input.Orders.Where(o => !plan.Contains(o)));
             List<Order> removedOrders = new();
             while (remainingOrders.Any())
             {

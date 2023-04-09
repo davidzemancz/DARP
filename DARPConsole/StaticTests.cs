@@ -14,7 +14,7 @@ namespace DARPConsole
 {
     internal class StaticTests
     {
-        static Random _random = new(0);
+        static Random _random = new();
 
 
         public static void Run()
@@ -31,17 +31,17 @@ namespace DARPConsole
         {
             var input = GetInput();
 
-            //InsertionHeuristicsInput insHInput4 = new(input);
-            //InsertionHeuristics insH4 = new();
-            //insHInput4.Epsilon = 0.2;
-            //double iProfit4Max = double.MinValue;
-            //for (int i = 0; i < 20; i++)
-            //{
-            //    InsertionHeuristicsOutput insHOutput4 = insH4.RunRandomizedGlobalBestFit(insHInput4);
-            //    double iProfit4 = insHOutput4.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
-            //    if (iProfit4 > iProfit4Max) iProfit4Max = iProfit4;
-            //}
-            //Console.WriteLine($"Randomized insertion: {iProfit4Max}");
+            InsertionHeuristicsInput insHInput4 = new(input);
+            InsertionHeuristics insH4 = new();
+            insHInput4.Epsilon = 0.2;
+            double iProfit4Max = double.MinValue;
+            for (int i = 0; i < 20; i++)
+            {
+                InsertionHeuristicsOutput insHOutput4 = insH4.RunRandomizedGlobalBestFit(insHInput4);
+                double iProfit4 = insHOutput4.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
+                if (iProfit4 > iProfit4Max) iProfit4Max = iProfit4;
+            }
+            Console.WriteLine($"Randomized insertion: {iProfit4Max}");
 
             ////Thread.Sleep(1000);
 
@@ -52,16 +52,17 @@ namespace DARPConsole
             //Console.WriteLine($"Aco: {acoProfit2}");
 
             EvolutionarySolverInput esInput2 = new(input);
-            esInput2.Generations = 300;
-            esInput2.PopulationSize = 200;
-            esInput2.BestfitOrderInsertMutProb = 0.3;
+            esInput2.Generations = 1000;
+            esInput2.PopulationSize = 300;
+            esInput2.BestfitOrderInsertMutProb = 0.0;
             esInput2.RandomOrderInsertMutProb = 0.2;
-            esInput2.RandomOrderRemoveMutProb = 0.3;
-            esInput2.RouteCrossoverProb = 0.4;
-            esInput2.PlanCrossoverProb = 0;
-            esInput2.EnviromentalSelection = EvolutionarySelection.Tournament;
-            esInput2.ParentalSelection = EvolutionarySelection.None;
-            esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
+            esInput2.RandomOrderRemoveMutProb = 0.5;
+            esInput2.SwapRoutesMutProb = 0.05;
+            esInput2.PlanCrossoverProb = 0.6;
+            esInput2.EnviromentalSelection = EvolutionarySelection.None;
+            esInput2.ParentalSelection = EvolutionarySelection.Roulette;
+            //esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;
+            esInput2.FitnessLog = (g, f) => { if (g % 100 == 0) Console.WriteLine($"{g}> {f[2]}"); };
             EvolutionarySolver es2 = new();
             EvolutionarySolverOutput output2 = es2.Run(esInput2);
             double eProfit2 = output2.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick);
@@ -204,7 +205,7 @@ namespace DARPConsole
             esInput.BestfitOrderInsertMutProb = 0.7;
             esInput.RandomOrderInsertMutProb = 0.4;
             esInput.RandomOrderRemoveMutProb = 0.45;
-            esInput.RouteCrossoverProb = 0.3;
+            esInput.SwapRoutesMutProb = 0.3;
             esInput.PlanCrossoverProb = 0.3;
             esInput.EnviromentalSelection = EvolutionarySelection.Tournament;
             //esInput.FitnessLog = (g, f) => { if (g % 50 == 0) Console.WriteLine($"{g}> [{string.Join(";", f)}]"); };
@@ -220,7 +221,7 @@ namespace DARPConsole
             esInput2.BestfitOrderInsertMutProb = 0.3;
             esInput2.RandomOrderInsertMutProb = 0.2;
             esInput2.RandomOrderRemoveMutProb = 0.3;
-            esInput2.RouteCrossoverProb = 0.2;
+            esInput2.SwapRoutesMutProb = 0.2;
             esInput2.PlanCrossoverProb = 0.7;
             esInput2.EnviromentalSelection = EvolutionarySelection.Tournament;
             esInput2.CrossoverInsertionHeuristic = new InsertionHeuristics().RunRandomizedGlobalBestFit;

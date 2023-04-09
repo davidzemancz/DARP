@@ -424,7 +424,7 @@ namespace DARP.Windows
                 RandomOrderInsertMutProb = WindowModel.Params.RandomOrderInsertMutProb,
                 RandomOrderRemoveMutProb = WindowModel.Params.RandomOrderRemoveMutProb,
                 BestfitOrderInsertMutProb = WindowModel.Params.BestfitOrderInsertMutProb,
-                RouteCrossoverProb = WindowModel.Params.RouteCrossoverProb,
+                SwapRoutesMutProb = WindowModel.Params.SwapRoutesMutProb,
                 PlanCrossoverProb = WindowModel.Params.PlanCrossoverProb,
                 EnviromentalSelection = WindowModel.Params.EnviromentalSelection,
                 ParentalSelection = WindowModel.Params.ParentalSelection,
@@ -814,6 +814,7 @@ namespace DARP.Windows
                     }
 
                     // Update plans
+                    Plan prevPlan = plan.Clone();
                     (double profit, List<Order> removedOrders) = plan.UpdateVehiclesLocation(model.CurrentTime, metric, vehicleCharge);
                     removedOrders.ForEach(o => o.Handle());
                     totalProfit += profit;
@@ -861,6 +862,7 @@ namespace DARP.Windows
                             var ordesToSchedule = orders.Where(o => o.State == OrderState.Created || o.State == OrderState.Accepted);
                             if (ordesToSchedule.Any()) 
                             {
+                               
                                 EvolutionarySolver solver = new();
                                 EvolutionarySolverInput input = new()
                                 {
@@ -878,7 +880,7 @@ namespace DARP.Windows
                                     BestfitOrderInsertMutProb = model.Params.BestfitOrderInsertMutProb,
                                     EnviromentalSelection = model.Params.EnviromentalSelection,
                                     ParentalSelection = model.Params.ParentalSelection,
-                                    RouteCrossoverProb = model.Params.RouteCrossoverProb,
+                                    SwapRoutesMutProb = model.Params.SwapRoutesMutProb,
                                     PlanCrossoverProb = model.Params.PlanCrossoverProb,
                                 };
                                 LoggerBase.Instance.Debug("Running evolutionary solver");
@@ -1749,8 +1751,8 @@ namespace DARP.Windows
         public double PlanCrossoverProb { get; set; } = 0.3;
 
         [Category("Evolution")]
-        [DisplayName("[CX] Route crossover")]
-        public double RouteCrossoverProb { get; set; } = 0.3;
+        [DisplayName("[MUT] Swap routes tails")]
+        public double SwapRoutesMutProb { get; set; } = 0.3;
 
         [Category("Evolution")]
         [DisplayName("Enviromental selection")]

@@ -2,6 +2,7 @@
 using DARP.Utils;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Office2016.Presentation.Command;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,22 +94,17 @@ namespace DARP.Solvers
         /// <summary>
         /// Probability of crossing over two plans
         /// </summary>
-        public double PlanCrossoverProb {  get; set; } = 0.3;
+        public double PlanCrossoverProb { get; set; } = 0.3;
 
         /// <summary>
         /// Probability of crossing over two routes in the same plan
         /// </summary>
-        public double RouteCrossoverProb { get; set; } = 0.3;
+        public double SwapRoutesMutProb { get; set; } = 0.3;
 
         /// <summary>
         /// Function for logging fitness
         /// </summary>
         public FitnessLogFunc FitnessLog { get; set; }
-
-        /// <summary>
-        /// Use adaptive mutation. Decreases mutations probability over generations.
-        /// </summary>
-        public bool AdaptiveMutation { get; set; }
 
         /// <summary>
         /// Enviromental selection
@@ -136,7 +132,7 @@ namespace DARP.Solvers
         /// <param name="solverInputBase">Instance</param>
         public EvolutionarySolverInput(SolverInputBase solverInputBase) : base(solverInputBase) { }
 
-       
+
     }
 
     /// <summary>
@@ -160,12 +156,12 @@ namespace DARP.Solvers
         /// Run evolutionary solver
         /// </summary>
         /// <param name="input">Input</param>
-        public EvolutionarySolverOutput Run(EvolutionarySolverInput input) 
+        public EvolutionarySolverOutput Run(EvolutionarySolverInput input)
         {
-            if (input.CrossoverInsertionHeuristic == null) input.CrossoverInsertionHeuristic = new InsertionHeuristics().RunGlobalBestFit;
+            //if (input.CrossoverInsertionHeuristic == null) input.CrossoverInsertionHeuristic = new InsertionHeuristics().RunGlobalBestFit;
             _random = input.RandomInstance == null ? new() : input.RandomInstance;
             _input = input;
-           
+
 
             // Initialize population
             Individual bestInd = new() { Fitness = double.MinValue };
@@ -190,18 +186,13 @@ namespace DARP.Solvers
                 {
                     MutateInsertOrderRandomly(individual, false);
                 }
+
                 population.Add(individual);
             }
 
             // Evolution
-            for (int g  = 0; g < input.Generations; g++)
+            for (int g = 0; g < input.Generations; g++)
             {
-                if (input.AdaptiveMutation && g > 0 && g % (input.Generations / 5) == 0)
-                {
-                    input.BestfitOrderInsertMutProb /= 1.25;
-                    input.RandomOrderInsertMutProb /= 1.5;
-                }
-
                 // Compute fitnesses
                 double fitnessAvg = 0, min = double.MaxValue, max = double.MinValue;
                 for (int i = 0; i < input.PopulationSize; i++)
@@ -214,12 +205,12 @@ namespace DARP.Solvers
 
                     ind.Fitness = fitness;
 
-                    if (ind.Fitness > bestInd.Fitness) 
+                    if (ind.Fitness > bestInd.Fitness)
                         bestInd = ind.Clone();
                 }
                 fitnessAvg /= population.Count;
-                
-                if (input.FitnessLog != null) 
+
+                if (input.FitnessLog != null)
                     input.FitnessLog(g, new[] { fitnessAvg, min, max });
 
                 List<Individual> newPopulation = new(input.PopulationSize);
@@ -228,11 +219,11 @@ namespace DARP.Solvers
                 {
                     // Select parents
                     Individual parent1 = null;
-                    Individual parent2 = null; 
-                    if(_input.ParentalSelection == EvolutionarySelection.None)
+                    Individual parent2 = null;
+                    if (_input.ParentalSelection == EvolutionarySelection.None)
                     {
                         parent1 = population[i];
-                        parent2 = population[i+1];
+                        parent2 = population[i + 1];
                     }
                     else if (_input.ParentalSelection == EvolutionarySelection.Roulette)
                     {
@@ -260,7 +251,8 @@ namespace DARP.Solvers
                         }
 
                         // Add remaining orders
-                        foreach (Order order in parent1.Plan.Orders.Concat(parent1.RemaningOrders))
+                        //foreach (Order order in parent1.Plan.Orders.Concat(parent1.RemaningOrders))
+                        foreach (Order order in _input.Orders)
                         {
                             if (!offspring1.Plan.Contains(order)) offspring1.RemaningOrders.Add(order);
                             if (!offspring2.Plan.Contains(order)) offspring2.RemaningOrders.Add(order);
@@ -272,53 +264,10 @@ namespace DARP.Solvers
                         newPopulation.Add(offspring1);
                         newPopulation.Add(offspring2);
                     }
-                    else if (_random.NextDouble() < input.RouteCrossoverProb) // Route xover
-                    {
-                        Individual offspring1 = parent1.Clone();
-                        Individual offspring2 = parent2.Clone();
-
-                        // Crossover routes of a same vehicle
-                        int routeIndex1 = _random.Next(offspring1.Plan.Routes.Count);
-
-                        Route route1 = offspring1.Plan.Routes[routeIndex1];
-                        Route route2 = offspring2.Plan.Routes[routeIndex1];
-
-                        Time splitTime = _random.NextTime(XMath.Max(route1.Points[0].Time, route2.Points[0].Time), XMath.Min(route1.Points.Last().Time, route2.Points.Last().Time));
-
-                        // Remove orders
-                        for (int j = 1; j < route1.Points.Count; j += 2) // Loop over pickups
-                        {
-                            if (route1.Points[j].Time > splitTime)
-                            {
-                                offspring1.RemaningOrders.Add(((OrderPickupRoutePoint)route1.Points[j]).Order);
-                                route1.Points.RemoveAt(j); // Pickup
-                                route1.Points.RemoveAt(j); // Delivery
-                                j -= 2;
-                            }
-                        }
-
-                        for (int j = 1; j < route2.Points.Count; j += 2) // Loop over pickups
-                        {
-                            if (route2.Points[j].Time > splitTime)
-                            {
-                                offspring2.RemaningOrders.Add(((OrderPickupRoutePoint)route2.Points[j]).Order);
-                                route2.Points.RemoveAt(j); // Pickup
-                                route2.Points.RemoveAt(j); // Delivery
-                                j -= 2;
-                            }
-                        }
-                        
-                        RunInsertionWithOffspring(offspring1);
-                        RunInsertionWithOffspring(offspring2);
-
-                        newPopulation.Add(offspring1);
-                        newPopulation.Add(offspring2);
-
-                    }
                     else
                     {
-                        newPopulation.Add(parent1);
-                        newPopulation.Add(parent2);
+                        newPopulation.Add(parent1.Clone());
+                        newPopulation.Add(parent2.Clone());
                     }
                 }
 
@@ -331,13 +280,25 @@ namespace DARP.Solvers
                         MutateInsertOrderRandomly(newPopulation[i]);
                         //MutateInsertOrderRandomly(newPopulation, i, true);
                     }
-                    
+
+                    // Swap routes tails
+                    //if (_random.NextDouble() < input.SwapRoutesMutProb)
+                    //{
+                    //    MutateSwapRoutes(newPopulation[i]);
+                    //}
+
                     // Bestfit insertion heuristics
                     if (_random.NextDouble() < input.BestfitOrderInsertMutProb)
                     {
                         MutateBestFitOrder(newPopulation[i]);
                         //MutateBestFitOrder(newPopulation, i, true);
-                    }      
+                    }
+
+                    Individual ind = newPopulation[i];
+                    if (ind.Plan.Routes.Any(r => r.Orders.Any(ro => ind.Plan.Routes.Any(r2 => r != r2 && r2.Contains(ro)))))
+                    {
+
+                    }
                 }
 
                 if (input.EnviromentalSelection == EvolutionarySelection.Tournament)
@@ -365,12 +326,12 @@ namespace DARP.Solvers
                             population.Add(newPopulation[fourth]);
                     }
                 }
-                else if (input.EnviromentalSelection == EvolutionarySelection.Elitism)
+                else if (input.EnviromentalSelection == EvolutionarySelection.None)
                 {
                     population = newPopulation;
-                        //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
-                        //.Take(input.PopulationSize)
-                        //.ToList();
+                    //.OrderByDescending(i => i.Plan.GetTotalProfit(input.Metric, input.VehicleChargePerTick))
+                    //.Take(input.PopulationSize)
+                    //.ToList();
                 }
 
             }
@@ -400,6 +361,90 @@ namespace DARP.Solvers
                     route.RemoveOrder(order);
             }
             offspring.Plan.Routes.Add(route);
+        }
+
+        private void MutateSwapRoutes(Individual individual)
+        {
+            // Crossover routes of a same vehicle
+            int routeIndex1 = _random.Next(individual.Plan.Routes.Count);
+            int routeIndex2 = _random.Next(individual.Plan.Routes.Count);
+
+            Route route1 = individual.Plan.Routes[routeIndex1];
+            Route route2 = individual.Plan.Routes[routeIndex2];
+
+            Time splitTime = _random.NextTime(XMath.Max(route1.Points[0].Time, route2.Points[0].Time), XMath.Min(route1.Points.Last().Time, route2.Points.Last().Time));
+
+            // Remove orders
+            List<Order> removedOrdersFromRoute1 = new();
+            for (int j = 1; j < route1.Points.Count; j += 2) // Loop over pickups
+            {
+                if (route1.Points[j].Time > splitTime)
+                {
+                    Order order = ((OrderPickupRoutePoint)route1.Points[j]).Order;
+                    individual.RemaningOrders.Add(order);
+                    removedOrdersFromRoute1.Add(order);
+
+                    route1.Points.RemoveAt(j); // Pickup
+                    route1.Points.RemoveAt(j); // Delivery
+                    j -= 2;
+                }
+            }
+
+            List<Order> removedOrdersFromRoute2 = new();
+            for (int j = 1; j < route2.Points.Count; j += 2) // Loop over pickups
+            {
+                if (route2.Points[j].Time > splitTime)
+                {
+                    Order order = ((OrderPickupRoutePoint)route2.Points[j]).Order;
+                    individual.RemaningOrders.Add(order);
+                    removedOrdersFromRoute2.Add(order);
+
+                    route2.Points.RemoveAt(j); // Pickup
+                    route2.Points.RemoveAt(j); // Delivery
+                    j -= 2;
+                }
+            }
+
+            // Append orders to other route
+            foreach (Order order in removedOrdersFromRoute1)
+            {
+                RoutePoint lastPoint = route2.Points[route2.Points.Count - 1];
+                Cords2D lastCords = lastPoint.Location;
+                Time lastTime = lastPoint.Time;
+
+                Time deliveryTime = lastTime + _input.Metric(lastCords, order.PickupLocation) + _input.Metric(order.PickupLocation, order.DeliveryLocation);
+
+                if (deliveryTime <= order.DeliveryTime.To)
+                {
+                    deliveryTime = XMath.Max(deliveryTime, order.DeliveryTime.From);
+                    Time pickupTime = deliveryTime - _input.Metric(order.PickupLocation, order.DeliveryLocation);
+
+                    route2.Points.Add(new OrderPickupRoutePoint(order) { Time = pickupTime });
+                    route2.Points.Add(new OrderDeliveryRoutePoint(order) { Time = deliveryTime });
+
+                    individual.RemaningOrders.Remove(order);
+                }
+            }
+
+            foreach (Order order in removedOrdersFromRoute2)
+            {
+                RoutePoint lastPoint = route1.Points[route1.Points.Count - 1];
+                Cords2D lastCords = lastPoint.Location;
+                Time lastTime = lastPoint.Time;
+
+                Time deliveryTime = lastTime + _input.Metric(lastCords, order.PickupLocation) + _input.Metric(order.PickupLocation, order.DeliveryLocation);
+
+                if (deliveryTime <= order.DeliveryTime.To)
+                {
+                    deliveryTime = XMath.Max(deliveryTime, order.DeliveryTime.From);
+                    Time pickupTime = deliveryTime - _input.Metric(order.PickupLocation, order.DeliveryLocation);
+
+                    route1.Points.Add(new OrderPickupRoutePoint(order) { Time = pickupTime });
+                    route1.Points.Add(new OrderDeliveryRoutePoint(order) { Time = deliveryTime });
+
+                    individual.RemaningOrders.Remove(order);
+                }
+            }
         }
 
         private void MutateRemoveOrder(Individual individual)
@@ -437,7 +482,7 @@ namespace DARP.Solvers
         private void MutateBestFitOrder(Individual individual)
         {
             if (!individual.RemaningOrders.Any()) return;
-            
+
             if (_random.NextDouble() < _input.RandomOrderRemoveMutProb) MutateRemoveOrder(individual);
 
             int orderIndex = _random.Next(individual.RemaningOrders.Count);
@@ -447,7 +492,7 @@ namespace DARP.Solvers
             insHInput.Plan = individual.Plan;
             insHInput.Orders = new[] { order };
             InsertionHeuristics insH = new();
-            individual.Plan  = insH.RunLocalBestFit(insHInput).Plan;
+            individual.Plan = insH.RunLocalBestFit(insHInput).Plan;
             if (individual.Plan.Contains(order))
             {
                 individual.RemaningOrders.Remove(order);
@@ -462,8 +507,8 @@ namespace DARP.Solvers
             /// <summary>
             /// Plan
             /// </summary>
-            public Plan Plan {  get; set; }
-            
+            public Plan Plan { get; set; }
+
             /// <summary>
             /// Orders that are not in the plan
             /// </summary>
@@ -490,5 +535,5 @@ namespace DARP.Solvers
         }
     }
 
-    
+
 }
