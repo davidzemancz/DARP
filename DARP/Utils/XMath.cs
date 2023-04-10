@@ -86,7 +86,7 @@ namespace DARP.Utils
 
             }
 
-            throw new NotImplementedException();
+            return sequence.Last();
         }
     }
 
